@@ -1,0 +1,15 @@
+/* Download page only. Everything else is in site.css. */
+
+/* The download slot: the (disabled) primary, then one sentence under it. */
+.dl-slot {
+  margin: 0 0 var(--s-8);
+}
+
+.dl-slot .btn-primary {
+  min-width: min(100%, 320px);
+}
+
+/* Release block (only once it is published): the file name may be long. */
+.release-file {
+  overflow-wrap: anywhere;
+}

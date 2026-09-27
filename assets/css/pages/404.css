@@ -1,0 +1,27 @@
+/* Page not found: one petrol band that fills the space between the app bar and the footer. */
+
+.nf {
+  display: flex;
+  flex-direction: column;
+}
+
+.nf-band {
+  flex: 1 0 auto;
+}
+
+.nf-band .band-inner {
+  padding-top: var(--s-16);
+  padding-bottom: var(--s-16);
+}
+
+.nf-lead {
+  max-width: 46ch;
+  margin: var(--s-5) 0 0;
+  color: var(--text-1);
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+}
+
+.nf .actions {
+  margin: var(--s-8) 0 var(--s-4);
+}

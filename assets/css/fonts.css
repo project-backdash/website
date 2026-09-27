@@ -1,0 +1,44 @@
+/* Project Backdash web fonts, self-hosted (see /assets/fonts/README.txt).
+   Display: PBD Display, our own caps-only face (one drawn weight; SIL Open Font License 1.1, see OFL-pbd.txt).
+   Every requested weight maps to its one weight, and body sets font-synthesis: none, so it is never made bold.
+   Display use: font-family: var(--font-display);  Body and UI: font-family: "Barlow" (SIL Open Font License 1.1). */
+
+@font-face {
+  font-family: "PBD Display";
+  src: url("/assets/fonts/pbd-display.woff2?v=5b6f3821ad") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/assets/fonts/barlow-400.woff2?v=dabe85d6ba") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/assets/fonts/barlow-500.woff2?v=469d942d3e") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/assets/fonts/barlow-600.woff2?v=6bbc91df55") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/assets/fonts/barlow-700.woff2?v=762022485e") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}

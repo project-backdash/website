@@ -1,0 +1,2658 @@
+/* ==========================================================================
+   backdash.gg: site.css, the Project Backdash design system (direction v2.4)
+
+   One file for every page. Page stylesheets in /assets/css/pages/ are optional
+   and only add layout for one page. Fonts come from /assets/css/fonts.css,
+   linked before this file by the head include.
+
+   Contents
+     1. Tokens (palette, dark default, light theme, surfaces that stay dark)
+     2. Base and type
+     3. App bar, drawer, status strip, skip link
+     4. Layouts: home bands and the spine; inner pages with a sidebar
+     5. Home pieces: hero, highlight box, label box, features, download block
+     6. Buttons: the afterimage primary, outline secondary, text links
+     7. Content: notices, tables, figures, details, lists, code, input strip
+     8. Footer and theme control
+     9. Utilities, motion, forced colours, print
+
+   Rules the file keeps (and check.mjs enforces): no italics, no skew, no
+   gradients except the hard-stop progress fill, no glows or shadows used as
+   light, no chevrons on buttons. PBD crimson (the --verm-* tokens) only on the
+   primary button and the logo's lit tile (one per screen: the footer's logo is
+   one-colour, and the first spine tick is petrol-300).
+   ========================================================================== */
+
+/* 1. Tokens ================================================================ */
+
+:root {
+  /* @palette: fixed colours, the same in both themes */
+  --petrol-950: #041C22;
+  --petrol-900: #07303A;
+  --petrol-800: #0C3E4A;
+  --petrol-700: #14525F;
+  --petrol-300: #8FC3CA;
+  --graphite-900: #14191B;
+  --graphite-850: #1A2023;
+  --graphite-800: #222A2D;
+  --mist-50: #F4F7F6;
+  --mist-100: #E6EBEA;
+  --mist-200: #D5DDDC;
+  /* PBD crimson, the one loud colour (direction v2.4; the --verm-* names are kept from the vermilion it replaced).
+     Ink on crimson is 4.05:1, so the primary label is 19 px or more in the heavy display face (large text). */
+  --verm-400: #EB5470;      /* PBD crimson, hover (label 5.09:1) */
+  --verm-500: #E3304F;      /* PBD crimson (label 4.05:1) */
+  --verm-600: #D02846;      /* PBD crimson, pressed (label 3.44:1); the logo's lit tile on light surfaces (4.28:1 on mist-100) */
+  --on-verm: #14191B;
+  --ink: #132024;
+  --track: #D5DDDC;
+  --dk-text-1: #E9EEED;
+  --dk-text-2: #AEBDBD;
+  --dk-text-3: #8A9C9C;
+  --dk-focus: #E6EBEA;
+  --lt-focus: #07303A;
+  /* @end */
+
+  /* Type */
+  --font-display: "PBD Display", "Barlow", "Segoe UI", system-ui, sans-serif;  /* our own caps-only face, one weight */
+  --font-ui: "Barlow", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+  --fs-hero: clamp(2.125rem, 1.741rem + 1.577vw, 2.75rem);   /* 34 -> 44 px */
+  --fs-title: clamp(1.75rem, 1.596rem + 0.631vw, 2rem);      /* 28 -> 32 px */
+  --fs-sub: clamp(1.125rem, 0.971rem + 0.631vw, 1.375rem);   /* 18 -> 22 px */
+  --fs-lead: clamp(1.125rem, 1.086rem + 0.158vw, 1.1875rem); /* 18 -> 19 px */
+  --fs-body: clamp(1.0625rem, 1.024rem + 0.158vw, 1.125rem); /* 17 -> 18 px */
+  --fs-h2: 1.375rem;     /* 22 */
+  --fs-label: 1.25rem;   /* 20 */
+  --fs-h3: 1.125rem;     /* 18 */
+  --fs-small: 0.875rem;  /* 14 */
+  --lh-body: 1.556;      /* 28/18, 26.4/17 */
+
+  /* Space (4 px grid), radii, motion, layers */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px;
+  --s-8: 32px; --s-10: 40px; --s-12: 48px; --s-16: 64px; --s-20: 80px;
+  --r-slab: 3px;
+  --r-control: 4px;
+  --r-box: 8px;
+  --t-fast: 90ms;
+  --t-press: 60ms;
+  --t-drawer: 200ms;
+  --ease-out: cubic-bezier(.2, 0, 0, 1);
+  --z-bar: 50;
+  --z-skip: 100;
+
+  /* Layout */
+  --bar-h: 56px;
+  --col: 704px;           /* home column */
+  --read: 760px;          /* inner-page reading column */
+  --side: 240px;          /* inner-page sidebar */
+  --pad-l: 44px;          /* home band padding; the spine lives in the left one */
+  --pad-r: 20px;
+  --spine-x: -26px;       /* spine line, from the column's left edge (phones: 18 px from the screen edge) */
+  --band-pt: 48px;
+  --band-pb: 48px;
+
+  color-scheme: dark;
+}
+
+/* Dark theme (default, the brand look) */
+:root,
+:root[data-theme="dark"] {
+  /* @dark */
+  --bg: #1A2023;            /* graphite-850: page under the bands, inner pages */
+  --band: #14191B;          /* graphite-900: neutral bands, footer, sidebar */
+  --surface: #222A2D;       /* graphite-800: figure frames, boxes on the page */
+  --text-1: #E9EEED;
+  --text-2: #AEBDBD;
+  --text-3: #8A9C9C;
+  --link: #8FC3CA;
+  --focus: #E6EBEA;
+  --control-edge: #8A9C9C;  /* outline buttons, the theme switch */
+  --selected-edge: #8FC3CA; /* inset edge of the petrol-700 "you are here" slab (3:1 against the surface) */
+  --good: #3CC47E;
+  --warn: #F4B63F;
+  --bad: #FF9470;           /* coral, kept apart from the crimson accent (the rose #FF8FA3 had its hue) */
+  --text-info: #8FC3CA;
+  --notice-info: #0C3E4A;
+  --notice-good: #123524;
+  --notice-warn: #3A2E12;
+  --notice-bad: #3B1F17;
+  /* @end */
+  --line: rgba(233, 238, 237, 0.12);
+  --hover: rgba(233, 238, 237, 0.07);
+  --press: rgba(233, 238, 237, 0.12);
+  --code-bg: rgba(233, 238, 237, 0.08);
+  --mark-lit: var(--verm-500);  /* the logo's lit tile */
+  color-scheme: dark;
+}
+
+/* Light theme: follows the system unless the visitor chose dark */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #F4F7F6;
+    --band: #E6EBEA;
+    --surface: #E6EBEA;
+    --text-1: #132024;
+    --text-2: #44565A;
+    --text-3: #5A6B6E;
+    --link: #0B5A68;
+    --focus: #07303A;
+    --control-edge: #5A6B6E;
+    --selected-edge: #14525F;
+    --good: #1C7447;
+    --warn: #8A5800;
+    --bad: #A8360C;
+    --text-info: #0B5A68;
+    --notice-info: #D8ECEE;
+    --notice-good: #DDF0E4;
+    --notice-warn: #FBF0D9;
+    --notice-bad: #FCE8E0;
+    --line: rgba(19, 32, 36, 0.14);
+    --hover: rgba(19, 32, 36, 0.06);
+    --press: rgba(19, 32, 36, 0.11);
+    --code-bg: rgba(19, 32, 36, 0.07);
+    --mark-lit: var(--verm-600);
+    color-scheme: light;
+  }
+}
+
+/* Light theme, chosen in the footer or with ?theme=light */
+:root[data-theme="light"] {
+  /* @light */
+  --bg: #F4F7F6;            /* mist-50 */
+  --band: #E6EBEA;          /* mist-100 */
+  --surface: #E6EBEA;       /* mist-100 */
+  --text-1: #132024;
+  --text-2: #44565A;
+  --text-3: #5A6B6E;
+  --link: #0B5A68;
+  --focus: #07303A;
+  --control-edge: #5A6B6E;
+  --selected-edge: #14525F;
+  --good: #1C7447;
+  --warn: #8A5800;
+  --bad: #A8360C;
+  --text-info: #0B5A68;
+  --notice-info: #D8ECEE;
+  --notice-good: #DDF0E4;
+  --notice-warn: #FBF0D9;
+  --notice-bad: #FCE8E0;
+  /* @end */
+  --line: rgba(19, 32, 36, 0.14);
+  --hover: rgba(19, 32, 36, 0.06);
+  --press: rgba(19, 32, 36, 0.11);
+  --code-bg: rgba(19, 32, 36, 0.07);
+  --mark-lit: var(--verm-600);
+  color-scheme: light;
+}
+
+/* Surfaces that keep their dark colours in both themes: the app bar, the drawer,
+   the status strip, the hero band and petrol bands. `.on-petrol` does the same
+   for anything an author puts on petrol. */
+.app-bar,
+.drawer-panel,
+.status-strip,
+.band-hero,
+.band-petrol,
+.on-petrol {
+  --text-1: var(--dk-text-1);
+  --text-2: var(--dk-text-2);
+  --text-3: var(--dk-text-3);
+  --link: var(--petrol-300);
+  --focus: var(--dk-focus);
+  --control-edge: var(--dk-text-3);
+  --selected-edge: var(--petrol-300);
+  --text-info: var(--petrol-300);
+  --line: rgba(143, 195, 202, 0.16);
+  --hover: rgba(233, 238, 237, 0.07);
+  --press: rgba(233, 238, 237, 0.12);
+  --code-bg: rgba(233, 238, 237, 0.08);
+  --mark-lit: var(--verm-500);
+  color-scheme: dark;
+  color: var(--text-1);
+}
+
+@media (min-width: 720px) {
+  :root {
+    --bar-h: 64px;
+    --pad-l: 56px;
+    --pad-r: 56px;
+    --spine-x: -36px;
+    --band-pt: 56px;
+    --band-pb: 56px;
+  }
+}
+
+/* 2. Base and type ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--bar-h) + 16px);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  font-synthesis: none;
+  font-variant-numeric: lining-nums;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+body > main,
+body > .page {
+  flex: 1 0 auto;
+}
+
+main:focus {
+  outline: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text-1);
+  text-wrap: balance;
+}
+
+h1,
+.page-title {
+  margin: 0 0 var(--s-3);
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 700;
+  font-size: var(--fs-title);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+
+/* Under 360 px the longest one-word title, "Requirements", is 296 px at 28 px
+   and the reading column is 280 px at 320, so it broke inside the word. At
+   26 px it is 275 px and stays on one line. */
+@media (max-width: 359.98px) {
+  h1,
+  .page-title {
+    font-size: 1.625rem;
+  }
+}
+
+h2,
+.h2 {
+  margin: var(--s-10) 0 var(--s-3);
+  font-family: var(--font-display);
+  font-stretch: 100%;
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  line-height: 1.3;
+}
+
+h3,
+.h3 {
+  margin: var(--s-8) 0 var(--s-2);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: 1.4;
+}
+
+h4 {
+  margin: var(--s-6) 0 var(--s-1);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+p,
+ul,
+ol,
+dl {
+  margin: 0 0 var(--s-4);
+}
+
+/* No one-word last lines. */
+p,
+li,
+dd,
+figcaption {
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  padding-left: 1.3em;
+}
+
+li + li {
+  margin-top: var(--s-1);
+}
+
+li::marker {
+  color: var(--text-3);
+}
+
+strong,
+b {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+/* No italics anywhere: emphasis is weight. */
+em,
+i,
+cite,
+dfn,
+var,
+address {
+  font-style: normal;
+}
+
+em {
+  font-weight: 600;
+}
+
+small,
+.fine {
+  font-size: var(--fs-small);
+  line-height: 1.43;
+}
+
+.lead {
+  margin: 0 0 var(--s-4);
+  max-width: 62ch;
+  color: var(--text-2);
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+}
+
+.muted,
+.text-2 {
+  color: var(--text-2);
+}
+
+.text-3 {
+  color: var(--text-3);
+}
+
+.num,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+hr {
+  height: 1px;
+  margin: var(--s-10) 0;
+  border: 0;
+  background: var(--line);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+::selection {
+  background: var(--petrol-700);
+  color: var(--dk-text-1);
+}
+
+/* Links: always underlined, one colour. */
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* 3. App bar, drawer, status strip, skip link ============================== */
+
+.skip-link {
+  position: absolute;
+  top: -200px;
+  left: var(--s-3);
+  z-index: var(--z-skip);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-control);
+  background: var(--mist-100);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: var(--s-2);
+  outline: 2px solid var(--petrol-300);
+  outline-offset: 2px;
+}
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-bar);
+  background: var(--petrol-900);
+  border-bottom: 1px solid rgba(143, 195, 202, 0.14);
+}
+
+.app-bar-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: var(--bar-h);
+  padding: 0 var(--s-3) 0 var(--s-2);
+}
+
+.app-bar-inner > .drawer {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.app-bar-inner > .lockup {
+  grid-column: 2;
+}
+
+.app-bar-inner > .app-bar-action {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.app-bar .app-bar-action {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .app-bar .app-bar-action {
+    display: inline-flex;
+  }
+}
+
+/* The button never links to the page you are on, and on pages with a sidebar
+   (from 1024 px) the sidebar already has the row. `visibility` keeps the
+   1fr/auto/1fr grid, so the lockup stays centred. */
+.app-bar .app-bar-action[aria-current="page"] {
+  visibility: hidden;
+}
+
+@media (min-width: 1024px) {
+  body:has(.sidebar) .app-bar .app-bar-action {
+    visibility: hidden;
+  }
+}
+
+/* The lockup: the mark, a gap of one cap height, the one-line wordmark. The
+   mark (the block hybrid) is 2 caps tall, 26 px at the 13 px header cap: a
+   block arrow carries 1.6 times the ink of the old line arrow, and at 2 caps
+   its solid masses sit level with the wordmark (explore/block-arrows README,
+   finding 2). The wordmark is the PBD Display outlines, 19.14 caps wide. */
+.lockup {
+  --cap: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cap);
+  min-height: 44px;
+  padding: 0 var(--s-1);
+  color: var(--text-1);
+  text-decoration: none;
+  border-radius: var(--r-control);
+}
+
+.lockup .mark {
+  display: block;
+  flex: none;
+  width: auto;
+  height: calc(var(--cap) * 2);
+}
+
+.lockup .wordmark {
+  display: block;
+  flex: none;
+  width: auto;
+  height: var(--cap);
+}
+
+@media (min-width: 720px) {
+  .app-bar .lockup {
+    --cap: 13px;
+  }
+}
+
+/* Phones: the lockup sits at the left and the menu button at the right. The
+   lockup (26.77 caps wide: the 6.63-cap mark, a one-cap gap and the 19.14-cap
+   wordmark) no longer fits centred between the button and an equal right
+   column, and a back arrow right after the burger reads as Back.
+   The "How it works" button is hidden here anyway. Below 360 px the cap
+   shrinks so at least 12 px stay between the wordmark and the button. The
+   drawer opens from the right, under its button. */
+@media (max-width: 599.98px) {
+  .app-bar-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0 var(--s-2) 0 var(--s-3);
+  }
+
+  .app-bar-inner > .lockup {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .app-bar-inner > .drawer {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .app-bar .lockup {
+    --cap: min(11px, calc((100vw - 84px) / 26.77));
+  }
+}
+
+/* The mark (the `mark` partial): the block hybrid, block back, the lit
+   down-back tile, block back. Its parts are filled shapes (.mark-solid). The
+   two block arrows (.mark-arrow) take the surface's text-1; the tile
+   (.mark-tile) is PBD crimson (verm-600 on light surfaces, 4.28:1 on mist-100)
+   with a graphite block down-back (.mark-key) in both themes. It is the logo's
+   only colour. */
+.mark {
+  color: var(--text-1);
+  overflow: visible;
+}
+
+.mark .mark-arrow.mark-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.mark .mark-tile {
+  fill: var(--mark-lit, var(--verm-500));
+}
+
+.mark .mark-key.mark-solid {
+  fill: var(--on-verm);
+  stroke: none;
+}
+
+/* Wordmark: the first word in text-2, the second in text-1. */
+.wordmark {
+  color: var(--text-1);
+  fill: currentColor;
+}
+
+.wordmark .wordmark-project {
+  fill: var(--text-2);
+}
+
+.wordmark-text {
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 800;
+  font-size: calc(var(--cap, 12px) * 1.43);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Drawer: a <details> element, so it opens and closes without JavaScript.
+   The open summary's ::before is the scrim; clicking it closes the drawer. */
+.drawer > summary {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-control);
+  color: var(--text-1);
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer > summary::-webkit-details-marker {
+  display: none;
+}
+
+.drawer > summary:hover {
+  background: var(--hover);
+}
+
+.burger,
+.burger::before,
+.burger::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  transition: transform var(--t-fast) var(--ease-out), background-color var(--t-fast) linear;
+}
+
+.burger {
+  position: relative;
+}
+
+.burger::before,
+.burger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.burger::before {
+  top: -6px;
+}
+
+.burger::after {
+  top: 6px;
+}
+
+.drawer[open] .burger {
+  background: transparent;
+}
+
+.drawer[open] .burger::before {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.drawer[open] .burger::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.drawer[open] > summary::before {
+  content: "";
+  position: fixed;
+  inset: var(--bar-h) 0 0 0;
+  background: rgba(4, 28, 34, 0.62);
+  cursor: default;
+}
+
+.drawer-panel {
+  position: fixed;
+  top: var(--bar-h);
+  bottom: 0;
+  left: 0;
+  width: min(300px, 86vw);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--s-4) 0 var(--s-8);
+  background: var(--petrol-950);
+  border-right: 1px solid rgba(143, 195, 202, 0.14);
+  transition: transform var(--t-drawer) var(--ease-out);
+}
+
+@starting-style {
+  .drawer[open] .drawer-panel {
+    transform: translateX(-100%);
+  }
+}
+
+/* Phones: the menu button is at the right (see the lockup rules), so the
+   drawer opens from the right. */
+@media (max-width: 599.98px) {
+  .drawer-panel {
+    left: auto;
+    right: 0;
+    border-right: 0;
+    border-left: 1px solid rgba(143, 195, 202, 0.14);
+  }
+
+  @starting-style {
+    .drawer[open] .drawer-panel {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* Without JavaScript nothing keeps keyboard focus inside the open drawer. Once
+   focus moves on into the page, stop covering it (WCAG 2.4.11). With site.js the
+   Tab trap keeps focus in the drawer, so this never matches. */
+body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible) .drawer[open] > .drawer-panel,
+body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible) .drawer[open] > summary::before {
+  display: none;
+}
+
+/* Navigation rows: drawer and sidebar. The current page is a petrol-700 slab. */
+.nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-list li + li {
+  margin-top: 2px;
+}
+
+.nav-list a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  margin: 0 var(--s-3);
+  padding: 0 var(--s-4);
+  border-radius: var(--r-slab);
+  color: var(--text-2);
+  font-weight: 500;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.nav-list a:hover {
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.nav-list a[aria-current="page"] {
+  background: var(--petrol-700);
+  box-shadow: inset 0 0 0 1.5px var(--selected-edge);
+  color: var(--dk-text-1);
+  font-weight: 600;
+}
+
+/* The private-test line under the app bar. */
+.status-strip {
+  background: var(--petrol-950);
+  color: var(--text-2);
+  border-bottom: 1px solid rgba(143, 195, 202, 0.1);
+}
+
+.status-strip p {
+  max-width: calc(var(--col) + 2 * var(--s-5));
+  margin: 0 auto;
+  padding: var(--s-2) var(--s-5);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* 4. Layouts =============================================================== */
+
+/* Home: full-width bands over a narrow column. */
+.band {
+  --band-bg: var(--band);
+  position: relative;
+  overflow: hidden;
+  background: var(--band-bg);
+  color: var(--text-1);
+}
+
+.band-hero,
+.band-petrol {
+  --band-bg: var(--petrol-900);
+}
+
+.band-inner {
+  position: relative;
+  max-width: calc(var(--col) + var(--pad-l) + var(--pad-r));
+  margin: 0 auto;
+  padding: var(--band-pt) var(--pad-r) var(--band-pb) var(--pad-l);
+}
+
+.band-inner > :last-child {
+  margin-bottom: 0;
+}
+
+/* The spine: a 2 px line in text-1 at 20 %, from the hero to the footer, home only.
+   Put `spine` on <main>; the footer joins in because it follows <main>. */
+.spine .band-inner::before,
+.spine ~ .site-footer .band-inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--pad-l) + var(--spine-x));
+  width: 2px;
+  background: var(--text-1);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* A spine node is a frame tick: a 14x4 bar across the line, with the line broken
+   8 px above and below it. Put `node` on the heading that starts a band (it must
+   sit at the column's left edge). `node-first` (the hero headline) is lit in
+   petrol-300, like the hero's other lit shapes, never crimson (the app bar's
+   lit tile is right above it, and there is one per screen), and has no line
+   above it; `node-last` (the footer) has no line below it.
+   Ticks are drawn only where there is a spine (Home): the footer's node shows
+   nothing on inner pages. */
+.node {
+  --node-y: 50%;
+  position: relative;
+}
+
+:is(.spine, .spine ~ .site-footer) .node::before {
+  content: "";
+  position: absolute;
+  left: var(--spine-x);
+  top: calc(var(--node-y) - 10px);
+  width: 2px;
+  height: 20px;
+  background: var(--band-bg, var(--bg));
+  pointer-events: none;
+}
+
+:is(.spine, .spine ~ .site-footer) .node::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--spine-x) - 6px);
+  top: calc(var(--node-y) - 2px);
+  width: 14px;
+  height: 4px;
+  background: var(--text-1);
+  pointer-events: none;
+}
+
+:is(.spine, .spine ~ .site-footer) .node-first::after {
+  background: var(--petrol-300);
+}
+
+:is(.spine, .spine ~ .site-footer) .node-first::before {
+  top: -4000px;
+  height: calc(4000px + var(--node-y) + 10px);
+}
+
+:is(.spine, .spine ~ .site-footer) .node-last::before {
+  height: 4000px;
+}
+
+/* Inner pages: sidebar from 1024 px up, reading column of 760 px. */
+.page {
+  display: block;
+}
+
+.sidebar {
+  display: none;
+}
+
+.page-main {
+  padding: var(--s-8) var(--s-5) var(--s-16);
+}
+
+.page-col {
+  max-width: var(--read);
+  margin: 0 auto;
+}
+
+@media (min-width: 720px) {
+  .page-main {
+    padding: var(--s-12) var(--s-10) var(--s-20);
+  }
+}
+
+@media (min-width: 1024px) {
+  .page {
+    display: grid;
+    grid-template-columns: var(--side) minmax(0, 1fr);
+  }
+
+  .sidebar {
+    display: block;
+    background: var(--band);
+    border-right: 1px solid var(--line);
+  }
+
+  .sidebar-inner {
+    position: sticky;
+    top: var(--bar-h);
+    max-height: calc(100vh - var(--bar-h));
+    overflow-y: auto;
+    padding: var(--s-6) 0;
+  }
+
+  /* Pages with a sidebar do not need the drawer on wide screens. */
+  body:has(.sidebar) .drawer {
+    display: none;
+  }
+}
+
+.page-head {
+  margin: 0 0 var(--s-10);
+}
+
+/* A quiet line under the lead (a date, a scope). */
+.page-meta {
+  margin: var(--s-3) 0 0;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* End-of-page links row (holds a ul.links). */
+.page-next {
+  margin-top: var(--s-12);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.section {
+  margin-top: var(--s-12);
+}
+
+.section > :first-child {
+  margin-top: 0;
+}
+
+/* 5. Home pieces =========================================================== */
+
+.band-hero .band-inner {
+  padding-top: var(--s-12);
+  padding-bottom: 104px;
+}
+
+@media (min-width: 720px) {
+  .band-hero .band-inner {
+    padding-top: var(--s-16);
+    padding-bottom: 120px;
+  }
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+/* No hero mark: the app-bar lockup sits right above the hero at every width,
+   the logo's lit tile is the one crimson tile per screen, and the arrows
+   always stand with the wordmark. The headline box opens the band. */
+
+/* Hero headline: PBD Display in the mist highlight box, one box per line. */
+.headline {
+  --node-y: calc(var(--fs-hero) * 0.65);
+  margin: 0;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 800;
+  font-size: var(--fs-hero);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* mist-200 rather than mist-100: the box is the largest light field in the dark
+   theme, and a step down glares less at night (ink on it 12.1:1, box on petrol 10.2:1). */
+.hl {
+  padding: 0.02em 0.2em 0.06em;
+  background: var(--mist-200);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Wide screens: PBD Display sets about 30 % wider than Saira did at the same
+   size, which pushed the headline box into the hero drawing's 60 px clearance.
+   The headline is capped at 579 px (60 px or more clear of the drawing at every
+   width from 1024 px) and set 14 % smaller: it takes three lines. */
+@media (min-width: 1024px) {
+  .band-hero .headline {
+    font-size: calc(var(--fs-hero) * 0.86);
+    max-width: 579px;
+  }
+}
+
+.hero-sub {
+  margin: var(--s-5) 0 0;
+  max-width: 32ch;
+  color: var(--text-1);
+  font-weight: 500;
+  font-size: var(--fs-sub);
+  line-height: 1.36;
+}
+
+.hero-compat {
+  margin: var(--s-3) 0 0;
+  max-width: 46ch;
+  color: var(--text-2);
+}
+
+/* The hero illustration slot (the hero-panel partial). Faint behind the lower
+   part of the headline on phones, at the right of the hero on wide screens.
+   Its lit button is petrol-300, never crimson: the panel is not the mark, and
+   the headline box stays the one bright thing. */
+.hero-art {
+  position: absolute;
+  top: 176px;
+  right: -64px;
+  z-index: 0;
+  width: 300px;
+  color: #6FA6AE;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.hero-art svg,
+.hero-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-art .lit {
+  fill: var(--petrol-300);
+  stroke: none;
+}
+
+@media (min-width: 720px) {
+  .hero-art {
+    top: 150px;
+    right: -32px;
+    width: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* The band column is 816 px wide from here up; the art starts 60 px past the
+     end of a two-line headline box, sits level with the headline block (the
+     band's bottom padding holds the strip), and never leaves the window.
+     #4E8790 (3.5:1 on petrol-900) keeps the drawing behind the headline. */
+  .hero-art {
+    top: calc(50% - 44px);
+    bottom: auto;
+    left: 648px;
+    right: auto;
+    width: clamp(240px, calc(50vw - 296px), 440px);
+    color: #4E8790;
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+
+  .hero-sub,
+  .hero-compat {
+    max-width: min(46ch, 56%);
+  }
+}
+
+/* The input strip along the hero's bottom edge: a frieze, not a control. Include
+   the input-strip partial twice (24 glyphs at the same 32 px pitch); it spans the
+   column and is cut off at the band's right edge on phones. Only the first copy
+   keeps its lit arrow. (.strip.hero-strip: these rules beat the general .strip ones below.) */
+.strip.hero-strip {
+  position: absolute;
+  left: var(--pad-l);
+  right: 0;
+  bottom: var(--s-6);
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.strip.hero-strip .input-strip {
+  flex: none;
+  width: 376px;
+  max-width: none;
+  height: 24px;
+}
+
+.strip.hero-strip .input-strip + .input-strip .lit {
+  color: inherit;
+}
+
+/* Section label: PBD Display in a petrol-700 box. Usually an <h2>. */
+.label-box {
+  display: block;
+  width: fit-content;
+  margin: 0 0 var(--s-6);
+  padding: 1px 10px 3px;
+  background: var(--petrol-700);
+  color: var(--dk-text-1);
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 700;
+  font-size: var(--fs-label);
+  line-height: 1.35;
+}
+
+.band-lead {
+  max-width: 58ch;
+  color: var(--text-1);
+}
+
+/* Feature items: 24 px icon, a name, one sentence. */
+.features {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-6) var(--s-8);
+  margin: 0 0 var(--s-10);
+  padding: 0;
+  list-style: none;
+}
+
+.features > li + li {
+  margin-top: 0;
+}
+
+@media (min-width: 880px) {
+  .features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.feature-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  color: var(--text-1);
+}
+
+.feature p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.icon {
+  display: inline-block;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  color: var(--text-1);
+}
+
+svg.icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The download block: one full-width primary, a note, then plain links. */
+.download {
+  margin: 0 0 var(--s-4);
+}
+
+.download-note {
+  margin: var(--s-3) 0 0;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.links li + li {
+  margin-top: 0;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* 6. Buttons =============================================================== */
+
+/* The afterimage primary: a slab trailing three slices to its right, one per
+   screen. The slices live in a transparent right border, so the focus ring and
+   the click area cover slab and slices. Slice widths 0.18h/0.11h/0.07h, gaps
+   0.09h/0.11h/0.14h, rounded to whole pixels. */
+.btn-primary {
+  --h: 48px;
+  --g1: 4px;
+  --w1: 9px;
+  --g2: 5px;
+  --w2: 5px;
+  --g3: 7px;
+  --w3: 3px;
+  --trail: calc(var(--g1) + var(--w1) + var(--g2) + var(--w2) + var(--g3) + var(--w3));
+  --min: 197px;             /* ceil(3.4h) + trail, whole pixels */
+  --slab: var(--verm-500);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--s-3);
+  min-height: var(--h);
+  min-width: var(--min);
+  margin: 0;
+  padding: 6px var(--s-5);
+  border: 0;
+  border-right: var(--trail) solid transparent;
+  border-radius: var(--r-slab) 0 0 var(--r-slab);
+  background-color: var(--slab);
+  background-clip: padding-box;
+  color: var(--on-verm);
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 800;
+  font-size: 1.1875rem;     /* 19 px, never less at any size: ink on crimson is 4.05:1, so the label must be large text (>= 18.66 px bold) */
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--t-fast) linear, transform var(--t-press) linear;
+}
+
+.btn-primary::before,
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-color: var(--slab);
+  pointer-events: none;
+  transition: background-color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+
+.btn-primary::before {
+  left: calc(100% + var(--g1));
+  width: var(--w1);
+}
+
+.btn-primary::after {
+  left: calc(100% + var(--g1) + var(--w1) + var(--g2));
+  width: calc(var(--w2) + var(--g3) + var(--w3));
+  border-left: var(--w2) solid var(--slab);
+  padding-left: var(--g3);
+  background-clip: content-box;
+}
+
+.btn-primary:hover {
+  --slab: var(--verm-400);
+  color: var(--on-verm);
+}
+
+.btn-primary:active {
+  --slab: var(--verm-600);
+  transform: translateX(-2px);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn-lg {
+  --h: 56px;
+  --g1: 5px;
+  --w1: 10px;
+  --g2: 6px;
+  --w2: 6px;
+  --g3: 8px;
+  --w3: 4px;
+  --min: 230px;
+  padding: 6px var(--s-6);
+  font-size: clamp(1.1875rem, 0.95rem + 0.5vw, 1.25rem);   /* 19 -> 20 px (large text on crimson) */
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* Disabled: petrol-700 slab, petrol-300 label, no slices. Say why next to it.
+   Use <button disabled>, aria-disabled="true", or a <span> with .is-disabled. */
+.btn-primary:is(:disabled, [aria-disabled="true"], .is-disabled) {
+  --slab: var(--petrol-700);
+  border-right-width: 0;
+  color: var(--petrol-300);
+  cursor: not-allowed;
+  transform: none;
+}
+
+span.btn-primary.is-disabled {
+  cursor: default;
+}
+
+.btn-primary:is(:disabled, [aria-disabled="true"], .is-disabled)::before,
+.btn-primary:is(:disabled, [aria-disabled="true"], .is-disabled)::after {
+  display: none;
+}
+
+/* Progress: the slices hide and a hard-stop fill runs left to right. Set
+   style="--progress: 42%" and remove .is-progress at 100 % to bring the slices back. */
+.btn-primary.is-progress {
+  background-image: linear-gradient(90deg, var(--verm-500) var(--progress, 0%), var(--track) var(--progress, 0%));
+  background-clip: padding-box;
+  color: var(--on-verm);
+  cursor: progress;
+  transform: none;
+}
+
+.btn-primary.is-progress::before,
+.btn-primary.is-progress::after {
+  visibility: hidden;
+}
+
+/* Outline secondary. */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  margin: 0;
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--control-edge);
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+
+.btn:hover {
+  border-color: var(--text-1);
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.btn:active {
+  background: var(--press);
+}
+
+.btn:is(:disabled, [aria-disabled="true"]) {
+  border-style: dashed;
+  background: transparent;
+  color: var(--text-2);
+  cursor: not-allowed;
+}
+
+/* Small outline button (app bar): 36 px to look at, 44 px to hit. */
+.btn-sm {
+  min-height: 36px;
+  padding: 0 var(--s-3);
+  font-size: 0.9375rem;
+}
+
+.btn-sm::before {
+  content: "";
+  position: absolute;
+  inset: -5px -2px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3) var(--s-4);
+  margin: var(--s-6) 0;
+}
+
+/* 7. Content =============================================================== */
+
+/* Notices: a full-tint box with an icon and words. No side stripe.
+   The icon is drawn by the stylesheet; put an .icon first to use your own. */
+.notice {
+  --notice-bg: var(--notice-info);
+  --notice-fg: var(--text-info);
+  --notice-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M12%2011v5.5M12%207.6v.01%22%2F%3E%3C%2Fsvg%3E");
+  position: relative;
+  margin: var(--s-6) 0;
+  padding: var(--s-4) var(--s-5) var(--s-4) 52px;
+  border-radius: var(--r-box);
+  background: var(--notice-bg);
+  color: var(--text-1);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.notice::before {
+  content: "";
+  position: absolute;
+  left: var(--s-4);
+  top: 18px;
+  width: 22px;
+  height: 22px;
+  background-color: var(--notice-fg);
+  -webkit-mask: var(--notice-icon) center / contain no-repeat;
+  mask: var(--notice-icon) center / contain no-repeat;
+}
+
+.notice:has(> .icon:first-child)::before {
+  display: none;
+}
+
+.notice > .icon:first-child {
+  position: absolute;
+  left: var(--s-4);
+  top: 17px;
+  color: var(--notice-fg);
+}
+
+.notice > :last-child {
+  margin-bottom: 0;
+}
+
+.notice-title {
+  margin: 0 0 var(--s-1);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.notice-good {
+  --notice-bg: var(--notice-good);
+  --notice-fg: var(--good);
+  --notice-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M8.2%2012.4l2.6%202.6%205-5.4%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.notice-warn {
+  --notice-bg: var(--notice-warn);
+  --notice-fg: var(--warn);
+  --notice-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%203.8L21%2019.6H3z%22%2F%3E%3Cpath%20d%3D%22M12%2010v4.2M12%2016.9v.01%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.notice-bad {
+  --notice-bg: var(--notice-bad);
+  --notice-fg: var(--bad);
+  --notice-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%2F%3E%3Cpath%20d%3D%22M9.2%209.2l5.6%205.6M14.8%209.2l-5.6%205.6%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.text-good {
+  color: var(--good);
+}
+
+.text-warn {
+  color: var(--warn);
+}
+
+.text-bad {
+  color: var(--bad);
+}
+
+/* Tables: always inside a focusable scroll wrapper, so the table scrolls, not the page.
+   <div class="table-wrap" tabindex="0" role="region" aria-labelledby="CAPTION-ID"> */
+.table-wrap {
+  margin: var(--s-6) 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-box);
+}
+
+.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.data-wide {
+  min-width: 640px;
+}
+
+.data caption {
+  padding: var(--s-3) var(--s-4) var(--s-2);
+  caption-side: top;
+  color: var(--text-1);
+  font-weight: 600;
+  text-align: left;
+}
+
+.data th,
+.data td {
+  padding: 10px var(--s-4);
+  border-top: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.data thead th {
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+}
+
+.data tbody th {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.data td {
+  color: var(--text-1);
+}
+
+.data .num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Phones: header cells may wrap and cells sit a little tighter, so short tables
+   fit a 320 px screen. `.data-wide` tables still scroll inside their box. */
+@media (max-width: 479.98px) {
+  .data thead th,
+  .data thead th.num {
+    white-space: normal;
+  }
+
+  .data caption,
+  .data th,
+  .data td {
+    padding-left: var(--s-3);
+    padding-right: var(--s-3);
+  }
+}
+
+/* Paragraphs inside cells, and a quieter caveat line (`.cell-note`). */
+.data td > p {
+  margin: 0;
+}
+
+.data td > p + p {
+  margin-top: var(--s-2);
+}
+
+.cell-note {
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.cell-note strong {
+  color: var(--text-1);
+}
+
+/* A link that is the whole content of a cell: a 44 px target. */
+.data td > a:only-child {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -10px;
+}
+
+/* `.data-kv`: a two-column label/value table. On phones each row stacks, the
+   label above its value, so it fits 320 px without scrolling. Give the table
+   explicit ARIA table roles (role="table", "rowgroup", "row", "rowheader",
+   "cell") so screen readers keep it a table when the display type changes. */
+.data-kv tbody th {
+  width: 36%;
+}
+
+@media (min-width: 720px) {
+  .data-kv tbody th {
+    width: 12rem;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .data-kv,
+  .data-kv caption,
+  .data-kv tbody,
+  .data-kv tr,
+  .data-kv th,
+  .data-kv td {
+    display: block;
+  }
+
+  .data-kv tbody th {
+    width: auto;
+    padding: var(--s-3) var(--s-4) 2px;
+  }
+
+  .data-kv td {
+    padding: 0 var(--s-4) var(--s-3);
+    border-top: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.notes {
+  margin: calc(var(--s-6) * -1 + var(--s-2)) 0 var(--s-6);
+  color: var(--text-2);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+/* A one-line note right under a table. */
+.table-wrap + .fine {
+  margin-top: calc(var(--s-2) - var(--s-6));
+}
+
+/* Numbered steps: a ringed number (like a round button) beside each step.
+   <ol class="steps"><li><h3>Title</h3><p>Text</p></li>...</ol> */
+.steps {
+  margin: var(--s-6) 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps > li {
+  position: relative;
+  min-height: 36px;
+  margin: 0;
+  padding-left: 52px;
+  counter-increment: step;
+}
+
+.steps > li + li {
+  margin-top: var(--s-6);
+}
+
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  top: -2px;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--control-edge);
+  border-radius: 50%;
+  color: var(--text-1);
+  /* Barlow, not the display face: PBD Display's 1 has a flag and no foot, and
+     at 16 px in a ring it reads as a 7. */
+  font-family: var(--font-ui);
+  font-stretch: 100%;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.steps h3 {
+  margin: 0 0 var(--s-1);
+  font-size: var(--fs-h3);
+  line-height: 1.5;
+}
+
+.steps li > p {
+  margin: 0;
+}
+
+.steps li > p + p {
+  margin-top: var(--s-2);
+}
+
+/* Term and description rows. */
+.dl {
+  margin: var(--s-6) 0;
+  border-top: 1px solid var(--line);
+}
+
+.dl > div {
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.dl dt {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.dl dd {
+  margin: var(--s-1) 0 0;
+  color: var(--text-1);
+}
+
+.dl dd > :last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 720px) {
+  .dl > div {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: var(--s-6);
+  }
+
+  .dl dd {
+    margin: 0;
+  }
+}
+
+/* Figures and captions. */
+.figure {
+  margin: var(--s-8) 0;
+}
+
+.figure-frame {
+  overflow: auto;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-box);
+  background: var(--surface);
+}
+
+.figure figcaption {
+  margin-top: var(--s-2);
+  color: var(--text-3);
+  font-size: var(--fs-small);
+  line-height: 1.43;
+}
+
+/* Details and summary. */
+.disclosure {
+  border-bottom: 1px solid var(--line);
+}
+
+.disclosure:first-of-type {
+  border-top: 1px solid var(--line);
+}
+
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: 52px;
+  padding: var(--s-3) var(--s-1);
+  color: var(--text-1);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure > summary:hover {
+  background: var(--hover);
+}
+
+.disclosure > summary::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background-color: var(--text-2);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11M8%202.5v11%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11M8%202.5v11%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+}
+
+.disclosure[open] > summary::after {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11%22%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.disclosure-body {
+  padding: 0 var(--s-1) var(--s-4);
+  color: var(--text-1);
+}
+
+.disclosure-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* Code and file names. */
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+code {
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: var(--code-bg);
+  color: var(--text-1);
+}
+
+pre {
+  overflow-x: auto;
+  margin: 0 0 var(--s-4);
+  padding: var(--s-4);
+  border-radius: var(--r-box);
+  background: var(--code-bg);
+  line-height: 1.5;
+}
+
+pre code {
+  padding: 0;
+  background: none;
+}
+
+.hash {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+/* An address or file name that is not a link (repositories that are not public
+   yet, host names). Monospace, no box, wraps anywhere. */
+.addr {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  overflow-wrap: anywhere;
+}
+
+/* The input strip (the input-strip partial): our arrows in the b, n, b, d/b
+   rhythm, at low contrast with one arrow lit. "Why the name" and the style
+   guide only. */
+.strip {
+  display: block;
+  color: var(--text-3);
+}
+
+.strip .input-strip {
+  display: block;
+  width: 100%;
+  max-width: 376px;
+  height: auto;
+}
+
+/* The lit arrow is brighter, never crimson (crimson is kept for the primary
+   button and the logo's lit tile, which draws the same cancel). */
+.strip .lit {
+  color: var(--text-1);
+}
+
+.band-hero .strip {
+  color: #2A6470;
+}
+
+.band-hero .strip .lit {
+  color: var(--petrol-300);
+}
+
+/* 8. Footer and theme control ============================================= */
+
+.site-footer {
+  flex: none;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.site-footer .band-inner {
+  padding-top: var(--s-12);
+  padding-bottom: var(--s-16);
+}
+
+/* Inner pages: the footer column lines up with the reading column (.page-col),
+   which has the page's side padding rather than the home bands' spine gutter.
+   From 1024 px, with the sidebar, it starts where .page-col does, not in the
+   middle of the window. */
+.page ~ .site-footer .band-inner {
+  max-width: calc(var(--read) + 2 * var(--s-5));
+  padding-left: var(--s-5);
+  padding-right: var(--s-5);
+}
+
+@media (min-width: 720px) {
+  .page ~ .site-footer .band-inner {
+    max-width: calc(var(--read) + 2 * var(--s-10));
+    padding-left: var(--s-10);
+    padding-right: var(--s-10);
+  }
+}
+
+@media (min-width: 1024px) {
+  body:has(.sidebar) .site-footer .band-inner {
+    max-width: none;
+    margin: 0 0 0 var(--side);
+    padding-left: max(var(--s-10), calc((100% - var(--side) - var(--read)) / 2));
+    padding-right: max(var(--s-10), calc((100% - var(--side) - var(--read)) / 2));
+  }
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin: 0 0 var(--s-4);
+}
+
+/* 11 px cap, smaller where the lockup (at most 27 caps wide, the widest
+   preview variant included) would not fit: 68 px is Home's 44 px spine
+   gutter, the 20 px right padding and the lockup's own 8 px padding, less its
+   4 px negative margin. The cap is 11 px from about 365 px up. */
+.footer-brand .lockup {
+  --cap: min(11px, calc((100vw - 68px) / 27));
+  margin-left: calc(var(--s-1) * -1);
+}
+
+/* The footer lockup is the one-colour logo. The sticky app bar keeps its lit
+   tile on screen, and there is one lit tile per screen: here the tile takes the
+   arrows' colour and its down-back is knocked out in the band colour.
+   (:where keeps these below the high-contrast rules at the end of the file.) */
+:where(.footer-brand) .mark .mark-tile {
+  fill: currentColor;
+}
+
+:where(.footer-brand) .mark .mark-key.mark-solid {
+  fill: var(--band-bg);
+}
+
+.footer-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-5);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+
+.footer-nav li + li {
+  margin-top: 0;
+}
+
+.footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--text-1);
+}
+
+.footer-nav a[aria-current="page"] {
+  text-decoration-thickness: 2px;
+}
+
+/* Project Backdash elsewhere (src/_partials/social.html): plain text links, no third-party logos. */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--s-5);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+
+.social-links li + li {
+  margin-top: 0;
+}
+
+/* At least 44 x 44 px to hit. The name is centred, so a one-letter name (X)
+   leaves the same space on both sides and the row stays evenly spaced. */
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--text-1);
+}
+
+.social-links .discord {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text-2);
+}
+
+.site-footer p {
+  margin: 0 0 var(--s-2);
+}
+
+.footer-free {
+  color: var(--text-1);
+  font-weight: 500;
+}
+
+.footer-fine {
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.footer-fine p {
+  max-width: 72ch;
+  color: var(--text-3);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.theme-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  margin: var(--s-6) 0 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.theme-control legend {
+  float: left;
+  margin-right: var(--s-3);
+  padding: 0;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1.5px solid var(--control-edge);
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+
+.segmented label {
+  position: relative;
+  display: block;
+}
+
+.segmented label + label {
+  border-left: 1px solid var(--line);
+}
+
+.segmented input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.segmented span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  color: var(--text-2);
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+.segmented label:hover span {
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.segmented input:checked + span {
+  background: var(--petrol-700);
+  box-shadow: inset 0 0 0 1.5px var(--selected-edge);
+  color: var(--dk-text-1);
+  font-weight: 600;
+}
+
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: -4px;
+}
+
+/* The ring sits inside the petrol-700 slab, so it is always the light ring
+   (the light theme's petrol ring would be 1.6:1 there). */
+.segmented input:checked:focus-visible + span {
+  outline-color: var(--dk-focus);
+}
+
+/* 9. Utilities, motion, forced colours, print ============================= */
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.mt-0 {
+  margin-top: 0 !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+/* A forced line break that only applies on phones (hero headline). */
+@media (min-width: 600px) {
+  .br-phone {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .btn-primary:active {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .btn-primary {
+    border: 2px solid ButtonText;
+    forced-color-adjust: auto;
+  }
+
+  .btn-primary::before,
+  .btn-primary::after,
+  :is(.spine, .spine ~ .site-footer) .node::before {
+    display: none;
+  }
+
+  .hl,
+  .label-box {
+    border: 1px solid CanvasText;
+  }
+
+  /* Shapes drawn with background colours would become Canvas and vanish:
+     the hamburger, the selected states, the notice and disclosure icons. */
+  .burger,
+  .burger::before,
+  .burger::after {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .drawer[open] .burger {
+    background: transparent;
+  }
+
+  .drawer-panel {
+    border-right: 1px solid CanvasText;
+  }
+
+  /* The logo: arrows and tile in CanvasText, the tile's arrow knocked out in
+     Canvas (the one-colour version). */
+  .mark {
+    forced-color-adjust: none;
+  }
+
+  .mark .mark-arrow.mark-solid {
+    fill: CanvasText;
+  }
+
+  .mark .mark-tile {
+    fill: CanvasText;
+  }
+
+  .mark .mark-key.mark-solid {
+    fill: Canvas;
+  }
+
+  /* The wordmark sets its own colour, so forced colours would keep its fills
+     (text-1 and text-2), which vanish on a light high-contrast Canvas. */
+  .wordmark,
+  .wordmark .wordmark-project,
+  .wordmark .wordmark-main {
+    forced-color-adjust: none;
+    fill: CanvasText;
+  }
+
+  .nav-list a[aria-current="page"] {
+    border: 2px solid CanvasText;
+  }
+
+  .segmented input:checked + span {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .notice {
+    border: 1px solid CanvasText;
+  }
+
+  .notice::before,
+  .disclosure > summary::after {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}
+
+@media (forced-colors: active) and (max-width: 599.98px) {
+  .drawer-panel {
+    border-right: 0;
+    border-left: 1px solid CanvasText;
+  }
+}
+
+@media print {
+  .app-bar,
+  .status-strip,
+  .sidebar,
+  .theme-control,
+  .hero-art,
+  .hero-strip {
+    display: none !important;
+  }
+
+  .band,
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
+
+/* @preview-switcher: begin
+   ==========================================================================
+   10. Preview switcher (preview builds only)
+   The logo switcher: src/_partials/preview-logo.html (included from the
+   footer) and the preview blocks of site.js. build.mjs cuts everything from this
+   comment to the end marker out of public builds, so nothing here ships on
+   the open site. README.md, "Preview switcher", says how to use it.
+   ========================================================================== */
+
+/* Variant marks. H, the logo, is the default: 2 caps tall (the main rules
+   above). Every variant is drawn with the same PBD block arrows as the
+   animated hero's log (explore/block-arrows/variants.py). The row marks
+   (H, C, N, T) are 2 caps tall, so the tile is the same 26 px in each at the
+   13 px header cap. The two-row squares (S, L2) draw their glyphs at 3/5 of
+   that scale (half scale read as too small next to the wordmark): 54 units
+   at 2/24 cap x 3/5 = 2.7 caps (35.1 px), so both rows fit the bar with room
+   to spare. The wordmark keeps its cap height and stays centred on the mark,
+   so the bar and everything under it stay put. */
+:root:is([data-logo="S"], [data-logo="L2"]) .lockup .mark {
+  height: calc(var(--cap) * 2.7);
+}
+
+/* Until site.js has put the chosen mark in (it then sets data-logo), the
+   lockups stay hidden, so a remembered variant never flashes the H mark and
+   moves the wordmark. Without JavaScript they appear after 0.6 s anyway. */
+:root:not([data-logo]) :is(.app-bar, .site-footer) .lockup {
+  visibility: hidden;
+  animation: logo-switcher-reveal 0s linear 0.6s forwards;
+}
+
+@keyframes logo-switcher-reveal {
+  to {
+    visibility: visible;
+  }
+}
+
+/* Phones: the lockup sits at the left, and below 360 px its cap shrinks so the
+   wordmark keeps 16 px or more from the menu button. The divisor is each
+   lockup's width in caps, rounded up: the mark, a one-cap gap and the
+   wordmark (PBD Display 19.14 caps; H: 26.77, the main rule). With the Saira
+   font (the font toggle below) the wordmark is 15.58 caps, 3.56 less. */
+@media (max-width: 599.98px) {
+  :root[data-logo="C"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 26.9)); }
+  :root[data-logo="N"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 26.11)); }
+  :root[data-logo="S"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 22.7)); }
+  :root[data-logo="L2"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 22.77)); }
+  :root[data-logo="T"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 22.15)); }
+}
+
+/* C's unlit tiles are outlines (.mark-edge) in the arrows' colour. N's lit
+   down-back is a bare filled arrow (.mark-lit), crimson like the tile; in
+   the footer's one-colour logo it takes the arrows' colour. (Every other part
+   is a filled .mark-solid shape, coloured by the main rules.) */
+.mark .mark-edge {
+  fill: none;
+  stroke: currentColor;
+}
+
+.mark .mark-lit.mark-solid {
+  fill: var(--mark-lit, var(--verm-500));
+  stroke: none;
+}
+
+:where(.footer-brand) .mark .mark-lit.mark-solid {
+  fill: currentColor;
+}
+
+/* The picker: a small petrol box at the bottom right, above everything. It
+   folds to one 44 px button ("Logo: H"); open, it shows the variants as one
+   segmented row, the name of the one under the pointer or focus, then the
+   display font. */
+.logo-switcher {
+  position: fixed;
+  right: max(var(--s-4), env(safe-area-inset-right));
+  bottom: max(var(--s-4), env(safe-area-inset-bottom));
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 2 * var(--s-4));
+  background: var(--petrol-900);
+  border: 1px solid rgba(143, 195, 202, 0.32);
+  border-radius: var(--r-box);
+  font-family: var(--font-ui);
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.logo-switcher[hidden] {
+  display: none;
+}
+
+/* A primary button or Home's animated hero is under the box (site.js): step
+   aside until it has passed, unless the box is in use. */
+.logo-switcher.is-yielding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* With a mouse (desktop), never make the box unusable: only dim it while something is under it, and bring it
+   back on hover. Touch screens keep the full step-aside above, so taps reach the button underneath. */
+@media (hover: hover) and (pointer: fine) {
+  .logo-switcher.is-yielding {
+    opacity: 0.35;
+    pointer-events: auto;
+  }
+  .logo-switcher.is-yielding:hover {
+    opacity: 1;
+  }
+}
+
+/* The element with keyboard focus is under the box (site.js): step fully
+   aside, with a mouse too, so the focus ring is never covered (WCAG 2.4.11). */
+.logo-switcher.is-clear {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logo-switcher-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 var(--s-3);
+  border: 0;
+  border-radius: calc(var(--r-box) - 1px);
+  background: transparent;
+  color: var(--text-1);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.logo-switcher-toggle:hover {
+  background: var(--hover);
+}
+
+.logo-switcher-toggle:focus-visible {
+  outline-offset: -4px;
+}
+
+.logo-switcher-sign {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--text-2);
+}
+
+.logo-switcher-toggle[aria-expanded="true"] .logo-switcher-plus {
+  display: none;
+}
+
+.logo-switcher-panel {
+  padding: 0 6px 6px;
+}
+
+.logo-switcher-panel[hidden] {
+  display: none;
+}
+
+.logo-switcher-options {
+  display: flex;
+  border: 1.5px solid var(--control-edge);
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+
+.logo-switcher-options button {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 var(--s-2);
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logo-switcher-options button + button {
+  border-left: 1px solid var(--line);
+}
+
+/* Under 360 px the Colour row (Crimson, Verm., Red, Deep) was 5 px wider
+   than its group and cut off Deep's padding and focus ring. */
+@media (max-width: 359.98px) {
+  .logo-switcher-options button {
+    padding: 0 var(--s-1);
+  }
+}
+
+/* Rows under the first: the font, with a short label (the groups have their
+   own names for screen readers). */
+.logo-switcher-options + .logo-switcher-options,
+.logo-switcher-row + .logo-switcher-row {
+  margin-top: 6px;
+}
+
+.logo-switcher-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.logo-switcher-label {
+  flex: none;
+  min-width: 3.5em;
+  padding-left: var(--s-1);
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+
+.logo-switcher-row .logo-switcher-options {
+  flex: 1 1 auto;
+}
+
+.logo-switcher-options button:hover {
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.logo-switcher-options button[aria-pressed="true"] {
+  background: var(--petrol-700);
+  box-shadow: inset 0 0 0 1.5px var(--selected-edge);
+  color: var(--dk-text-1);
+}
+
+.logo-switcher-options button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -4px;
+}
+
+/* The name line holds a 20 px one-colour copy of the mark, like the footer's,
+   so the picker never adds a second lit tile to the screen. */
+.logo-switcher-name {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 28px;
+  margin: var(--s-2) var(--s-1) var(--s-1);
+  overflow: hidden;
+  color: var(--text-2);
+  font-size: var(--fs-small);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.logo-switcher-name b {
+  min-width: 1.25em;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.logo-switcher-name .mark {
+  flex: none;
+  width: auto;
+  height: 20px;
+  color: var(--text-2);
+}
+
+.logo-switcher-name .mark .mark-tile,
+.logo-switcher-name .mark .mark-lit.mark-solid {
+  fill: currentColor;
+}
+
+.logo-switcher-name .mark .mark-key.mark-solid {
+  fill: var(--petrol-900);
+}
+
+/* Open at the very end of a page, the box would sit on the footer's last
+   lines: give the footer room for it (the box, 236 px tall with its logo,
+   font and colour rows, and its 16 px margin, with the last line 16 px or more above
+   it). */
+:root:has(.logo-switcher.is-open:not([hidden])) .site-footer .band-inner {
+  padding-bottom: calc(var(--s-16) + 196px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-switcher {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .mark .mark-lit.mark-solid {
+    fill: CanvasText;
+  }
+
+  .mark .mark-edge {
+    stroke: CanvasText;
+  }
+
+  .logo-switcher {
+    border-color: CanvasText;
+  }
+
+  .logo-switcher-options button[aria-pressed="true"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .logo-switcher-name .mark {
+    color: CanvasText;
+  }
+
+  .logo-switcher-name .mark .mark-key.mark-solid {
+    fill: Canvas;
+  }
+}
+
+@media print {
+  .logo-switcher {
+    display: none !important;
+  }
+}
+/* @preview-switcher: end */
+
+/* @preview-switcher: begin
+   Preview font toggle (preview builds only): Saira, the display face before PBD Display, for headlines,
+   section labels and the primary button when <html data-font="saira">, so the two faces can be compared
+   on the real pages. The Saira file and its licence are in /assets/brand/variants/ (left out of public
+   builds). */
+@font-face {
+  font-family: "Saira";
+  src: url("/assets/brand/variants/saira-var.woff2?v=44fa530d90") format("woff2");
+  font-style: normal;
+  font-weight: 400 800;
+  font-stretch: 100% 125%;
+  font-display: swap;
+}
+:root[data-font="saira"] {
+  --font-display: "Saira", "Barlow", "Segoe UI", system-ui, sans-serif;
+}
+
+/* Phones: Saira's wordmark is 15.58 caps wide, 3.56 less than PBD Display's, so each lockup's
+   cap-shrink divisor (the main rule and the variant divisors above) is 3.56 smaller. */
+@media (max-width: 599.98px) {
+  :root[data-font="saira"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 23.21)); }
+  :root[data-font="saira"][data-logo="C"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 23.34)); }
+  :root[data-font="saira"][data-logo="N"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 22.55)); }
+  :root[data-font="saira"][data-logo="S"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 19.14)); }
+  :root[data-font="saira"][data-logo="L2"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 19.21)); }
+  :root[data-font="saira"][data-logo="T"] .app-bar .lockup { --cap: min(11px, calc((100vw - 84px) / 18.59)); }
+}
+
+/* Wide screens: Saira's headline was two lines at full size, with no cap (the PBD rule in the hero
+   section above caps it at 579 px and sets it 14 % smaller). */
+@media (min-width: 1024px) {
+  :root[data-font="saira"] .band-hero .headline { font-size: var(--fs-hero); max-width: none; }
+}
+/* @preview-switcher: end */
+
+/* @preview-switcher: begin
+   Preview accent colours (data-accent on <html>, set by the switcher's Colour row). The default, with no attribute,
+   is PBD crimson, the tokens at the top of this file. "vermilion": the accent before direction v2.4 (ink label
+   5.4:1). "red": arcade red, a warm true red of our own (hue 4 degrees; ink label 4.65:1). "deep": a deep blood red
+   with a white label. The logo tile, primary buttons and lit accents use these tokens; static images (favicon,
+   og.png, the icons) stay PBD crimson. */
+:root[data-accent="vermilion"] {
+  --verm-400: #FF6A3D;
+  --verm-500: #FF4F1A;
+  --verm-600: #EA4812;
+}
+:root[data-accent="red"] {
+  --verm-400: #FF5A4B;
+  --verm-500: #F43B2E;
+  --verm-600: #EE3727;
+}
+:root[data-accent="deep"] {
+  --verm-400: #D93636;
+  --verm-500: #CC2222;
+  --verm-600: #B81D1D;
+  --on-verm: #FFFFFF;   /* white label 5.5:1; an ink label would be 3.5:1 */
+}
+/* @preview-switcher: end */

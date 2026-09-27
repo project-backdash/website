@@ -1,0 +1,143 @@
+/*
+ * info.css: Requirements, Community, Source and Privacy (inner pages).
+ * Builds on site.css. Every colour here is a site.css token, so both themes work
+ * and `node contrast.mjs` covers them. No new colour values.
+ *
+ * The shared pieces these pages started (.page-meta, .page-next, .data-kv,
+ * .cell-note, .steps, .addr, the one-line note under a table, the 44 px link in
+ * a cell) now live in site.css. What is left is used only by these four pages:
+ *   section spacing  a slightly tighter rhythm for short sections
+ *   .data-machines   the three-column test-laptop table on small phones
+ *   .rule            the community rule on petrol (dark in both themes)
+ *   .channel-list    hairline rows for the Discord and contact lines
+ *   .contact-box     the contact line in a framed box (Source, Privacy)
+ *   .not-yet         "(not public yet)" after an address
+ */
+
+/* Sections on these pages sit a little closer than the default: they are
+   short, and the long pages (Privacy) read as one document. */
+.page-col > .section {
+  margin-top: var(--s-10);
+}
+
+.page-col > .section > h2 {
+  margin-bottom: var(--s-3);
+}
+
+/* Paragraphs in the reading column: 18/28, 12 px apart. */
+.page-col > .section > p {
+  margin-bottom: var(--s-3);
+}
+
+.page-col > .section > :last-child {
+  margin-bottom: 0;
+}
+
+/* Machines table: three short columns; tighter cells on small phones. */
+@media (max-width: 479.98px) {
+  .data-machines th,
+  .data-machines td,
+  .data-machines caption {
+    padding-inline: 10px;
+  }
+}
+
+/* The shared contact partial inside a step. */
+.steps .contact {
+  color: var(--text-1);
+}
+
+/* ------------------------------------------------------------------------
+   Community: the rule, and the Discord and contact lines.
+   ------------------------------------------------------------------------ */
+
+/* The one community rule, on petrol in both themes. */
+.rule {
+  margin: var(--s-5) 0 var(--s-6);
+  padding: var(--s-5) var(--s-5) var(--s-6);
+  border-radius: var(--r-box);
+  background: var(--petrol-900);
+}
+
+@media (min-width: 720px) {
+  .rule {
+    padding: var(--s-6) var(--s-8) var(--s-8);
+  }
+}
+
+.rule-text {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 700;
+  font-size: clamp(1.25rem, 1.096rem + 0.631vw, 1.5rem); /* 20 -> 24 px */
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.rule-scope {
+  margin: var(--s-3) 0 0;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Discord and contact lines (their text comes from the shared partials). */
+.channel-list {
+  margin: var(--s-5) 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.channel-list > li {
+  margin: 0;
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.channel-list p {
+  margin: 0;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------------
+   Source and Privacy
+   ------------------------------------------------------------------------ */
+
+/* The contact line in a framed box, with a small label. */
+.contact-box {
+  margin: var(--s-5) 0 0;
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-box);
+  background: var(--surface);
+}
+
+.contact-box-label {
+  margin: 0 0 2px;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.contact-box .contact {
+  margin: 0;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.not-yet {
+  color: var(--text-2);
+}
+
+/* Forced colours drop the petrol and surface fills, so the rule box and the
+   contact box would lose their edges: draw them, as .notice does. */
+@media (forced-colors: active) {
+  .rule,
+  .contact-box {
+    border: 1px solid CanvasText;
+  }
+}

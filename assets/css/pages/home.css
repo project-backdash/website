@@ -1,0 +1,181 @@
+/* Home page only. Everything else (bands, spine, hero, label box, features,
+   download block) is in site.css; this file adds the status band's
+   "Not yet" line, the test-PC line and the animated hero. */
+
+/* "Not yet": one plain sentence, same measure as the lead. */
+.notyet {
+  max-width: 58ch;
+  color: var(--text-1);
+}
+
+/* One column of features (below 880 px): keep the lines readable. */
+.feature p {
+  max-width: 60ch;
+}
+
+/* The test-PC line: quieter than the lead, same measure. */
+.test-pcs {
+  max-width: 58ch;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* The animated hero (the hero-stick partial, drawn and played by
+   assets/js/stick.js): a top-down lever panel (a Japanese ball-top lever,
+   drawn without its gate, and the four nearest buttons) with its own input
+   log of PBD block arrows. The hero's bottom padding holds the Pause / Play row.
+   Colours are quiet, so the drawing never competes with the copy: the drawing,
+   the lever (ball, shaft, dust washer) and older inputs in the panel line
+   #4E8790 (3.5:1 on petrol-900), the newest input in petrol-300, never
+   crimson. The thin cuts that set the ball off the shaft and the washer
+   (and the shaft off the washer) are the band's own colour. The logo's lit
+   tile in the app bar is the page's one lit element; the headline box stays
+   the one bright thing in the hero. */
+.band-hero .band-inner {
+  padding-bottom: var(--s-16);
+}
+
+/* Phones and tablets: under the copy, never over the text, and quieter. */
+.hero-stick {
+  position: relative;
+  width: min(100%, 400px);
+  margin-top: var(--s-8);
+}
+
+.stick {
+  --stick-line: #4E8790;
+  --stick-lit: var(--petrol-300);
+  --stick-ground: var(--band-bg, var(--petrol-900));
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 163 / 120;
+  overflow: visible;
+  opacity: 0.55;
+}
+
+.stick-ring {
+  fill: none;
+  stroke: var(--stick-line);
+}
+
+.stick-ball {
+  fill: var(--stick-line);
+}
+
+/* The dust washer: a flat disc, drawn as a ring like the buttons. */
+.stick-washer {
+  fill: var(--stick-ground);
+  stroke: var(--stick-line);
+}
+
+.stick-shaft {
+  fill: none;
+  stroke: var(--stick-line);
+  stroke-linecap: round;
+}
+
+.stick-cut {
+  fill: var(--stick-ground);
+  stroke: none;
+}
+
+line.stick-cut {
+  fill: none;
+  stroke: var(--stick-ground);
+  stroke-linecap: round;
+}
+
+.stick-smear {
+  fill: none;
+  stroke: var(--stick-line);
+  stroke-linecap: round;
+}
+
+/* The log: solid block arrows, no frame counts, the newest lit. */
+.stick-slot {
+  color: var(--stick-line);
+}
+
+.stick-slot.is-now {
+  color: var(--stick-lit);
+}
+
+.stick-block {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Pause / Play: a small text button, shown by stick.js (without JavaScript
+   nothing moves, so there is nothing to pause). It hangs below the drawing,
+   in the band's bottom padding, so showing it moves nothing. Its right edge
+   lines up with the newest arrow in the log; it is at least 44 x 44 px, with
+   the label kept at its right edge, so "Pause" and "Play" end in the same
+   place. */
+.stick-toggle {
+  position: absolute;
+  top: 100%;
+  right: 1.23%;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 2px;
+  text-align: right;
+  border: 0;
+  background: none;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.stick-toggle:hover {
+  color: var(--text-1);
+  text-decoration-thickness: 2px;
+}
+
+.stick-toggle[hidden] {
+  display: none;
+}
+
+/* Wide screens: at the right of the copy, 60 px past the end of the
+   headline box, centred on the copy block (the band's
+   top and bottom padding are equal here), never leaving the window. Up to
+   400 px wide, so the drawing is never taller than the copy block (294 px
+   at 400). */
+@media (min-width: 1024px) {
+  .hero-stick {
+    position: absolute;
+    top: 50%;
+    left: 648px;
+    width: clamp(240px, calc(50vw - 296px), 400px);
+    margin: 0;
+    transform: translateY(-50%);
+  }
+
+  .stick {
+    opacity: 1;
+  }
+}
+
+@media (forced-colors: active) {
+  .stick {
+    forced-color-adjust: none;
+    --stick-line: GrayText;
+    --stick-lit: CanvasText;
+    --stick-ground: Canvas;
+    opacity: 1;
+  }
+}
+
+@media print {
+  .hero-stick {
+    display: none !important;
+  }
+}
