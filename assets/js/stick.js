@@ -48,17 +48,18 @@
   var SMEAR_ALPHA = 0.16;  // the one-frame smear drawn on the frame an input changes
   var SHIFT0 = 0.6;        // share of the one-entry log shift done on the frame a new input appears (the rest on the next)
 
-  // The PBD block arrows, solid, in their 24-unit box (explore/block-arrows/arrows/*-solid.svg). Every diagonal
-  // is the straight arrow turned 45 degrees, cuts and all, scaled x 1.12: one arrow, four ways.
+  // The PBD block arrows, solid, in their 24-unit box (explore/block-arrows/arrows/*-solid.svg; site_sync.py
+  // there writes this table). Square tails. Every diagonal is the straight arrow turned 45 degrees and scaled
+  // x 1.12, its tail ending on the box's edges: one arrow, four ways.
   var BLOCK = {
-    l: 'M0 12L12 0L13 0L13 8L22 8L24 9L24 14L20 16L13 16L13 24L12 24Z',
-    u: 'M12 0L24 12L24 13L16 13L16 20L14 24L9 24L8 22L8 13L0 13L0 12Z',
-    r: 'M24 12L12 24L11 24L11 16L2 16L0 15L0 10L4 8L11 8L11 0L12 0Z',
-    d: 'M12 24L0 12L0 11L8 11L8 4L10 0L15 0L16 2L16 11L24 11L24 12Z',
-    ul: 'M2 2L21 2L21.7917 2.7917L15.4583 9.125L22.5833 16.25L23.375 18.625L19.4167 22.5833L14.6667 21L9.125 15.4583L2.7917 21.7917L2 21Z',
-    ur: 'M22 2L22 21L21.2083 21.7917L14.875 15.4583L7.75 22.5833L5.375 23.375L1.4167 19.4167L3 14.6667L8.5417 9.125L2.2083 2.7917L3 2Z',
-    dr: 'M22 22L3 22L2.2083 21.2083L8.5417 14.875L1.4167 7.75L0.625 5.375L4.5833 1.4167L9.3333 3L14.875 8.5417L21.2083 2.2083L22 3Z',
-    dl: 'M2 22L2 3L2.7917 2.2083L9.125 8.5417L16.25 1.4167L18.625 0.625L22.5833 4.5833L21 9.3333L15.4583 14.875L21.7917 21.2083L21 22Z',
+    l: 'M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z',
+    u: 'M12 0L24 12L24 13L16 13L16 24L8 24L8 13L0 13L0 12Z',
+    r: 'M24 12L12 24L11 24L11 16L0 16L0 8L11 8L11 0L12 0Z',
+    d: 'M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z',
+    ul: 'M2 2L21 2L21.7917 2.7917L15.4583 9.125L24 17.6667L17.6667 24L9.125 15.4583L2.7917 21.7917L2 21Z',
+    ur: 'M22 2L22 21L21.2083 21.7917L14.875 15.4583L6.3333 24L0 17.6667L8.5417 9.125L2.2083 2.7917L3 2Z',
+    dr: 'M22 22L3 22L2.2083 21.2083L8.5417 14.875L0 6.3333L6.3333 0L14.875 8.5417L21.2083 2.2083L22 3Z',
+    dl: 'M2 22L2 3L2.7917 2.2083L9.125 8.5417L17.6667 0L24 6.3333L15.4583 14.875L21.7917 21.2083L21 22Z',
     n: 'M8 9L10 8L15 8L16 8.5L16 15L14 16L9 16L8 15.5Z'
   };
 

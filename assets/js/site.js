@@ -5,8 +5,10 @@
  *    saving it (handy for screenshots). The inline script in <head> applies the saved
  *    theme before the first paint, so there is no flash.
  *  - Drawer (the menu behind the hamburger, a <details> element that already opens and
- *    closes without JavaScript): Escape closes it and returns focus to the button, Tab
- *    stays inside it while it is open, choosing a link or clicking outside closes it.
+ *    closes without JavaScript: the X in its header row and the scrim are its summary):
+ *    opening moves focus into the panel, Tab stays inside it, the rest of the page is inert
+ *    and does not scroll; Escape closes it and returns focus to the menu button, and
+ *    choosing a link closes it.
  */
 (function () {
   'use strict';
@@ -65,22 +67,61 @@
 
   /* Drawer --------------------------------------------------------------- */
 
-  function focusables(drawer) {
-    var summary = drawer.querySelector('summary');
-    var links = drawer.querySelectorAll('.drawer-panel a[href], .drawer-panel button:not([disabled])');
-    var list = [summary];
-    for (var i = 0; i < links.length; i++) list.push(links[i]);
-    return list;
-  }
-
   function initDrawer(drawer) {
     var summary = drawer.querySelector('summary');
-    if (!summary) return;
+    var panel = drawer.querySelector('.drawer-panel');
+    if (!summary || !panel) return;
+    var madeInert = [];
 
+    // What Tab goes through while the drawer is open: the close button (the summary, drawn in
+    // the panel's header row), then the panel's links.
+    function focusables() {
+      var list = [summary];
+      var items = panel.querySelectorAll('a[href], button:not([disabled])');
+      for (var i = 0; i < items.length; i++) list.push(items[i]);
+      return list;
+    }
+
+    // Every focus() here passes preventScroll: the button sits in the sticky bar, inside the
+    // page's scroll-padding-top, so a plain focus() scrolled the page (600 px down went to 142).
     function close(returnFocus) {
       if (!drawer.open) return;
       drawer.open = false;
-      if (returnFocus) summary.focus();
+      if (returnFocus) summary.focus({ preventScroll: true });
+    }
+
+    // Everything the scrim covers: the page's other top-level parts and the app bar's own lockup
+    // and button. inert keeps them out of the Tab order and out of reach of screen readers
+    // until the drawer closes. Only what this code made inert is released again.
+    function setOutsideInert(on) {
+      var i;
+      if (!on) {
+        for (i = 0; i < madeInert.length; i++) madeInert[i].removeAttribute('inert');
+        madeInert = [];
+        return;
+      }
+      var groups = [document.body.children, drawer.parentNode.children];
+      for (var g = 0; g < groups.length; g++) {
+        for (i = 0; i < groups[g].length; i++) {
+          var el = groups[g][i];
+          if (el === drawer || el.contains(drawer) || el.hasAttribute('inert') || /^(SCRIPT|TEMPLATE|STYLE|LINK)$/.test(el.tagName)) continue;
+          el.setAttribute('inert', '');
+          madeInert.push(el);
+        }
+      }
+    }
+
+    // The page under the scrim does not scroll. Hiding the scrollbar would widen the page, so the
+    // body is padded by the scrollbar's width meanwhile (site.css, .drawer-locked).
+    function lockScroll(on) {
+      if (on) {
+        var gutter = window.innerWidth - root.clientWidth;
+        root.style.setProperty('--drawer-gutter', (gutter > 0 ? gutter : 0) + 'px');
+        root.classList.add('drawer-locked');
+      } else {
+        root.classList.remove('drawer-locked');
+        root.style.removeProperty('--drawer-gutter');
+      }
     }
 
     function onKeydown(event) {
@@ -91,39 +132,46 @@
         return;
       }
       if (event.key !== 'Tab') return;
-      var items = focusables(drawer);
+      var items = focusables();
       var first = items[0];
       var last = items[items.length - 1];
       var active = document.activeElement;
-      if (event.shiftKey && active === first) {
+      if (items.indexOf(active) === -1) {
         event.preventDefault();
-        last.focus();
+        (event.shiftKey ? last : first).focus({ preventScroll: true });
+      } else if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
       } else if (!event.shiftKey && active === last) {
         event.preventDefault();
-        first.focus();
-      } else if (items.indexOf(active) === -1) {
-        event.preventDefault();
-        first.focus();
+        first.focus({ preventScroll: true });
       }
-    }
-
-    function onDocumentClick(event) {
-      if (!drawer.open) return;
-      if (!drawer.contains(event.target)) close(false);
     }
 
     drawer.addEventListener('toggle', function () {
       if (drawer.open) {
+        lockScroll(true);
+        setOutsideInert(true);
         document.addEventListener('keydown', onKeydown);
-        document.addEventListener('click', onDocumentClick);
+        // Focus moves into the panel: to the page you are on, else the first page in the list.
+        // (After a click the link gets no focus ring; after Enter or Space it does.)
+        var target = panel.querySelector('.drawer-nav a[aria-current="page"]') || panel.querySelector('.drawer-nav a[href]');
+        if (target) target.focus({ preventScroll: true });
       } else {
         document.removeEventListener('keydown', onKeydown);
-        document.removeEventListener('click', onDocumentClick);
+        setOutsideInert(false);
+        lockScroll(false);
+        // Back to the menu button, unless focus has already gone somewhere outside the drawer.
+        var active = document.activeElement;
+        if (!active || active === document.body || drawer.contains(active)) summary.focus({ preventScroll: true });
       }
     });
 
-    drawer.addEventListener('click', function (event) {
-      var link = event.target.closest ? event.target.closest('.drawer-panel a') : null;
+    // Choosing a link closes the drawer (a Ctrl, Shift or middle click opens a new tab or window,
+    // so the drawer stays open for the next one).
+    panel.addEventListener('click', function (event) {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.button > 0) return;
+      var link = event.target.closest ? event.target.closest('a[href]') : null;
       if (link) close(false);
     });
 

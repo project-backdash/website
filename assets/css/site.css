@@ -186,11 +186,14 @@
   color-scheme: light;
 }
 
-/* Surfaces that keep their dark colours in both themes: the app bar, the drawer,
-   the status strip, the hero band and petrol bands. `.on-petrol` does the same
-   for anything an author puts on petrol. */
-.app-bar,
-.drawer-panel,
+/* Surfaces that keep their dark colours in both themes: the app bar (what sits
+   in it, and the drawer's header row), the status strip, the hero band and
+   petrol bands. The drawer's list of pages is not among them: it follows the
+   theme (section 3). `.on-petrol` does the same for anything an author puts on
+   petrol. */
+.app-bar-inner > :not(.drawer),
+.drawer > summary,
+.drawer-head,
 .status-strip,
 .band-hero,
 .band-petrol,
@@ -472,6 +475,16 @@ a:hover {
   padding: 0 var(--s-3) 0 var(--s-2);
 }
 
+/* The bar is sticky at the top, so what sits in it never needs scrolling into
+   view. The page's scroll-padding-top (which keeps focused content clear of
+   the bar) made focusing the menu button, the lockup or the button scroll the
+   page (600 px down jumped to 142); a negative margin of the same size cancels
+   it for them. */
+.app-bar-inner > :not(.drawer),
+.drawer > summary {
+  scroll-margin-top: calc(-1 * (var(--bar-h) + 16px));
+}
+
 .app-bar-inner > .drawer {
   grid-column: 1;
   justify-self: start;
@@ -552,7 +565,8 @@ a:hover {
    column, and a back arrow right after the burger reads as Back.
    The "How it works" button is hidden here anyway. Below 360 px the cap
    shrinks so at least 12 px stay between the wordmark and the button. The
-   drawer opens from the right, under its button. */
+   drawer then opens from the right, and its close button lands where the
+   menu button was. */
 @media (max-width: 599.98px) {
   .app-bar-inner {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -622,13 +636,30 @@ a:hover {
 }
 
 /* Drawer: a <details> element, so it opens and closes without JavaScript.
-   The open summary's ::before is the scrim; clicking it closes the drawer. */
+   Open, a panel slides in over the page from the side the menu button is on
+   (the left; on phones, where the button is at the right, the right). It
+   spans the full height, the app bar's row included: a header row as tall as
+   the bar holds the lockup and the close button, and the list of pages sits
+   under it. A scrim dims everything else, the app bar included.
+   The summary does all the closing: its ::before is the scrim, and its
+   .drawer-button (the burger, drawn as an X while open) moves into the
+   header row. So the X, a click on the scrim, and Enter or Space on the
+   button close the drawer with or without site.js; site.js adds Escape,
+   closes it when a link is chosen, moves focus into the panel and keeps it
+   there, and locks the page's scroll (.drawer-locked).
+   Colours: the panel is one step lighter than the bar, petrol-800 on
+   petrol-900. The header row keeps it in both themes, like the bar; the list
+   takes the page's theme, so in the light theme it is mist-50 with the
+   light theme's text, hover and "you are here" slab (the sidebar's look). */
+.drawer {
+  /* 360 px, and at least 56 px of dimmed page stays in view on phones. */
+  --drawer-w: min(360px, calc(100vw - 56px));
+}
+
 .drawer > summary {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 44px;
   height: 44px;
-  border-radius: var(--r-control);
   color: var(--text-1);
   cursor: pointer;
   list-style: none;
@@ -639,8 +670,32 @@ a:hover {
   display: none;
 }
 
-.drawer > summary:hover {
-  background: var(--hover);
+/* What you see of the summary, 44 x 44 px: in the bar while the drawer is
+   closed, in the panel's header row while it is open. The focus ring is drawn
+   here too, so it follows the button. */
+.drawer-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-control);
+}
+
+/* Pointers that hover only: on a phone the X lands under the finger that
+   tapped the burger, and a hover state would stick to it. */
+@media (hover: hover) {
+  .drawer-button:hover {
+    background: var(--hover);
+  }
+}
+
+.drawer > summary:focus-visible {
+  outline: none;
+}
+
+.drawer > summary:focus-visible .drawer-button {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .burger,
@@ -684,58 +739,169 @@ a:hover {
   transform: translateY(-6px) rotate(-45deg);
 }
 
+/* Layers inside the app bar (z-index 50, above the whole page): the scrim 1,
+   the panel 2, the close button 3. The bar's own lockup and button stay
+   under the scrim. */
 .drawer[open] > summary::before {
   content: "";
   position: fixed;
-  inset: var(--bar-h) 0 0 0;
+  inset: 0;
+  z-index: 1;
   background: rgba(4, 28, 34, 0.62);
   cursor: default;
+  transition: opacity var(--t-drawer) linear;
 }
 
 .drawer-panel {
   position: fixed;
-  top: var(--bar-h);
+  top: 0;
   bottom: 0;
   left: 0;
-  width: min(300px, 86vw);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: var(--s-4) 0 var(--s-8);
-  background: var(--petrol-950);
-  border-right: 1px solid rgba(143, 195, 202, 0.14);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: var(--drawer-w);
   transition: transform var(--t-drawer) var(--ease-out);
 }
 
+/* The header row: the bar's height and its bottom line, so both lines meet. */
+.drawer-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: calc(var(--bar-h) + 1px);
+  padding: 0 calc(44px + 2 * var(--s-2)) 0 var(--s-3);
+  background: var(--petrol-800);
+  border-bottom: 1px solid rgba(143, 195, 202, 0.14);
+}
+
+/* The lockup at 10 px caps (the bar's is 13), smaller where the panel is
+   narrower: it is 26.77 caps and 8 px wide (the .lockup rules), and the row
+   keeps 12 px at the left and the close button with 8 px on each side at the
+   right. 27.5 caps leaves room for every mark in the preview switcher.
+   !important because the bar's lockup sizes (.app-bar .lockup, per width and
+   per mark) are more specific and would reach this one too. */
+.drawer-head .lockup {
+  --cap: min(10px, calc((var(--drawer-w) - 84px) / 27.5)) !important;
+}
+
+/* The list: petrol-800 in the dark theme, mist-50 in the light theme (the
+   same two selectors as the light tokens in section 1). */
+.drawer-nav {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--s-4) 0 var(--s-8);
+  background: var(--petrol-800);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .drawer-nav {
+    background: var(--mist-50);
+  }
+}
+
+:root[data-theme="light"] .drawer-nav {
+  background: var(--mist-50);
+}
+
+/* The close button, over the panel's header row at its right end. */
+.drawer[open] .drawer-button {
+  position: fixed;
+  top: calc((var(--bar-h) - 44px) / 2);
+  left: calc(var(--drawer-w) - 44px - var(--s-2));
+  z-index: 3;
+  transition: transform var(--t-drawer) var(--ease-out);
+}
+
+/* Sliding in: the panel and its close button move together; the scrim fades
+   in. Closing is instant, and with prefers-reduced-motion so is opening (the
+   rule after the phone rules). */
 @starting-style {
+  .drawer[open] > summary::before {
+    opacity: 0;
+  }
+
   .drawer[open] .drawer-panel {
     transform: translateX(-100%);
+  }
+
+  .drawer[open] .drawer-button {
+    transform: translateX(calc(-1 * var(--drawer-w)));
   }
 }
 
 /* Phones: the menu button is at the right (see the lockup rules), so the
-   drawer opens from the right. */
+   drawer opens from the right, and the close button lands where the menu
+   button was. (--drawer-gutter is the scrollbar's width, which site.js adds
+   back while it locks the page's scroll; 0 on phones.) */
 @media (max-width: 599.98px) {
   .drawer-panel {
     left: auto;
     right: 0;
-    border-right: 0;
-    border-left: 1px solid rgba(143, 195, 202, 0.14);
+  }
+
+  .drawer[open] .drawer-button {
+    left: auto;
+    right: calc(var(--s-2) + var(--drawer-gutter, 0px));
   }
 
   @starting-style {
     .drawer[open] .drawer-panel {
       transform: translateX(100%);
     }
+
+    .drawer[open] .drawer-button {
+      transform: translateX(var(--drawer-w));
+    }
   }
 }
 
+/* Reduced motion: no slide and no fade. Without a transition the starting
+   styles above never apply, so the drawer is simply there. (The general rule
+   in section 9 only shortens transitions; a test showed the panel still at
+   its starting offset two frames after opening.) */
+@media (prefers-reduced-motion: reduce) {
+  .drawer[open] > summary::before,
+  .drawer-panel,
+  .drawer[open] .drawer-button {
+    transition: none;
+  }
+}
+
+/* site.js locks the page's scroll while the drawer is open and pads the body
+   by the scrollbar's width, so nothing under the scrim moves sideways. */
+:root.drawer-locked {
+  overflow: hidden;
+}
+
+:root.drawer-locked body {
+  padding-right: var(--drawer-gutter, 0px);
+}
+
 /* Without JavaScript nothing keeps keyboard focus inside the open drawer. Once
-   focus moves on into the page, stop covering it (WCAG 2.4.11). With site.js the
-   Tab trap keeps focus in the drawer, so this never matches. */
-body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible) .drawer[open] > .drawer-panel,
-body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible) .drawer[open] > summary::before {
+   focus moves on (into the page, or to the lockup or button in the app bar
+   under the scrim), stop covering it (WCAG 2.4.11): the panel and scrim go
+   and the button, still an X, goes back into the bar. With site.js the Tab
+   trap keeps focus in the drawer, so this never matches. */
+body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] > .drawer-panel,
+body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] > summary::before {
   display: none;
 }
+
+body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] .drawer-button {
+  position: static;
+  transform: none;
+}
+
+/* @preview-switcher: begin
+   The preview picker sits above everything (z-index 200): keep it off the
+   open drawer. */
+:root:has(.drawer[open]) .logo-switcher {
+  visibility: hidden;
+}
+/* @preview-switcher: end */
 
 /* Navigation rows: drawer and sidebar. The current page is a petrol-700 slab. */
 .nav-list {
@@ -1985,13 +2151,14 @@ pre code {
   text-decoration-thickness: 2px;
 }
 
-/* Project Backdash elsewhere (src/_partials/social.html): plain text links, no third-party logos. */
+/* Project Backdash elsewhere (src/_partials/social.html): one-colour icon links, as on most project sites. */
 .social-links {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0 var(--s-5);
-  margin: 0 0 var(--s-4);
+  /* Pull the row left by the tap padding so the first icon lines up with the text above and below it. */
+  margin: 0 0 var(--s-4) -10px;
   padding: 0;
   list-style: none;
 }
@@ -2000,8 +2167,7 @@ pre code {
   margin-top: 0;
 }
 
-/* At least 44 x 44 px to hit. The name is centred, so a one-letter name (X)
-   leaves the same space on both sides and the row stays evenly spaced. */
+/* At least 44 x 44 px to hit, with the 24 px icon centred in it. */
 .social-links a {
   display: inline-flex;
   align-items: center;
@@ -2011,11 +2177,19 @@ pre code {
   color: var(--text-1);
 }
 
-.social-links .discord {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
+/* Icon links: one-colour brand marks at 24 px inside 44 px targets; they dim on hover like the other quiet links. */
+.social-links .social-icon {
+  transition: color var(--t-fast) linear;
+}
+
+.social-links .social-icon:hover {
   color: var(--text-2);
+}
+
+.social-links .social-icon svg {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .site-footer p {
