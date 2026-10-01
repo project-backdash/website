@@ -546,6 +546,13 @@ a:hover {
   height: calc(var(--cap) * 2);
 }
 
+/* The middle arrow is the same back arrow turned 45 degrees, with a bare crimson fill. */
+.mark .mark-lit.mark-solid {
+  fill: var(--mark-lit, var(--verm-500));
+  stroke: none;
+}
+:where(.footer-brand) .mark .mark-lit.mark-solid { fill: currentColor; }
+
 .lockup .wordmark {
   display: block;
   flex: none;
@@ -586,7 +593,7 @@ a:hover {
   }
 
   .app-bar .lockup {
-    --cap: min(11px, calc((100vw - 84px) / 26.77));
+    --cap: min(11px, calc((100vw - 84px) / 26.30));
   }
 }
 
@@ -2114,10 +2121,7 @@ pre code {
   margin-left: calc(var(--s-1) * -1);
 }
 
-/* The footer lockup is the one-colour logo. The sticky app bar keeps its lit
-   tile on screen, and there is one lit tile per screen: here the tile takes the
-   arrows' colour and its down-back is knocked out in the band colour.
-   (:where keeps these below the high-contrast rules at the end of the file.) */
+/* The footer uses the same three arrows in one colour. */
 :where(.footer-brand) .mark .mark-tile {
   fill: currentColor;
 }
@@ -2463,11 +2467,11 @@ pre code {
    (H, C, N, T) are 2 caps tall, so the tile is the same 26 px in each at the
    13 px header cap. The two-row squares (S, L2) draw their glyphs at 3/5 of
    that scale (half scale read as too small next to the wordmark): 54 units
-   at 2/24 cap x 3/5 = 2.7 caps (35.1 px), so both rows fit the bar with room
+   at 2/24 cap x 3/5 = 2.27 caps (35.1 px), so both rows fit the bar with room
    to spare. The wordmark keeps its cap height and stays centred on the mark,
    so the bar and everything under it stay put. */
-:root:is([data-logo="S"], [data-logo="L2"]) .lockup .mark {
-  height: calc(var(--cap) * 2.7);
+:root[data-logo="S"] .lockup .mark {
+  height: calc(var(--cap) * 2.27);
 }
 
 /* Until site.js has put the chosen mark in (it then sets data-logo), the
