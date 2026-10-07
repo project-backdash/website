@@ -4,8 +4,8 @@
   "description": "Rollback netplay on Windows. Bring your own game.",
   "start_url": "/",
   "display": "browser",
-  "theme_color": "#07303A",
-  "background_color": "#07303A",
+  "theme_color": "#140608",
+  "background_color": "#140608",
   "icons": [
     {
       "src": "/icon-192.png?v=0b4beba1aa",
