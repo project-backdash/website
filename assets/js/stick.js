@@ -6,8 +6,9 @@
  * ball hides the shaft in neutral; pushed, the ball moves off centre, a short piece of the shaft shows between
  * the mounting hole and the ball, and the dust washer at its base slides a fifth of the ball's travel. The
  * input log under the panel shows each input as the game reads it, as a PBD block arrow
- * (docs/brand/assets/explore/block-arrows/), newest at the right and lit in petrol-300 (the quiet site
- * variant: never crimson; the logo's tile in the app bar is the page's one lit thing). No frame counts.
+ * (docs/brand/assets/explore/block-arrows/), newest at the right and lit in the lighter rose of the
+ * launcher's lever palette (pages/home.css; never crimson: the logo's down-back is the page's one
+ * crimson mark). No frame counts.
  *
  * The timing is not in this file: data-stick on .hero-stick holds it (idle, lead_in, loop and rest_on, in
  * frames at 60 fps; the same values as docs/brand/assets/explore/animated-stick/timing-v2/timeline-site.json).

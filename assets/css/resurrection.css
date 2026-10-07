@@ -1,6 +1,11 @@
-/* The red field, black bands and gold selection share the launcher's palette. */
+/* The launcher's palette and touches, over site.css's shared components and frame.
+   Tokens: the red field, black bands, gold links and selection, the same text greys as the launcher.
+   Frame: site.css draws the bar, the status strip, the sidebar and the drawer on the band (black here);
+   this file marks the current page in gold and gives a short centred footer. The radial field and the
+   gold wash are the only gradients, as in the launcher. */
 :root,
-:root[data-theme] {
+:root[data-theme],
+:root:not([data-theme="dark"]) {
   --bg: #140608;
   --band: #0B0304;
   --surface: #1D0609;
@@ -16,26 +21,159 @@
   --press: rgba(244,182,63,.14);
   --code-bg: rgba(233,238,237,.08);
   --mark-lit: #E3304F;
+  --good: #3CC47E;
+  --warn: #F4B63F;
+  --bad: #FF9470;
+  --text-info: #F4B63F;
+  --notice-info: #2A0B11;
+  --notice-good: #123524;
+  --notice-warn: #3A2E12;
+  --notice-bad: #3B1F17;
+  --read: 720px;
   color-scheme: dark;
 }
 
+/* site.css gives its always-dark surfaces petrol links and edges; here they take the gold, as
+   everywhere else: the hero band of the coming-soon shell and the replay link page, and .on-petrol
+   (the preview-only logo picker). */
+.band-hero,
+.on-petrol {
+  --link: #F4B63F;
+  --focus: #F4B63F;
+  --selected-edge: #F4B63F;
+  --line: rgba(233,238,237,.12);
+}
+
 html, body { background: #140608; }
-.app-bar,
-.drawer-head,
-.drawer-panel,
-.sidebar,
-.site-footer,
-.status-strip { background: #0B0304; }
-.app-bar { border-bottom-color: rgba(233,238,237,.12); }
-.status-strip { border-bottom: 1px solid rgba(233,238,237,.06); }
-.status-strip a { color: #8FC3CA; }
-.band-hero {
-  --band-bg: #140608;
+::selection { background: #5A0E18; color: #E9EEED; }
+
+/* The launcher's field. `field` on <body> lays it behind the whole window; a fixed layer, so it
+   stays put while the page scrolls, as the launcher's window does. Pages may move it with
+   background-size and background-position. */
+.field { isolation: isolate; }
+.field::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background: radial-gradient(ellipse 80% 90% at 64% 47%, #5A0E18 0%, #470B15 24%, #2F0810 50%, #1D0609 76%, #140608 100%);
 }
-.band-petrol { background: #1D0609; }
-.band-hero .band-inner { padding-top: 72px; padding-bottom: 72px; }
-.band-hero .headline { font-size: clamp(34px, 3.1vw, 44px); }
+.field.page-body::before {
+  background-size: 140% 120%;
+  background-position: 30% 100%;
+  opacity: .55;
+}
+
+/* ---- The frame: black bar, status strip, sidebar and drawer (site.css); the page you are on is a
+   gold edge and wash, as a selected row in the launcher, and the row under the pointer a faint gold. -- */
+.app-bar { border-bottom-color: rgba(233,238,237,.12); }
+.status-strip { border-bottom-color: rgba(233,238,237,.06); }
+.nav-list a:hover { background: rgba(244,182,63,.08); }
+.nav-list a[aria-current="page"] {
+  color: #F4B63F;
+  background: linear-gradient(90deg, rgba(244,182,63,.14), rgba(244,182,63,.05) 38%, transparent 72%);
+  border-radius: 0;
+  box-shadow: inset 2px 0 0 0 #F4B63F;
+}
+.sidebar .nav-list a[aria-current="page"] { padding-left: 20px; }
+
+/* The launcher's label tab: black, slanted right edge, the name in PBD Display at 18 px. On phones the
+   letter spacing tightens so a long name ("What is Project Backdash?") stays on one line at 360 px. */
+.label-tab {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 8px 34px 7px 14px;
+  background: #0B0304;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  color: #E9EEED;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.125rem;
+  letter-spacing: .18em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;   /* with the text enlarged on a narrow phone, a long word wraps inside the tab */
+}
+@media (max-width: 419.98px) {
+  .label-tab { letter-spacing: .1em; }
+}
+
+/* A small state word on a row ("Coming soon"), as the launcher's pill. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 5px 8px;
+  border: 1px solid rgba(244,182,63,.4);
+  border-radius: 3px;
+  background: #0B0304;
+  color: #F4B63F;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: .75rem;
+  letter-spacing: .12em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---- Footer: centred, no band of its own. Home shows the accounts under its download block
+   instead (.home-social), drawn the same way. ------------------------------------------------ */
+.site-footer {
+  flex: none;
+  background: transparent;
+  color: var(--text-2);
+  font-size: .9375rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.site-footer-inner {
+  max-width: calc(560px + 2 * var(--s-4));
+  margin: 0 auto;
+  padding: var(--s-10) var(--s-4) var(--s-12);
+  border-top: 1px solid rgba(233,238,237,.07);
+}
+.site-footer .social-links { justify-content: center; gap: var(--s-3); margin: 0 0 var(--s-5); }
+:is(.site-footer, .home-social) .social-links a {
+  min-width: 48px;
+  min-height: 48px;
+  border: 1px solid rgba(233,238,237,.16);
+  border-radius: 50%;
+  background: rgba(11,3,4,.6);
+  color: var(--text-1);
+  transition: color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+:is(.site-footer, .home-social) .social-links a:hover { color: #F4B63F; border-color: rgba(244,182,63,.6); }
+:is(.site-footer, .home-social) .social-links .social-icon svg { width: 20px; height: 20px; }
+.footer-nav ul { justify-content: center; gap: 0 var(--s-5); margin: 0 0 var(--s-2); }
+@media (max-width: 399.98px) {
+  .footer-nav ul { gap: 0 var(--s-3); }
+}
+.footer-nav a { color: var(--text-1); }
+.footer-nav a[aria-current="page"] { color: var(--link); }
+.site-footer .contact { margin: 0 0 var(--s-2); }
+.footer-free { margin: 0; color: var(--text-2); font-weight: 400; }
+.site-footer .footer-fine { max-width: 60ch; margin: var(--s-5) auto 0; color: var(--text-3); font-size: var(--fs-small); }
+/* With a sidebar (from 1024 px) the footer centres under the page beside it, and the sidebar's black
+   column carries on down to the bottom of the window, so the list stands in one unbroken column. */
+@media (min-width: 1024px) {
+  body:has(.sidebar) .site-footer { position: relative; padding-left: var(--side); }
+  body:has(.sidebar) .site-footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--side);
+    background: var(--band);
+    border-right: 1px solid var(--line);
+  }
+}
+
+/* ---- Shared parts in the launcher's colours ----------------------------------------------- */
 .hl {
   color: #E9EEED;
   background: transparent;
@@ -43,18 +181,11 @@ html, body { background: #140608; }
   box-decoration-break: initial;
   -webkit-box-decoration-break: initial;
 }
-.hero-sub { color: #F4B63F; }
-.hero-compat { color: #AEBDBD; }
-.stick {
-  --stick-line: #8A9C9C;
-  --stick-lit: #F4B63F;
-  --stick-ground: #2F0810;
-  opacity: .62;
+/* The replay link page's red field and label (src/r/index.html). */
+.band-hero {
+  --band-bg: #140608;
+  background: radial-gradient(ellipse 80% 90% at 64% 47%, #5A0E18 0%, #470B15 24%, #2F0810 50%, #1D0609 76%, #140608 100%);
 }
-.spine .band-inner::before,
-.spine ~ .site-footer .band-inner::before,
-:is(.spine, .spine ~ .site-footer) .node::before,
-:is(.spine, .spine ~ .site-footer) .node::after { display: none; }
 .label-box {
   background: #0B0304;
   color: #E9EEED;
@@ -63,41 +194,44 @@ html, body { background: #140608; }
   clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
   box-shadow: inset 0 1px 0 0 rgba(233,238,237,.12);
 }
-.feature { padding-top: 20px; border-top: 1px solid rgba(233,238,237,.12); }
-.feature-name { color: #F4B63F; }
-.feature-name .icon { color: #AEBDBD; }
-.nav-list a[aria-current="page"] {
-  color: #F4B63F;
-  background: linear-gradient(90deg, rgba(244,182,63,.14), rgba(244,182,63,.05) 38%, transparent 72%);
-  border-radius: 0;
-  box-shadow: inset 2px 0 0 0 #F4B63F;
-}
-.sidebar .nav-list a[aria-current="page"] { padding-left: 20px; }
-.nav-list a:hover { background: rgba(244,182,63,.08); }
-.band-petrol .label-box { color: #E9EEED; }
-.band-petrol .notyet,
-.band-petrol .band-lead { color: #E9EEED; }
-.band-petrol .test-pcs { color: #AEBDBD; }
-.btn-primary.is-disabled { background: #07303A; color: #8FC3CA; }
-.btn-primary:not(.is-disabled) { --on-verm: #14191B; }
-.footer-brand .mark .mark-lit.mark-solid { fill: currentColor; }
-.theme-control { display: none; }
 
-@media (max-width: 599.98px) {
-  .band-hero .band-inner { padding-top: 40px; padding-bottom: 64px; }
-  .band-hero .headline { font-size: 34px; }
-  .hero-stick { margin-top: 32px; }
+/* A row of links, each one line with a hairline under it; the gold wash marks the row under the
+   pointer or focus, as a selected row in the launcher. */
+.link-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid rgba(233,238,237,.08); }
+.link-rows > li { margin: 0; }
+.link-rows a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--s-3);
+  min-height: 52px;
+  padding: var(--s-3) var(--s-3);
+  border-bottom: 1px solid rgba(233,238,237,.08);
+  color: var(--text-1);
+  text-decoration: none;
 }
-@media (min-width: 1024px) {
-  .band-hero .headline { font-size: calc(var(--fs-hero) * .86); }
+.link-rows a:hover,
+.link-rows a:focus-visible {
+  background: linear-gradient(90deg, rgba(244,182,63,.14), rgba(244,182,63,.05) 38%, transparent 72%);
+  box-shadow: inset 2px 0 0 0 #F4B63F;
+  color: #F4B63F;
 }
+.link-rows a:focus-visible { outline-offset: -2px; }
+.link-name { font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; }
+.link-note { color: var(--text-2); font-size: .9375rem; }
+.link-rows a:hover .link-note,
+.link-rows a:focus-visible .link-note { color: var(--text-1); }
+
 @media (forced-colors: active) {
+  .field::before { display: none; }
+  .nav-list a[aria-current="page"] { background: Canvas; color: CanvasText; box-shadow: none; border: 2px solid Highlight; }
   .band-hero,
-  .band-petrol,
   .label-box,
-  .nav-list a[aria-current="page"] { background: Canvas; color: CanvasText; }
-  .label-box { clip-path: none; border: 1px solid CanvasText; }
-  .nav-list a[aria-current="page"] { box-shadow: none; border: 2px solid Highlight; }
-  .hl, .hero-sub, .feature-name { color: CanvasText; }
-  .stick { --stick-line: GrayText; --stick-lit: CanvasText; --stick-ground: Canvas; }
+  .label-tab { background: Canvas; color: CanvasText; }
+  .label-box,
+  .label-tab { clip-path: none; border: 1px solid CanvasText; }
+  .pill { border-color: CanvasText; color: CanvasText; }
+  .hl { color: CanvasText; }
+  .link-rows a:hover,
+  .link-rows a:focus-visible { background: Highlight; color: HighlightText; box-shadow: none; }
 }

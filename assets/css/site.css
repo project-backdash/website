@@ -8,30 +8,33 @@
    Contents
      1. Tokens (palette, dark default, light theme, surfaces that stay dark)
      2. Base and type
-     3. App bar, drawer, status strip, skip link
-     4. Layouts: home bands and the spine; inner pages with a sidebar
-     5. Home pieces: hero, highlight box, label box, features, download block
-     6. Buttons: the afterimage primary, outline secondary, text links
+     3. App bar, drawer, page list, status strip, skip link, lockup
+     4. Layouts: bands; pages with a sidebar and a reading column
+     5. Shared pieces: headline and highlight box, label box, download block, links
+     6. Buttons: the crimson primary, outline secondary
      7. Content: notices, tables, figures, details, lists, code, input strip
-     8. Footer and theme control
+     8. Footer
      9. Utilities, motion, forced colours, print
+
+   resurrection.css, linked after this file, sets the launcher's palette on every
+   page and adds its touches: the red field, the gold mark on the current page,
+   the label tab, the link rows and the centred footer.
 
    Rules the file keeps (and check.mjs enforces): no italics, no skew, no
    gradients except the hard-stop progress fill, no glows or shadows used as
    light, no chevrons on buttons. PBD crimson (the --verm-* tokens) only on the
-   primary button and the logo's lit tile (one per screen: the footer's logo is
-   one-colour, and the first spine tick is petrol-300).
+   primary button and the logo's lit down-back.
    ========================================================================== */
 
 /* 1. Tokens ================================================================ */
 
 :root {
   /* @palette: fixed colours, the same in both themes */
-  --petrol-950: #041C22;
-  --petrol-900: #07303A;
-  --petrol-800: #0C3E4A;
-  --petrol-700: #14525F;
-  --petrol-300: #8FC3CA;
+  --petrol-950: #0B0304;
+  --petrol-900: #1D0609;
+  --petrol-800: #2A0B11;
+  --petrol-700: #5A0E18;
+  --petrol-300: #F4B63F;
   --graphite-900: #14191B;
   --graphite-850: #1A2023;
   --graphite-800: #222A2D;
@@ -50,7 +53,7 @@
   --dk-text-2: #AEBDBD;
   --dk-text-3: #8A9C9C;
   --dk-focus: #E6EBEA;
-  --lt-focus: #07303A;
+  --lt-focus: #5A0E18;
   /* @end */
 
   /* Type */
@@ -100,20 +103,20 @@
 :root[data-theme="dark"] {
   /* @dark */
   --bg: #1A2023;            /* graphite-850: page under the bands, inner pages */
-  --band: #14191B;          /* graphite-900: neutral bands, footer, sidebar */
+  --band: #14191B;          /* graphite-900: neutral bands, the app bar, status strip, sidebar and drawer */
   --surface: #222A2D;       /* graphite-800: figure frames, boxes on the page */
   --text-1: #E9EEED;
   --text-2: #AEBDBD;
   --text-3: #8A9C9C;
-  --link: #8FC3CA;
+  --link: #F4B63F;
   --focus: #E6EBEA;
   --control-edge: #8A9C9C;  /* outline buttons, the theme switch */
-  --selected-edge: #8FC3CA; /* inset edge of the petrol-700 "you are here" slab (3:1 against the surface) */
+  --selected-edge: #E3304F; /* inset edge of the petrol-700 "you are here" slab (3:1 against the surface) */
   --good: #3CC47E;
   --warn: #F4B63F;
   --bad: #FF9470;           /* coral, kept apart from the crimson accent (the rose #FF8FA3 had its hue) */
-  --text-info: #8FC3CA;
-  --notice-info: #0C3E4A;
+  --text-info: #F4B63F;
+  --notice-info: #2A0B11;
   --notice-good: #123524;
   --notice-warn: #3A2E12;
   --notice-bad: #3B1F17;
@@ -129,28 +132,28 @@
 /* Light theme: follows the system unless the visitor chose dark */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg: #F4F7F6;
-    --band: #E6EBEA;
-    --surface: #E6EBEA;
-    --text-1: #132024;
-    --text-2: #44565A;
-    --text-3: #5A6B6E;
-    --link: #0B5A68;
-    --focus: #07303A;
-    --control-edge: #5A6B6E;
-    --selected-edge: #14525F;
+    --bg: #F7F3F3;
+    --band: #EDE5E6;
+    --surface: #EDE5E6;
+    --text-1: #1A0A0D;
+    --text-2: #5A4549;
+    --text-3: #6A5559;
+    --link: #A01F38;
+    --focus: #5A0E18;
+    --control-edge: #6A5559;
+    --selected-edge: #A01F38;
     --good: #1C7447;
     --warn: #8A5800;
     --bad: #A8360C;
-    --text-info: #0B5A68;
-    --notice-info: #D8ECEE;
+    --text-info: #8A1C30;
+    --notice-info: #FBE6EA;
     --notice-good: #DDF0E4;
     --notice-warn: #FBF0D9;
     --notice-bad: #FCE8E0;
-    --line: rgba(19, 32, 36, 0.14);
-    --hover: rgba(19, 32, 36, 0.06);
-    --press: rgba(19, 32, 36, 0.11);
-    --code-bg: rgba(19, 32, 36, 0.07);
+    --line: rgba(26, 10, 13, 0.14);
+    --hover: rgba(26, 10, 13, 0.06);
+    --press: rgba(26, 10, 13, 0.11);
+    --code-bg: rgba(26, 10, 13, 0.07);
     --mark-lit: var(--verm-600);
     color-scheme: light;
   }
@@ -159,44 +162,37 @@
 /* Light theme, chosen in the footer or with ?theme=light */
 :root[data-theme="light"] {
   /* @light */
-  --bg: #F4F7F6;            /* mist-50 */
-  --band: #E6EBEA;          /* mist-100 */
-  --surface: #E6EBEA;       /* mist-100 */
-  --text-1: #132024;
-  --text-2: #44565A;
-  --text-3: #5A6B6E;
-  --link: #0B5A68;
-  --focus: #07303A;
-  --control-edge: #5A6B6E;
-  --selected-edge: #14525F;
+  --bg: #F7F3F3;            /* mist-50 */
+  --band: #EDE5E6;          /* mist-100 */
+  --surface: #EDE5E6;       /* mist-100 */
+  --text-1: #1A0A0D;
+  --text-2: #5A4549;
+  --text-3: #6A5559;
+  --link: #A01F38;
+  --focus: #5A0E18;
+  --control-edge: #6A5559;
+  --selected-edge: #A01F38;
   --good: #1C7447;
   --warn: #8A5800;
   --bad: #A8360C;
-  --text-info: #0B5A68;
-  --notice-info: #D8ECEE;
+  --text-info: #8A1C30;
+  --notice-info: #FBE6EA;
   --notice-good: #DDF0E4;
   --notice-warn: #FBF0D9;
   --notice-bad: #FCE8E0;
   /* @end */
-  --line: rgba(19, 32, 36, 0.14);
-  --hover: rgba(19, 32, 36, 0.06);
-  --press: rgba(19, 32, 36, 0.11);
-  --code-bg: rgba(19, 32, 36, 0.07);
+  --line: rgba(26, 10, 13, 0.14);
+  --hover: rgba(26, 10, 13, 0.06);
+  --press: rgba(26, 10, 13, 0.11);
+  --code-bg: rgba(26, 10, 13, 0.07);
   --mark-lit: var(--verm-600);
   color-scheme: light;
 }
 
-/* Surfaces that keep their dark colours in both themes: the app bar (what sits
-   in it, and the drawer's header row), the status strip, the hero band and
-   petrol bands. The drawer's list of pages is not among them: it follows the
-   theme (section 3). `.on-petrol` does the same for anything an author puts on
-   petrol. */
-.app-bar-inner > :not(.drawer),
-.drawer > summary,
-.drawer-head,
-.status-strip,
+/* Surfaces that keep their dark colours in both themes: the hero band (the
+   coming-soon shell and the replay link page). `.on-petrol` does the same for
+   anything an author puts on petrol. */
 .band-hero,
-.band-petrol,
 .on-petrol {
   --text-1: var(--dk-text-1);
   --text-2: var(--dk-text-2);
@@ -206,7 +202,7 @@
   --control-edge: var(--dk-text-3);
   --selected-edge: var(--petrol-300);
   --text-info: var(--petrol-300);
-  --line: rgba(143, 195, 202, 0.16);
+  --line: rgba(233, 238, 237, 0.12);
   --hover: rgba(233, 238, 237, 0.07);
   --press: rgba(233, 238, 237, 0.12);
   --code-bg: rgba(233, 238, 237, 0.08);
@@ -439,8 +435,10 @@ a:hover {
   outline-offset: 2px;
 }
 
-/* 3. App bar, drawer, status strip, skip link ============================== */
+/* 3. App bar, drawer, page list, status strip, skip link ================== */
 
+/* The skip link: a black slab, light text and the gold focus ring, as in the
+   launcher. */
 .skip-link {
   position: absolute;
   top: -200px;
@@ -448,23 +446,26 @@ a:hover {
   z-index: var(--z-skip);
   padding: var(--s-3) var(--s-4);
   border-radius: var(--r-control);
-  background: var(--mist-100);
-  color: var(--ink);
+  background: #0B0304;
+  color: #E9EEED;
   font-weight: 600;
 }
 
 .skip-link:focus {
   top: var(--s-2);
-  outline: 2px solid var(--petrol-300);
+  outline: 2px solid #F4B63F;
   outline-offset: 2px;
 }
 
+/* The bar on every page, on the band colour (the launcher's black): the menu
+   button at the left, the lockup in the middle, How it works at the right.
+   Sticky, so the page list is always one tap away. */
 .app-bar {
   position: sticky;
   top: 0;
   z-index: var(--z-bar);
-  background: var(--petrol-900);
-  border-bottom: 1px solid rgba(143, 195, 202, 0.14);
+  background: var(--band);
+  border-bottom: 1px solid var(--line);
 }
 
 .app-bar-inner {
@@ -523,10 +524,8 @@ a:hover {
 }
 
 /* The lockup: the mark, a gap of one cap height, the one-line wordmark. The
-   mark (the block hybrid) is 2 caps tall, 26 px at the 13 px header cap: a
-   block arrow carries 1.6 times the ink of the old line arrow, and at 2 caps
-   its solid masses sit level with the wordmark (explore/block-arrows README,
-   finding 2). The wordmark is the PBD Display outlines, 19.14 caps wide. */
+   mark is 2 caps tall, 26 px at the 13 px bar cap, and 6.15 caps wide; the
+   wordmark is the PBD Display outlines, 19.14 caps wide. */
 .lockup {
   --cap: 11px;
   display: inline-flex;
@@ -551,7 +550,6 @@ a:hover {
   fill: var(--mark-lit, var(--verm-500));
   stroke: none;
 }
-:where(.footer-brand) .mark .mark-lit.mark-solid { fill: currentColor; }
 
 .lockup .wordmark {
   display: block;
@@ -567,9 +565,9 @@ a:hover {
 }
 
 /* Phones: the lockup sits at the left and the menu button at the right. The
-   lockup (26.77 caps wide: the 6.63-cap mark, a one-cap gap and the 19.14-cap
-   wordmark) no longer fits centred between the button and an equal right
-   column, and a back arrow right after the burger reads as Back.
+   lockup (26.29 caps and 8 px wide: the 6.15-cap mark, a one-cap gap and the
+   19.14-cap wordmark) no longer fits centred between the button and an equal
+   right column, and a back arrow right after the burger reads as Back.
    The "How it works" button is hidden here anyway. Below 360 px the cap
    shrinks so at least 12 px stay between the wordmark and the button. The
    drawer then opens from the right, and its close button lands where the
@@ -597,12 +595,54 @@ a:hover {
   }
 }
 
-/* The mark (the `mark` partial): the block hybrid, block back, the lit
-   down-back tile, block back. Its parts are filled shapes (.mark-solid). The
-   two block arrows (.mark-arrow) take the surface's text-1; the tile
-   (.mark-tile) is PBD crimson (verm-600 on light surfaces, 4.28:1 on mist-100)
-   with a graphite block down-back (.mark-key) in both themes. It is the logo's
-   only colour. */
+/* The game the site is for, as a second line under the bar's wordmark: plain
+   text in small capitals, never the game's own lettering. It shows from
+   720 px, where the cap is 13 px: the wordmark (13 px), a 3 px gap and the
+   11 px line together are as tall as the mark, which spans both lines. On
+   narrower bars the lockup is the plain one-line version; the link's name
+   says the game at every width. */
+.lockup-for {
+  display: none;
+}
+
+@media (min-width: 720px) {
+  .lockup-game {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 3px var(--cap);
+  }
+
+  .lockup-game .mark {
+    grid-row: 1 / 3;
+  }
+
+  .lockup-game .wordmark {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .lockup-for {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    color: var(--text-2);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+}
+
+/* The mark (the `mark` partial): back, down-back, back, every arrow the same
+   size. Its parts are filled shapes (.mark-solid). The two backs (.mark-arrow)
+   take the surface's text-1; the down-back (.mark-lit, above) is PBD crimson,
+   the logo's only colour. */
 .mark {
   color: var(--text-1);
   overflow: visible;
@@ -610,15 +650,6 @@ a:hover {
 
 .mark .mark-arrow.mark-solid {
   fill: currentColor;
-  stroke: none;
-}
-
-.mark .mark-tile {
-  fill: var(--mark-lit, var(--verm-500));
-}
-
-.mark .mark-key.mark-solid {
-  fill: var(--on-verm);
   stroke: none;
 }
 
@@ -646,7 +677,7 @@ a:hover {
    Open, a panel slides in over the page from the side the menu button is on
    (the left; on phones, where the button is at the right, the right). It
    spans the full height, the app bar's row included: a header row as tall as
-   the bar holds the lockup and the close button, and the list of pages sits
+   the bar holds the lockup and the close button, and the page list sits
    under it. A scrim dims everything else, the app bar included.
    The summary does all the closing: its ::before is the scrim, and its
    .drawer-button (the burger, drawn as an X while open) moves into the
@@ -654,10 +685,8 @@ a:hover {
    button close the drawer with or without site.js; site.js adds Escape,
    closes it when a link is chosen, moves focus into the panel and keeps it
    there, and locks the page's scroll (.drawer-locked).
-   Colours: the panel is one step lighter than the bar, petrol-800 on
-   petrol-900. The header row keeps it in both themes, like the bar; the list
-   takes the page's theme, so in the light theme it is mist-50 with the
-   light theme's text, hover and "you are here" slab (the sidebar's look). */
+   The panel is the bar's band colour, with the bar's hairline under its
+   header row. */
 .drawer {
   /* 360 px, and at least 56 px of dimmed page stays in view on phones. */
   --drawer-w: min(360px, calc(100vw - 56px));
@@ -748,13 +777,13 @@ a:hover {
 
 /* Layers inside the app bar (z-index 50, above the whole page): the scrim 1,
    the panel 2, the close button 3. The bar's own lockup and button stay
-   under the scrim. */
+   under the scrim, which darkens the red field towards the launcher's black. */
 .drawer[open] > summary::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: rgba(4, 28, 34, 0.62);
+  background: rgba(11, 3, 4, 0.66);
   cursor: default;
   transition: opacity var(--t-drawer) linear;
 }
@@ -768,6 +797,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   width: var(--drawer-w);
+  background: var(--band);
   transition: transform var(--t-drawer) var(--ease-out);
 }
 
@@ -778,12 +808,12 @@ a:hover {
   align-items: center;
   height: calc(var(--bar-h) + 1px);
   padding: 0 calc(44px + 2 * var(--s-2)) 0 var(--s-3);
-  background: var(--petrol-800);
-  border-bottom: 1px solid rgba(143, 195, 202, 0.14);
+  background: var(--band);
+  border-bottom: 1px solid var(--line);
 }
 
 /* The lockup at 10 px caps (the bar's is 13), smaller where the panel is
-   narrower: it is 26.77 caps and 8 px wide (the .lockup rules), and the row
+   narrower: it is 26.29 caps and 8 px wide (the .lockup rules), and the row
    keeps 12 px at the left and the close button with 8 px on each side at the
    right. 27.5 caps leaves room for every mark in the preview switcher.
    !important because the bar's lockup sizes (.app-bar .lockup, per width and
@@ -792,25 +822,13 @@ a:hover {
   --cap: min(10px, calc((var(--drawer-w) - 84px) / 27.5)) !important;
 }
 
-/* The list: petrol-800 in the dark theme, mist-50 in the light theme (the
-   same two selectors as the light tokens in section 1). */
 .drawer-nav {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--s-4) 0 var(--s-8);
-  background: var(--petrol-800);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .drawer-nav {
-    background: var(--mist-50);
-  }
-}
-
-:root[data-theme="light"] .drawer-nav {
-  background: var(--mist-50);
+  background: var(--band);
 }
 
 /* The close button, over the panel's header row at its right end. */
@@ -910,7 +928,9 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
 }
 /* @preview-switcher: end */
 
-/* Navigation rows: drawer and sidebar. The current page is a petrol-700 slab. */
+/* The page list (the `nav` partial), in the drawer and the sidebar: one row
+   per page, 48 px tall. The current page is marked in resurrection.css (the
+   launcher's gold edge and wash); here it is a slab with the selected edge. */
 .nav-list {
   margin: 0;
   padding: 0;
@@ -923,10 +943,12 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
 
 .nav-list a {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 2px var(--s-3);
   min-height: 48px;
   margin: 0 var(--s-3);
-  padding: 0 var(--s-4);
+  padding: var(--s-1) var(--s-4);
   border-radius: var(--r-slab);
   color: var(--text-2);
   font-weight: 500;
@@ -947,11 +969,95 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   font-weight: 600;
 }
 
-/* The private-test line under the app bar. */
-.status-strip {
-  background: var(--petrol-950);
+/* A state on a row (the Coming soon pill) sits at its right end. */
+.nav-list .pill {
+  margin-left: auto;
+}
+
+/* Download, while there is no public release: not a link, so nothing to
+   focus or press. The launcher's disabled look, as on Home's download block:
+   a faint light fill and edge, the arrow and label in text-3 (never crimson),
+   and the reason under the label in gold capitals. */
+.nav-download {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 56px;
+  margin: var(--s-4) var(--s-3) 0;
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-control);
+  background: rgba(233, 238, 237, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(233, 238, 237, 0.08);
+  color: #8A9C9C;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+}
+
+.nav-download-arrow {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.nav-download-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nav-download .nav-state {
+  color: var(--link);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* Source and Privacy close the list in small type, over a hairline. */
+.nav-fine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-5);
+  margin: var(--s-6) var(--s-3) 0;
+  padding: var(--s-1) var(--s-4) 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.nav-fine li + li {
+  margin-top: 0;
+}
+
+.nav-fine a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--text-2);
-  border-bottom: 1px solid rgba(143, 195, 202, 0.1);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav-fine a:hover {
+  color: var(--text-1);
+  text-decoration: underline;
+}
+
+.nav-fine a[aria-current="page"] {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+/* The private-test line under the app bar, on the bar's band. */
+.status-strip {
+  background: var(--band);
+  color: var(--text-2);
+  border-bottom: 1px solid var(--line);
 }
 
 .status-strip p {
@@ -965,7 +1071,7 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
 
 /* 4. Layouts =============================================================== */
 
-/* Home: full-width bands over a narrow column. */
+/* A full-width band (the coming-soon shell and the replay link page). */
 .band {
   --band-bg: var(--band);
   position: relative;
@@ -974,86 +1080,14 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   color: var(--text-1);
 }
 
-.band-hero,
-.band-petrol {
+.band-hero {
   --band-bg: var(--petrol-900);
 }
 
-.band-inner {
-  position: relative;
-  max-width: calc(var(--col) + var(--pad-l) + var(--pad-r));
-  margin: 0 auto;
-  padding: var(--band-pt) var(--pad-r) var(--band-pb) var(--pad-l);
-}
-
-.band-inner > :last-child {
-  margin-bottom: 0;
-}
-
-/* The spine: a 2 px line in text-1 at 20 %, from the hero to the footer, home only.
-   Put `spine` on <main>; the footer joins in because it follows <main>. */
-.spine .band-inner::before,
-.spine ~ .site-footer .band-inner::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(var(--pad-l) + var(--spine-x));
-  width: 2px;
-  background: var(--text-1);
-  opacity: 0.2;
-  pointer-events: none;
-}
-
-/* A spine node is a frame tick: a 14x4 bar across the line, with the line broken
-   8 px above and below it. Put `node` on the heading that starts a band (it must
-   sit at the column's left edge). `node-first` (the hero headline) is lit in
-   petrol-300, like the hero's other lit shapes, never crimson (the app bar's
-   lit tile is right above it, and there is one per screen), and has no line
-   above it; `node-last` (the footer) has no line below it.
-   Ticks are drawn only where there is a spine (Home): the footer's node shows
-   nothing on inner pages. */
-.node {
-  --node-y: 50%;
-  position: relative;
-}
-
-:is(.spine, .spine ~ .site-footer) .node::before {
-  content: "";
-  position: absolute;
-  left: var(--spine-x);
-  top: calc(var(--node-y) - 10px);
-  width: 2px;
-  height: 20px;
-  background: var(--band-bg, var(--bg));
-  pointer-events: none;
-}
-
-:is(.spine, .spine ~ .site-footer) .node::after {
-  content: "";
-  position: absolute;
-  left: calc(var(--spine-x) - 6px);
-  top: calc(var(--node-y) - 2px);
-  width: 14px;
-  height: 4px;
-  background: var(--text-1);
-  pointer-events: none;
-}
-
-:is(.spine, .spine ~ .site-footer) .node-first::after {
-  background: var(--petrol-300);
-}
-
-:is(.spine, .spine ~ .site-footer) .node-first::before {
-  top: -4000px;
-  height: calc(4000px + var(--node-y) + 10px);
-}
-
-:is(.spine, .spine ~ .site-footer) .node-last::before {
-  height: 4000px;
-}
-
-/* Inner pages: sidebar from 1024 px up, reading column of 760 px. */
+/* Pages with a sidebar: from 1024 px the page list stands on the band at the
+   left, beside the page (one reading column on inner pages, Home's own column
+   on Home); narrower, the drawer holds the list. resurrection.css sets the
+   reading column's width. */
 .page {
   display: block;
 }
@@ -1063,7 +1097,7 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
 }
 
 .page-main {
-  padding: var(--s-8) var(--s-5) var(--s-16);
+  padding: var(--s-10) var(--s-4) var(--s-16);
 }
 
 .page-col {
@@ -1130,30 +1164,9 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   margin-top: 0;
 }
 
-/* 5. Home pieces =========================================================== */
+/* 5. Shared pieces ========================================================= */
 
-.band-hero .band-inner {
-  padding-top: var(--s-12);
-  padding-bottom: 104px;
-}
-
-@media (min-width: 720px) {
-  .band-hero .band-inner {
-    padding-top: var(--s-16);
-    padding-bottom: 120px;
-  }
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 1;
-}
-
-/* No hero mark: the app-bar lockup sits right above the hero at every width,
-   the logo's lit tile is the one crimson tile per screen, and the arrows
-   always stand with the wordmark. The headline box opens the band. */
-
-/* Hero headline: PBD Display in the mist highlight box, one box per line. */
+/* Headline (the coming-soon shell): PBD Display in the mist highlight box, one box per line. */
 .headline {
   --node-y: calc(var(--fs-hero) * 0.65);
   margin: 0;
@@ -1203,90 +1216,14 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   color: var(--text-2);
 }
 
-/* The hero illustration slot (the hero-panel partial). Faint behind the lower
-   part of the headline on phones, at the right of the hero on wide screens.
-   Its lit button is petrol-300, never crimson: the panel is not the mark, and
-   the headline box stays the one bright thing. */
-.hero-art {
-  position: absolute;
-  top: 176px;
-  right: -64px;
-  z-index: 0;
-  width: 300px;
-  color: #6FA6AE;
-  opacity: 0.14;
-  pointer-events: none;
-}
-
-.hero-art svg,
-.hero-art img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.hero-art .lit {
-  fill: var(--petrol-300);
-  stroke: none;
-}
-
-@media (min-width: 720px) {
-  .hero-art {
-    top: 150px;
-    right: -32px;
-    width: 400px;
-  }
-}
-
 @media (min-width: 1024px) {
-  /* The band column is 816 px wide from here up; the art starts 60 px past the
-     end of a two-line headline box, sits level with the headline block (the
-     band's bottom padding holds the strip), and never leaves the window.
-     #4E8790 (3.5:1 on petrol-900) keeps the drawing behind the headline. */
-  .hero-art {
-    top: calc(50% - 44px);
-    bottom: auto;
-    left: 648px;
-    right: auto;
-    width: clamp(240px, calc(50vw - 296px), 440px);
-    color: #4E8790;
-    opacity: 1;
-    transform: translateY(-50%);
-  }
-
   .hero-sub,
   .hero-compat {
     max-width: min(46ch, 56%);
   }
 }
 
-/* The input strip along the hero's bottom edge: a frieze, not a control. Include
-   the input-strip partial twice (24 glyphs at the same 32 px pitch); it spans the
-   column and is cut off at the band's right edge on phones. Only the first copy
-   keeps its lit arrow. (.strip.hero-strip: these rules beat the general .strip ones below.) */
-.strip.hero-strip {
-  position: absolute;
-  left: var(--pad-l);
-  right: 0;
-  bottom: var(--s-6);
-  z-index: 1;
-  display: flex;
-  gap: 8px;
-  overflow: hidden;
-}
-
-.strip.hero-strip .input-strip {
-  flex: none;
-  width: 376px;
-  max-width: none;
-  height: 24px;
-}
-
-.strip.hero-strip .input-strip + .input-strip .lit {
-  color: inherit;
-}
-
-/* Section label: PBD Display in a petrol-700 box. Usually an <h2>. */
+/* Section label (the replay link page): a box over its heading. */
 .label-box {
   display: block;
   width: fit-content;
@@ -1299,50 +1236,6 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   font-weight: 700;
   font-size: var(--fs-label);
   line-height: 1.35;
-}
-
-.band-lead {
-  max-width: 58ch;
-  color: var(--text-1);
-}
-
-/* Feature items: 24 px icon, a name, one sentence. */
-.features {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--s-6) var(--s-8);
-  margin: 0 0 var(--s-10);
-  padding: 0;
-  list-style: none;
-}
-
-.features > li + li {
-  margin-top: 0;
-}
-
-@media (min-width: 880px) {
-  .features {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.feature-name {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 0 var(--s-1);
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 1.0625rem;
-  line-height: 1.35;
-  color: var(--text-1);
-}
-
-.feature p {
-  margin: 0;
-  color: var(--text-2);
-  font-size: 1rem;
-  line-height: 1.5;
 }
 
 .icon {
@@ -1362,7 +1255,7 @@ svg.icon {
   stroke-linejoin: round;
 }
 
-/* The download block: one full-width primary, a note, then plain links. */
+/* The download block: the primary, then one sentence under it. */
 .download {
   margin: 0 0 var(--s-4);
 }
@@ -1395,42 +1288,28 @@ svg.icon {
 
 /* 6. Buttons =============================================================== */
 
-/* The afterimage primary: a slab trailing three slices to its right, one per
-   screen. The slices live in a transparent right border, so the focus ring and
-   the click area cover slab and slices. Slice widths 0.18h/0.11h/0.07h, gaps
-   0.09h/0.11h/0.14h, rounded to whole pixels. */
+/* The primary, as in the launcher: one plain crimson rectangle per screen, the
+   label in PBD Display at 20 px in ink. Ink on crimson is 4.05:1, so the label
+   never gets smaller (it is declared bold, which the one-weight face draws as
+   is, so it counts as large text). Pressed, it steps 2 px left for 60 ms. */
 .btn-primary {
-  --h: 48px;
-  --g1: 4px;
-  --w1: 9px;
-  --g2: 5px;
-  --w2: 5px;
-  --g3: 7px;
-  --w3: 3px;
-  --trail: calc(var(--g1) + var(--w1) + var(--g2) + var(--w2) + var(--g3) + var(--w3));
-  --min: 197px;             /* ceil(3.4h) + trail, whole pixels */
-  --slab: var(--verm-500);
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
   gap: var(--s-3);
-  min-height: var(--h);
-  min-width: var(--min);
+  min-height: 48px;
+  min-width: 0;
   margin: 0;
-  padding: 6px var(--s-5);
+  padding: 6px 22px;
   border: 0;
-  border-right: var(--trail) solid transparent;
-  border-radius: var(--r-slab) 0 0 var(--r-slab);
-  background-color: var(--slab);
-  background-clip: padding-box;
+  border-radius: var(--r-control);
+  background: var(--verm-500);
   color: var(--on-verm);
   font-family: var(--font-display);
-  font-stretch: 125%;
   font-weight: 800;
-  font-size: 1.1875rem;     /* 19 px, never less at any size: ink on crimson is 4.05:1, so the label must be large text (>= 18.66 px bold) */
+  font-size: 1.25rem;
   line-height: 1.1;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
   text-align: left;
   text-transform: uppercase;
   text-decoration: none;
@@ -1440,37 +1319,13 @@ svg.icon {
   transition: background-color var(--t-fast) linear, transform var(--t-press) linear;
 }
 
-.btn-primary::before,
-.btn-primary::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background-color: var(--slab);
-  pointer-events: none;
-  transition: background-color var(--t-fast) linear, border-color var(--t-fast) linear;
-}
-
-.btn-primary::before {
-  left: calc(100% + var(--g1));
-  width: var(--w1);
-}
-
-.btn-primary::after {
-  left: calc(100% + var(--g1) + var(--w1) + var(--g2));
-  width: calc(var(--w2) + var(--g3) + var(--w3));
-  border-left: var(--w2) solid var(--slab);
-  padding-left: var(--g3);
-  background-clip: content-box;
-}
-
 .btn-primary:hover {
-  --slab: var(--verm-400);
+  background: var(--verm-400);
   color: var(--on-verm);
 }
 
 .btn-primary:active {
-  --slab: var(--verm-600);
+  background: var(--verm-600);
   transform: translateX(-2px);
 }
 
@@ -1480,16 +1335,8 @@ svg.icon {
 }
 
 .btn-lg {
-  --h: 56px;
-  --g1: 5px;
-  --w1: 10px;
-  --g2: 6px;
-  --w2: 6px;
-  --g3: 8px;
-  --w3: 4px;
-  --min: 230px;
-  padding: 6px var(--s-6);
-  font-size: clamp(1.1875rem, 0.95rem + 0.5vw, 1.25rem);   /* 19 -> 20 px (large text on crimson) */
+  min-height: 56px;
+  padding: 6px 28px;
 }
 
 .btn-block {
@@ -1497,12 +1344,13 @@ svg.icon {
   width: 100%;
 }
 
-/* Disabled: petrol-700 slab, petrol-300 label, no slices. Say why next to it.
-   Use <button disabled>, aria-disabled="true", or a <span> with .is-disabled. */
+/* Disabled, as in the launcher: never crimson. A faint light edge and fill, the
+   label in text-3; say why next to it. Use <button disabled>,
+   aria-disabled="true", or a <span> with .is-disabled. */
 .btn-primary:is(:disabled, [aria-disabled="true"], .is-disabled) {
-  --slab: var(--petrol-700);
-  border-right-width: 0;
-  color: var(--petrol-300);
+  background: rgba(233, 238, 237, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(233, 238, 237, 0.08);
+  color: #8A9C9C;
   cursor: not-allowed;
   transform: none;
 }
@@ -1511,24 +1359,12 @@ span.btn-primary.is-disabled {
   cursor: default;
 }
 
-.btn-primary:is(:disabled, [aria-disabled="true"], .is-disabled)::before,
-.btn-primary:is(:disabled, [aria-disabled="true"], .is-disabled)::after {
-  display: none;
-}
-
-/* Progress: the slices hide and a hard-stop fill runs left to right. Set
-   style="--progress: 42%" and remove .is-progress at 100 % to bring the slices back. */
+/* Progress: a hard-stop fill runs left to right. Set style="--progress: 42%". */
 .btn-primary.is-progress {
-  background-image: linear-gradient(90deg, var(--verm-500) var(--progress, 0%), var(--track) var(--progress, 0%));
-  background-clip: padding-box;
+  background-image: linear-gradient(90deg, var(--verm-500) var(--progress, 0%), rgba(233, 238, 237, 0.1) var(--progress, 0%));
   color: var(--on-verm);
   cursor: progress;
   transform: none;
-}
-
-.btn-primary.is-progress::before,
-.btn-primary.is-progress::after {
-  visibility: hidden;
 }
 
 /* Outline secondary. */
@@ -2056,78 +1892,279 @@ pre code {
   color: var(--text-1);
 }
 
-.band-hero .strip {
-  color: #2A6470;
+/* Guide pieces: Download, Install, FAQ and Troubleshooting ----------------
+   Short, scannable help for players who are not technical. Every colour is a
+   token, so the contrast pairs in contrast.mjs already cover them.
+     .tag          a status word (Ready, Preview, Coming soon, Not active yet)
+     .ui           the name of an on-screen button, as the player sees it
+     .checklist    "have these ready" items with a tick
+     .jump         a grid of problem links at the top of a long help page
+     .versions     version rows: a name, its status tags, one sentence
+     .win-sketch   a plain drawing of the Windows warning (no screenshot)  */
+
+.tag {
+  display: inline-block;
+  padding: 1px 8px 2px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  vertical-align: 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
-.band-hero .strip .lit {
-  color: var(--petrol-300);
+.tag-ready {
+  color: var(--good);
 }
 
-/* 8. Footer and theme control ============================================= */
+.tag-preview {
+  color: var(--warn);
+}
+
+/* An on-screen button name: a thin outline like a launcher control. */
+.ui {
+  display: inline-block;
+  padding: 0 6px 1px;
+  border: 1px solid var(--control-edge);
+  border-radius: 3px;
+  color: var(--text-1);
+  font-weight: 600;
+  line-height: 1.4;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* A one-line command the reader copies: wraps instead of scrolling, so it
+   stays readable at 320 px and with enlarged text. */
+.pre-wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Things to have ready, each with a tick. */
+.checklist {
+  margin: var(--s-5) 0 var(--s-6);
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.checklist > li {
+  position: relative;
+  margin: 0;
+  padding: var(--s-3) 0 var(--s-3) 36px;
+  border-bottom: 1px solid var(--line);
+}
+
+.checklist > li + li {
+  margin-top: 0;
+}
+
+.checklist > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: calc(var(--s-3) + 3px);
+  width: 20px;
+  height: 20px;
+  background-color: var(--warn);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%2012.5l4.5%204.5L19%207.5%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M5%2012.5l4.5%204.5L19%207.5%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
+}
+
+.checklist strong {
+  color: var(--text-1);
+}
+
+.checklist .hint {
+  display: block;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Problem links at the top of a help page: one column on phones, two from 600 px. */
+.jump {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-2);
+  margin: var(--s-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jump > li + li {
+  margin-top: 0;
+}
+
+@media (min-width: 600px) {
+  .jump {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.jump a {
+  display: block;
+  height: 100%;
+  min-height: 44px;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-box);
+  background: var(--surface);
+  color: var(--text-1);
+  text-decoration: none;
+}
+
+.jump a:hover {
+  border-color: var(--selected-edge);
+  background: var(--hover);
+}
+
+.jump-title {
+  display: block;
+  color: var(--link);
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.jump-hint {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+/* Version rows: name, tags, then one sentence. */
+.versions {
+  margin: var(--s-5) 0 var(--s-6);
+  border-top: 1px solid var(--line);
+}
+
+.versions > div {
+  padding: var(--s-4) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.versions dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.versions dt .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  font-weight: 400;
+}
+
+.versions dd {
+  margin: var(--s-2) 0 0;
+  color: var(--text-1);
+}
+
+/* A plain drawing of the Windows warning: words and two outlined buttons with
+   numbered markers. Hidden from screen readers; the caption says the same. */
+.win-sketch {
+  max-width: 460px;
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  background: var(--band);
+  color: var(--text-1);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.win-sketch p {
+  margin: 0 0 var(--s-3);
+}
+
+.win-sketch-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.win-sketch-fine {
+  color: var(--text-2);
+}
+
+.win-sketch-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.win-sketch-buttons {
+  justify-content: flex-end;
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+
+.win-sketch .ui-link {
+  padding: 0;
+  border: 0;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.win-sketch .ui {
+  padding: 4px 14px 5px;
+}
+
+.win-sketch .ui.is-target {
+  border: 2px solid var(--warn);
+}
+
+/* The numbered marker beside the control to press, ringed like a step. */
+.win-sketch .pick {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--warn);
+  border-radius: 50%;
+  color: var(--warn);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1;
+}
+
+@media (forced-colors: active) {
+  .tag,
+  .ui,
+  .jump a,
+  .win-sketch {
+    border: 1px solid CanvasText;
+  }
+
+  .checklist > li::before {
+    forced-color-adjust: none;
+    background-color: CanvasText;
+  }
+}
+
+/* 8. Footer ================================================================ */
 
 .site-footer {
   flex: none;
   color: var(--text-2);
   font-size: 0.9375rem;
   line-height: 1.5;
-}
-
-.site-footer .band-inner {
-  padding-top: var(--s-12);
-  padding-bottom: var(--s-16);
-}
-
-/* Inner pages: the footer column lines up with the reading column (.page-col),
-   which has the page's side padding rather than the home bands' spine gutter.
-   From 1024 px, with the sidebar, it starts where .page-col does, not in the
-   middle of the window. */
-.page ~ .site-footer .band-inner {
-  max-width: calc(var(--read) + 2 * var(--s-5));
-  padding-left: var(--s-5);
-  padding-right: var(--s-5);
-}
-
-@media (min-width: 720px) {
-  .page ~ .site-footer .band-inner {
-    max-width: calc(var(--read) + 2 * var(--s-10));
-    padding-left: var(--s-10);
-    padding-right: var(--s-10);
-  }
-}
-
-@media (min-width: 1024px) {
-  body:has(.sidebar) .site-footer .band-inner {
-    max-width: none;
-    margin: 0 0 0 var(--side);
-    padding-left: max(var(--s-10), calc((100% - var(--side) - var(--read)) / 2));
-    padding-right: max(var(--s-10), calc((100% - var(--side) - var(--read)) / 2));
-  }
-}
-
-.footer-brand {
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  margin: 0 0 var(--s-4);
-}
-
-/* 11 px cap, smaller where the lockup (at most 27 caps wide, the widest
-   preview variant included) would not fit: 68 px is Home's 44 px spine
-   gutter, the 20 px right padding and the lockup's own 8 px padding, less its
-   4 px negative margin. The cap is 11 px from about 365 px up. */
-.footer-brand .lockup {
-  --cap: min(11px, calc((100vw - 68px) / 27));
-  margin-left: calc(var(--s-1) * -1);
-}
-
-/* The footer uses the same three arrows in one colour. */
-:where(.footer-brand) .mark .mark-tile {
-  fill: currentColor;
-}
-
-:where(.footer-brand) .mark .mark-key.mark-solid {
-  fill: var(--band-bg);
 }
 
 .footer-nav ul {
@@ -2205,97 +2242,12 @@ pre code {
   font-weight: 500;
 }
 
+/* One line of fine print: independence and the trademark. */
 .footer-fine {
-  margin-top: var(--s-6);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--line);
-}
-
-.footer-fine p {
   max-width: 72ch;
   color: var(--text-3);
   font-size: var(--fs-small);
   line-height: 1.5;
-}
-
-.theme-control {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-2) var(--s-3);
-  margin: var(--s-6) 0 0;
-  padding: 0;
-  border: 0;
-  min-inline-size: 0;
-}
-
-.theme-control legend {
-  float: left;
-  margin-right: var(--s-3);
-  padding: 0;
-  color: var(--text-2);
-  font-size: 0.9375rem;
-}
-
-.segmented {
-  display: inline-flex;
-  border: 1.5px solid var(--control-edge);
-  border-radius: var(--r-control);
-  overflow: hidden;
-}
-
-.segmented label {
-  position: relative;
-  display: block;
-}
-
-.segmented label + label {
-  border-left: 1px solid var(--line);
-}
-
-.segmented input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.segmented span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 64px;
-  min-height: 44px;
-  padding: 0 var(--s-3);
-  color: var(--text-2);
-  font-weight: 500;
-  font-size: 0.9375rem;
-}
-
-.segmented label:hover span {
-  background: var(--hover);
-  color: var(--text-1);
-}
-
-.segmented input:checked + span {
-  background: var(--petrol-700);
-  box-shadow: inset 0 0 0 1.5px var(--selected-edge);
-  color: var(--dk-text-1);
-  font-weight: 600;
-}
-
-.segmented input:focus-visible + span {
-  outline: 2px solid var(--focus);
-  outline-offset: -4px;
-}
-
-/* The ring sits inside the petrol-700 slab, so it is always the light ring
-   (the light theme's petrol ring would be 1.6:1 there). */
-.segmented input:checked:focus-visible + span {
-  outline-color: var(--dk-focus);
 }
 
 /* 9. Utilities, motion, forced colours, print ============================= */
@@ -2352,50 +2304,19 @@ pre code {
     forced-color-adjust: auto;
   }
 
-  .btn-primary::before,
-  .btn-primary::after,
-  :is(.spine, .spine ~ .site-footer) .node::before {
-    display: none;
-  }
-
   .hl,
   .label-box {
     border: 1px solid CanvasText;
   }
 
-  /* Shapes drawn with background colours would become Canvas and vanish:
-     the hamburger, the selected states, the notice and disclosure icons. */
-  .burger,
-  .burger::before,
-  .burger::after {
-    forced-color-adjust: none;
-    background: CanvasText;
-  }
-
-  .drawer[open] .burger {
-    background: transparent;
-  }
-
-  .drawer-panel {
-    border-right: 1px solid CanvasText;
-  }
-
-  /* The logo: arrows and tile in CanvasText, the tile's arrow knocked out in
-     Canvas (the one-colour version). */
+  /* The logo in one colour: every arrow in CanvasText. */
   .mark {
     forced-color-adjust: none;
   }
 
-  .mark .mark-arrow.mark-solid {
+  .mark .mark-arrow.mark-solid,
+  .mark .mark-lit.mark-solid {
     fill: CanvasText;
-  }
-
-  .mark .mark-tile {
-    fill: CanvasText;
-  }
-
-  .mark .mark-key.mark-solid {
-    fill: Canvas;
   }
 
   /* The wordmark sets its own colour, so forced colours would keep its fills
@@ -2407,24 +2328,32 @@ pre code {
     fill: CanvasText;
   }
 
-  .nav-list a[aria-current="page"] {
-    border: 2px solid CanvasText;
-  }
-
-  .segmented input:checked + span {
-    forced-color-adjust: none;
-    background: Highlight;
-    color: HighlightText;
-  }
-
   .notice {
     border: 1px solid CanvasText;
   }
 
+  /* Shapes drawn with background colours would become Canvas and vanish: the
+     hamburger, the notice and disclosure icons. */
+  .burger,
+  .burger::before,
+  .burger::after,
   .notice::before,
   .disclosure > summary::after {
     forced-color-adjust: none;
     background-color: CanvasText;
+  }
+
+  .drawer[open] .burger {
+    background-color: transparent;
+  }
+
+  .drawer-panel {
+    border-right: 1px solid CanvasText;
+  }
+
+  .nav-list a[aria-current="page"],
+  .nav-download {
+    border: 2px solid CanvasText;
   }
 }
 
@@ -2439,9 +2368,7 @@ pre code {
   .app-bar,
   .status-strip,
   .sidebar,
-  .theme-control,
-  .hero-art,
-  .hero-strip {
+  .skip-link {
     display: none !important;
   }
 
@@ -2519,7 +2446,7 @@ pre code {
   fill: currentColor;
 }
 
-/* The picker: a small petrol box at the bottom right, above everything. It
+/* The picker: a small dark box at the bottom right, above everything. It
    folds to one 44 px button ("Logo: H"); open, it shows the variants as one
    segmented row, the name of the one under the pointer or focus, then the
    display font. */
@@ -2532,7 +2459,7 @@ pre code {
   flex-direction: column;
   max-width: calc(100vw - 2 * var(--s-4));
   background: var(--petrol-900);
-  border: 1px solid rgba(143, 195, 202, 0.32);
+  border: 1px solid rgba(233, 238, 237, 0.16);
   border-radius: var(--r-box);
   font-family: var(--font-ui);
   font-size: 0.9375rem;

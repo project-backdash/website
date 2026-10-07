@@ -1,15 +1,14 @@
 /*
- * info.css: Requirements, Community, Source and Privacy (inner pages).
+ * info.css: the help and reference pages (Requirements, Install, FAQ, Troubleshooting, the Practice and
+ * Replays guides, Source and Privacy).
  * Builds on site.css. Every colour here is a site.css token, so both themes work
  * and `node contrast.mjs` covers them. No new colour values.
  *
  * The shared pieces these pages started (.page-meta, .page-next, .data-kv,
  * .cell-note, .steps, .addr, the one-line note under a table, the 44 px link in
- * a cell) now live in site.css. What is left is used only by these four pages:
+ * a cell) now live in site.css. What is left is used only by these pages:
  *   section spacing  a slightly tighter rhythm for short sections
  *   .data-machines   the three-column test-laptop table on small phones
- *   .rule            the community rule on petrol (dark in both themes)
- *   .channel-list    hairline rows for the Discord and contact lines
  *   .contact-box     the contact line in a framed box (Source, Privacy)
  *   .not-yet         "(not public yet)" after an address
  */
@@ -48,63 +47,6 @@
 }
 
 /* ------------------------------------------------------------------------
-   Community: the rule, and the Discord and contact lines.
-   ------------------------------------------------------------------------ */
-
-/* The one community rule, on petrol in both themes. */
-.rule {
-  margin: var(--s-5) 0 var(--s-6);
-  padding: var(--s-5) var(--s-5) var(--s-6);
-  border-radius: var(--r-box);
-  background: var(--petrol-900);
-}
-
-@media (min-width: 720px) {
-  .rule {
-    padding: var(--s-6) var(--s-8) var(--s-8);
-  }
-}
-
-.rule-text {
-  margin: 0;
-  max-width: 34ch;
-  color: var(--text-1);
-  font-family: var(--font-display);
-  font-stretch: 112%;
-  font-weight: 700;
-  font-size: clamp(1.25rem, 1.096rem + 0.631vw, 1.5rem); /* 20 -> 24 px */
-  line-height: 1.35;
-  text-wrap: balance;
-}
-
-.rule-scope {
-  margin: var(--s-3) 0 0;
-  color: var(--text-2);
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-/* Discord and contact lines (their text comes from the shared partials). */
-.channel-list {
-  margin: var(--s-5) 0;
-  padding: 0;
-  border-top: 1px solid var(--line);
-  list-style: none;
-}
-
-.channel-list > li {
-  margin: 0;
-  padding: var(--s-3) 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.channel-list p {
-  margin: 0;
-  color: var(--text-1);
-  font-weight: 600;
-}
-
-/* ------------------------------------------------------------------------
    Source and Privacy
    ------------------------------------------------------------------------ */
 
@@ -133,11 +75,17 @@
   color: var(--text-2);
 }
 
-/* Forced colours drop the petrol and surface fills, so the rule box and the
-   contact box would lose their edges: draw them, as .notice does. */
+/* Forced colours drop the surface fill, so the contact box would lose its
+   edge: draw it, as .notice does. */
 @media (forced-colors: active) {
-  .rule,
   .contact-box {
     border: 1px solid CanvasText;
   }
+}
+
+/* A one-word title longer than a phone column ("Troubleshooting") shrinks to
+   fit instead of breaking mid-word. 13.6 is the title's width per pixel of
+   font size in PBD Display; 40 px is the column's side padding. */
+.page-head .h1-fit {
+  font-size: min(var(--fs-title), calc((100vw - 40px) / 13.6));
 }

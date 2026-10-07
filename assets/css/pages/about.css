@@ -1,0 +1,72 @@
+/* About: the story (a marked placeholder in preview builds until it is written) and the name. */
+
+.about > .section {
+  margin-top: var(--s-12);
+}
+
+.about > .page-head + .section {
+  margin-top: 0;
+}
+
+.about > .section > .label-tab {
+  margin-bottom: var(--s-5);
+}
+
+.about > .section > p {
+  max-width: 64ch;
+  margin-bottom: var(--s-3);
+}
+
+/* Placeholder for the story (src/_partials/preview-story.html, preview builds only): a dashed gold
+   frame, so it cannot be mistaken for finished copy. */
+.story-placeholder {
+  padding: var(--s-5) var(--s-5) var(--s-6);
+  border: 1px dashed rgba(244, 182, 63, 0.6);
+  border-radius: var(--r-slab);
+  background: rgba(11, 3, 4, 0.6);
+}
+
+.story-placeholder p {
+  margin: 0;
+  color: var(--text-2);
+}
+
+.story-placeholder .story-placeholder-tag {
+  margin: 0 0 var(--s-2);
+  color: var(--link);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* The input loop in the lever's colours: older arrows dark rose, the first cancel lit. */
+.name-figure {
+  margin: var(--s-5) 0 var(--s-5);
+}
+
+.name-figure .strip {
+  color: #74313D;
+}
+
+.name-figure .strip .lit {
+  color: #C96678;
+}
+
+.name-figure figcaption {
+  margin: var(--s-3) 0 0;
+  color: var(--text-3);
+  font-size: 0.9375rem;
+}
+
+@media (forced-colors: active) {
+  .story-placeholder {
+    border-color: CanvasText;
+  }
+
+  .name-figure .strip,
+  .name-figure .strip .lit {
+    color: CanvasText;
+  }
+}

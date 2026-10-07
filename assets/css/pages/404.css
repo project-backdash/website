@@ -1,23 +1,25 @@
-/* Page not found: one petrol band that fills the space between the app bar and the footer. */
+/* Page not found: one short column between the bar and the footer. */
 
 .nf {
   display: flex;
   flex-direction: column;
 }
 
-.nf-band {
-  flex: 1 0 auto;
+.nf-inner {
+  width: 100%;
+  max-width: calc(var(--read) + 2 * var(--s-4));
+  margin: 0 auto;
+  padding: var(--s-16) var(--s-4);
 }
 
-.nf-band .band-inner {
-  padding-top: var(--s-16);
-  padding-bottom: var(--s-16);
+.nf-tab {
+  margin-bottom: var(--s-5);
 }
 
 .nf-lead {
   max-width: 46ch;
-  margin: var(--s-5) 0 0;
-  color: var(--text-1);
+  margin: var(--s-3) 0 0;
+  color: var(--text-2);
   font-size: var(--fs-lead);
   line-height: 1.5;
 }

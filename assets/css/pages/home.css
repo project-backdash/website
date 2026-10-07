@@ -1,58 +1,116 @@
-/* Home page only. Everything else (bands, spine, hero, label box, features,
-   download block) is in site.css; this file adds the status band's
-   "Not yet" line, the test-PC line and the animated hero. */
+/* Home: one centred column that reads like a link page. From the top: the stacked mark and the
+   wordmark (the h1), one line of pitch, the animated lever as the hero, the one download block and the
+   accounts under it, the feature rows, the compatibility line, then the shared footer's links.
+   The red field behind it is resurrection.css's .field; this file only centres it. */
 
-/* "Not yet": one plain sentence, same measure as the lead. */
-.notyet {
-  max-width: 58ch;
+.home {
+  --home-col: 560px;
+  width: 100%;
+  max-width: calc(var(--home-col) + 2 * var(--s-4));
+  margin: 0 auto;
+  padding: var(--s-12) var(--s-4) var(--s-8);
+}
+
+@media (min-width: 720px) {
+  .home {
+    padding-top: var(--s-16);
+  }
+}
+
+/* The launcher's field is centred on its emblem at 64 % across; here it is centred on the column:
+   a field 1.6 times the window wide, shifted so that its 64 % point lands mid-window. */
+.home-page.field::before {
+  background-size: 160% 100%;
+  background-position: 87.33% 0;
+}
+
+/* ---- Brand: stacked mark, wordmark, pitch --------------------------------------------- */
+
+.home-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Two backs over the down-back, every arrow the same size: the avatar form of the mark. */
+.home-mark {
+  display: block;
+  width: 60px;
+  height: auto;
+  aspect-ratio: 51 / 44.799;
+  margin: 0 0 var(--s-6);
+}
+
+.home-mark .mark-arrow {
+  fill: var(--text-1);
+}
+
+.home-mark .mark-lit {
+  fill: var(--mark-lit);
+}
+
+/* The wordmark is the h1. Its cap is set so the full name fits a phone column. */
+.home-title {
+  --cap: min(24px, calc((100vw - 40px) / 19.2));
+  margin: 0;
+  line-height: 0;
+}
+
+.home-title .wordmark {
+  display: block;
+  width: auto;
+  height: var(--cap);
   color: var(--text-1);
 }
 
-/* One column of features (below 880 px): keep the lines readable. */
-.feature p {
-  max-width: 60ch;
-}
-
-/* The test-PC line: quieter than the lead, same measure. */
-.test-pcs {
-  max-width: 58ch;
+/* The pitch names the game in full: one sentence per line, each balanced when a phone wraps it. The
+   name is an inline block, so it moves to the next line whole, and only wraps inside itself when it is
+   wider than the column on its own (enlarged text on a narrow phone). */
+.home-pitch {
+  margin: var(--s-5) 0 0;
   color: var(--text-2);
-  font-size: 1rem;
+  font-size: var(--fs-lead);
   line-height: 1.5;
 }
 
-/* The animated hero (the hero-stick partial, drawn and played by
-   assets/js/stick.js): a top-down lever panel (a Japanese ball-top lever,
-   drawn without its gate, and the four nearest buttons) with its own input
-   log of PBD block arrows. The hero's bottom padding holds the Pause / Play row.
-   Colours are quiet, so the drawing never competes with the copy: the drawing,
-   the lever (ball, shaft, dust washer) and older inputs in the panel line
-   #4E8790 (3.5:1 on petrol-900), the newest input in petrol-300, never
-   crimson. The thin cuts that set the ball off the shaft and the washer
-   (and the shaft off the washer) are the band's own colour. The logo's lit
-   tile in the app bar is the page's one lit element; the headline box stays
-   the one bright thing in the hero. */
-.band-hero .band-inner {
-  padding-bottom: var(--s-16);
+.pitch-line {
+  display: block;
+  text-wrap: balance;
 }
 
-/* Phones and tablets: under the copy, never over the text, and quieter. */
+.pitch-name {
+  display: inline-block;
+}
+
+/* ---- The animated hero (hero-stick partial, drawn and played by assets/js/stick.js) ---------
+   A top-down lever panel (a ball-top lever without its gate, and the four nearest buttons) with
+   its input log of block arrows. The colours are the launcher's own lever palette: the drawing
+   and older inputs in a dark rose, the newest input in a lighter rose, and the thin cuts that set
+   the ball off the shaft and the washer in a near-black red, as on the launcher's main menu.
+   Never crimson: the logo's down-back is the one crimson mark at the top of the page. */
+
+.home-hero {
+  display: flex;
+  justify-content: center;
+  margin: var(--s-10) 0 0;
+  padding-bottom: var(--s-12);   /* room for Pause / Play, which hangs under the drawing */
+}
+
 .hero-stick {
   position: relative;
-  width: min(100%, 400px);
-  margin-top: var(--s-8);
+  width: min(100%, 440px);
 }
 
 .stick {
-  --stick-line: #4E8790;
-  --stick-lit: var(--petrol-300);
-  --stick-ground: var(--band-bg, var(--petrol-900));
+  --stick-line: #74313D;
+  --stick-lit: #C96678;
+  --stick-ground: #21090E;
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 163 / 120;
   overflow: visible;
-  opacity: 0.55;
 }
 
 .stick-ring {
@@ -70,7 +128,8 @@
   stroke: var(--stick-line);
 }
 
-.stick-shaft {
+.stick-shaft,
+.stick-smear {
   fill: none;
   stroke: var(--stick-line);
   stroke-linecap: round;
@@ -84,12 +143,6 @@
 line.stick-cut {
   fill: none;
   stroke: var(--stick-ground);
-  stroke-linecap: round;
-}
-
-.stick-smear {
-  fill: none;
-  stroke: var(--stick-line);
   stroke-linecap: round;
 }
 
@@ -107,12 +160,10 @@ line.stick-cut {
   stroke: none;
 }
 
-/* Pause / Play: a small text button, shown by stick.js (without JavaScript
-   nothing moves, so there is nothing to pause). It hangs below the drawing,
-   in the band's bottom padding, so showing it moves nothing. Its right edge
-   lines up with the newest arrow in the log; it is at least 44 x 44 px, with
-   the label kept at its right edge, so "Pause" and "Play" end in the same
-   place. */
+/* Pause / Play: a small quiet word under the log's right end, shown by stick.js (without
+   JavaScript nothing moves, so there is nothing to pause). It hangs in the padding below the
+   drawing, so showing it moves nothing; 44 x 44 px to hit, label at the right edge so "Pause"
+   and "Play" end in the same place. */
 .stick-toggle {
   position: absolute;
   top: 100%;
@@ -121,47 +172,229 @@ line.stick-cut {
   min-height: 44px;
   margin: 0;
   padding: 0 2px;
-  text-align: right;
   border: 0;
   background: none;
-  color: var(--text-2);
+  color: var(--text-3);
   font: inherit;
-  font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
   line-height: 1.2;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  text-align: right;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
 .stick-toggle:hover {
   color: var(--text-1);
-  text-decoration-thickness: 2px;
 }
 
 .stick-toggle[hidden] {
   display: none;
 }
 
-/* Wide screens: at the right of the copy, 60 px past the end of the
-   headline box, centred on the copy block (the band's
-   top and bottom padding are equal here), never leaving the window. Up to
-   400 px wide, so the drawing is never taller than the copy block (294 px
-   at 400). */
-@media (min-width: 1024px) {
-  .hero-stick {
-    position: absolute;
-    top: 50%;
-    left: 648px;
-    width: clamp(240px, calc(50vw - 296px), 400px);
-    margin: 0;
-    transform: translateY(-50%);
+/* ---- Download: the page's one big block. ---------------------------------------------------
+   Its size lives here and its look in site.css's .btn-primary: while it is disabled it takes the
+   launcher's disabled look (faint edge and fill, grey label and arrow, never crimson), so it does not
+   read as a live button; once a release turns it into a link without .is-disabled, the same rules give
+   it the crimson primary with an ink label and arrow. */
+
+.home-download {
+  margin: 0;
+}
+
+.home-download .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  min-height: 76px;
+  padding: var(--s-4) var(--s-5);
+  font-size: clamp(1.1875rem, 0.95rem + 0.9vw, 1.375rem);   /* 19 -> 22 px: large text, with the bold the one-weight face draws as is */
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+}
+
+.dl-arrow {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+/* The label over its state, both left-aligned beside the arrow. */
+.dl-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* The state: small capitals in Barlow (PBD Display never goes below 18 px), gold as in the launcher. */
+.dl-state {
+  flex: none;
+  color: var(--link);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* ---- Accounts: the shared round icons (resurrection.css), centred under the download block --- */
+
+.home-social {
+  margin: var(--s-6) 0 0;
+}
+
+.home-social .social-links {
+  justify-content: center;
+  gap: var(--s-3);
+  margin: 0;
+}
+
+/* ---- Features: ruled rows like the launcher's menu, each with a small drawn icon ---------- */
+
+.home-features {
+  margin: var(--s-16) 0 0;
+}
+
+.home-features .label-tab {
+  margin-bottom: var(--s-2);
+}
+
+.feature-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(233, 238, 237, 0.08);
+}
+
+.feature-rows > li + li {
+  margin-top: 0;
+}
+
+.feature-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0 var(--s-4);
+  padding: var(--s-5) var(--s-1);
+  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
+}
+
+.feature-icon {
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  fill: none;
+  stroke: #C96678;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.feature-title {
+  margin: 0;
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.feature-text p {
+  margin: var(--s-1) 0 0;
+  color: var(--text-2);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Practice lists its parts as small chips rather than a long sentence. A part the Practice guide
+   does not have yet is quieter and carries a small gold "Soon", the Coming soon pill's style. */
+.feature-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-chips > li {
+  margin: 0;
+  padding: 3px 9px 4px;
+  border: 1px solid rgba(233, 238, 237, 0.16);
+  border-radius: var(--r-slab);
+  background: rgba(11, 3, 4, 0.5);
+  color: var(--text-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.feature-chips > li.is-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  border-style: dashed;
+  color: var(--text-3);
+}
+
+.chip-soon {
+  padding: 2px 5px;
+  border: 1px solid rgba(244, 182, 63, 0.4);
+  border-radius: 3px;
+  background: #0B0304;
+  color: #F4B63F;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.feature-row.is-soon .feature-title,
+.feature-row.is-soon .feature-icon {
+  opacity: 0.7;
+}
+
+.feature-row .pill {
+  align-self: center;
+}
+
+/* Phones: the "Coming soon" pill drops under the text instead of squeezing it, and the titles step
+   down to 18 px (PBD Display's smallest size) so each keeps to one line at 360 px. */
+@media (max-width: 419.98px) {
+  .feature-row {
+    grid-template-columns: 24px minmax(0, 1fr);
   }
 
-  .stick {
-    opacity: 1;
+  .feature-title {
+    font-size: 1.125rem;
+    letter-spacing: 0.06em;
   }
+
+  .feature-row .pill {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: var(--s-3);
+  }
+}
+
+/* ---- The compatibility line, quiet, under the rows ---------------------------------------- */
+
+.home-compat {
+  max-width: none;
+  margin: var(--s-10) 0 0;
+  color: var(--text-3);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-align: center;
+  text-wrap: balance;
 }
 
 @media (forced-colors: active) {
@@ -170,12 +403,31 @@ line.stick-cut {
     --stick-line: GrayText;
     --stick-lit: CanvasText;
     --stick-ground: Canvas;
-    opacity: 1;
+  }
+
+  .home-mark .mark-arrow,
+  .home-mark .mark-lit,
+  .dl-arrow {
+    fill: CanvasText;
+  }
+
+  .feature-icon {
+    stroke: CanvasText;
+  }
+
+  .home-download .btn-primary.is-disabled {
+    border: 1px solid GrayText;
+    color: GrayText;
+  }
+
+  .chip-soon {
+    border-color: CanvasText;
+    color: CanvasText;
   }
 }
 
 @media print {
-  .hero-stick {
+  .home-hero {
     display: none !important;
   }
 }

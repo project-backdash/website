@@ -1,694 +1,108 @@
-/* How it works (/how-it-works/): page-only styles on the v2.4 system.
-   Layout comes from site.css (inner page, sidebar, .section, .dl, .notice, tables,
-   figures, details). This file draws the page's own figures: the rollback storyboard,
-   the connection-line drawing, the connection diagram, the latency bars and the
-   input strip under "Why the name".
+/* How it works: the three parts, rollback and the connection, the PC checklist and every link.
+   Builds on site.css and resurrection.css (.label-tab, .link-rows). */
 
-   Diagram colours: one accent, petrol, for "our netplay" (re-simulated frames, the
-   direct link, the online latency bars). Everything else is text and neutral tones.
-   No crimson here: it belongs to the primary button and the logo's lit tile. */
-
-/* Page tokens (dark default) ============================================== */
-
-.hiw {
-  --hiw-accent: #8FC3CA;       /* petrol-300: re-sim edge, direct link, online bars */
-  --hiw-accent-fill: #14525F;  /* petrol-700: re-simulated frame */
-  --hiw-cell: #283235;         /* a frame whose input is known */
-  --hiw-edge: #8A9C9C;         /* text-3: cell edges, node edges, axis */
-  --hiw-faint: rgba(233, 238, 237, 0.2);  /* future frames (decorative) */
-  --hiw-now: rgba(233, 238, 237, 0.06);   /* the column on screen now (decorative) */
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .hiw {
-    --hiw-accent: #14525F;
-    --hiw-accent-fill: #8FC3CA;  /* petrol-300: text-1 on it 8.59:1 */
-    --hiw-cell: #DCE3E2;
-    --hiw-edge: #5A6B6E;
-    --hiw-faint: rgba(19, 32, 36, 0.2);
-    --hiw-now: rgba(19, 32, 36, 0.06);
-  }
-}
-
-:root[data-theme="light"] .hiw {
-  --hiw-accent: #14525F;
-  --hiw-accent-fill: #8FC3CA;
-  --hiw-cell: #DCE3E2;
-  --hiw-edge: #5A6B6E;
-  --hiw-faint: rgba(19, 32, 36, 0.2);
-  --hiw-now: rgba(19, 32, 36, 0.06);
-}
-
-/* On this page ============================================================ */
-
-.hiw-toc {
-  margin-top: var(--s-6);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--line);
-}
-
-.hiw-toc-title {
-  margin: 0 0 var(--s-1);
-  color: var(--text-2);
-  font-weight: 600;
-  font-size: 0.9375rem;
-}
-
-.hiw-toc .links {
-  gap: 0 var(--s-5);
-}
-
-/* Rollback storyboard: five steps, each text plus one strip of frames ======= */
-
-.rb-steps {
-  container-type: inline-size;
-  margin: var(--s-6) 0 var(--s-5);
-  padding: 0;
-  list-style: none;
-  counter-reset: rb;
-}
-
-.rb-steps > li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--s-3);
-  margin: 0;
-  padding: var(--s-5) 0;
-  border-top: 1px solid var(--line);
-  counter-increment: rb;
-}
-
-.rb-steps > li:last-child {
-  border-bottom: 1px solid var(--line);
-}
-
-.rb-text h3 {
-  margin: 0 0 var(--s-1);
-}
-
-.rb-text h3::before {
-  content: counter(rb) ".";
-  margin-right: 0.45em;
-  color: var(--text-3);
-  font-variant-numeric: tabular-nums;
-}
-
-.rb-text p {
-  margin: 0;
-  color: var(--text-2);
-}
-
-.rb-strip {
-  display: block;
-  width: 100%;
-  max-width: 352px;
-  height: auto;
-  overflow: visible;
-}
-
-@container (min-width: 640px) {
-  .rb-steps > li {
-    grid-template-columns: minmax(0, 1fr) 352px;
-    align-items: start;
-    gap: var(--s-6);
-  }
-}
-
-/* SVG parts, shared by the strips and the key */
-.rb-strip text,
-.rb-key text {
-  font-family: var(--font-ui);
-}
-
-.rb-num {
-  fill: var(--text-3);
-  font-size: 15px;
-  font-variant-numeric: tabular-nums;
-  text-anchor: middle;
-  dominant-baseline: central;
-}
-
-.rb-num-now {
-  fill: var(--text-1);
-  font-weight: 700;
-}
-
-.rb-who {
-  fill: var(--text-2);
-  font-size: 16px;
-  font-weight: 600;
-  dominant-baseline: central;
-}
-
-.rb-cell {
-  stroke-width: 1.5;
-}
-
-.rb-done {
-  fill: var(--hiw-cell);
-  stroke: var(--hiw-edge);
-}
-
-.rb-future {
-  fill: none;
-  stroke: var(--hiw-faint);
-  stroke-width: 1;
-}
-
-.rb-guess {
-  fill: none;
-  stroke: var(--text-2);
-  stroke-dasharray: 4 3;
-}
-
-.rb-wrong {
-  fill: var(--hiw-cell);
-  stroke: var(--text-1);
-  stroke-width: 3;
-}
-
-.rb-resim {
-  fill: var(--hiw-accent-fill);
-  stroke: var(--hiw-accent);
-  stroke-width: 2.5;
-}
-
-.rb-resim.rb-guess {
-  stroke-dasharray: 4 3;
-}
-
-.rb-q {
-  fill: var(--text-2);
-  font-size: 20px;
-  font-weight: 700;
-  text-anchor: middle;
-  dominant-baseline: central;
-}
-
-.rb-q-sm {
-  font-size: 14px;
-}
-
-/* A predicted frame that is also re-simulated: the "?" sits on petrol, so it
-   takes text-1 (text-2 on petrol-700 is only 4.50:1). */
-.rb-resim.rb-guess + .rb-q {
-  fill: var(--text-1);
-}
-
-.rb-you {
-  fill: var(--text-1);
-}
-
-.rb-them {
-  fill: none;
-  stroke: var(--text-1);
-  stroke-width: 2.5;
-}
-
-.rb-now {
-  fill: var(--hiw-now);
-}
-
-.rb-tick {
-  fill: var(--text-1);
-}
-
-.rb-arrow {
-  fill: none;
-  stroke: var(--text-1);
-  stroke-width: 2;
-}
-
-.rb-head {
-  fill: var(--text-1);
-}
-
-.rb-note {
-  fill: var(--text-1);
-  font-size: 15px;
-  font-weight: 600;
-  dominant-baseline: central;
-}
-
-/* Key under the storyboard */
-.rb-key {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-3) var(--s-6);
-  margin: 0;
-  padding: 0;
-  color: var(--text-2);
-  font-size: var(--fs-small);
-  line-height: 1.4;
-  list-style: none;
-}
-
-.rb-key li {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  margin: 0;
-}
-
-.rb-key svg {
-  flex: none;
-  width: 24px;
-  height: 24px;
-  overflow: visible;
-}
-
-/* Tested sessions: keep "About 145 ms" on one line where there is room; the
-   header cells wrap (site.css .data .num would keep them on one line). */
-.tested-table tbody th {
-  white-space: nowrap;
-}
-
-.tested-table thead th.num {
-  white-space: normal;
-}
-
-@media (max-width: 479.98px) {
-  .tested-table th,
-  .tested-table td,
-  .tested-table caption {
-    padding-inline: 10px;
-  }
-
-  .tested-table tbody th {
-    white-space: normal;
-  }
-}
-
-/* Input delay and limits: term rows (site.css .dl), terms a little wider */
-@media (min-width: 720px) {
-  .delay-dl > div {
-    grid-template-columns: 8rem minmax(0, 1fr);
-  }
-
-  .limits-dl > div {
-    grid-template-columns: 10rem minmax(0, 1fr);
-  }
-}
-
-.delay-dl dt {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Connection line: a drawing on the dark game surface, in both themes ======= */
-
-.conn-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-1) var(--s-5);
-  width: fit-content;
-  max-width: 100%;
-  margin: 0;
-  padding: 10px var(--s-4);
-  border: 1px solid var(--line);
-  border-radius: var(--r-control);
-  background: var(--graphite-900);
-  font-size: 1rem;
-  line-height: 1.4;
-  font-variant-numeric: tabular-nums;
-}
-
-.conn-item {
-  white-space: nowrap;
-}
-
-.conn-k {
-  color: var(--text-2);
-}
-
-.conn-v {
-  color: var(--text-1);
-  font-weight: 600;
-}
-
-/* How two PCs connect ====================================================== */
-
-.hiw-steps > li + li {
-  margin-top: var(--s-2);
-}
-
-.net-diagram {
-  display: block;
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  overflow: visible;
-}
-
-.net-diagram text {
-  font-family: var(--font-ui);
-  text-anchor: middle;
-  dominant-baseline: central;
-}
-
-.net-node {
-  fill: var(--hiw-cell);
-  stroke: var(--hiw-edge);
-  stroke-width: 1.5;
-}
-
-.net-ext {
-  fill: none;
-  stroke-dasharray: 5 4;
-}
-
-.net-title {
-  fill: var(--text-1);
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.net-sub,
-.net-small {
-  fill: var(--text-2);
-  font-size: 15px;
-}
-
-.net-lookup {
-  fill: none;
-  stroke: var(--hiw-edge);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-}
-
-.net-code {
-  fill: none;
-  stroke: var(--text-2);
-  stroke-width: 2;
-  stroke-dasharray: 1 5;
-  stroke-linecap: round;
-}
-
-.net-wire {
-  fill: none;
-  stroke: var(--hiw-edge);
-  stroke-width: 1.5;
-}
-
-.net-link {
-  fill: none;
-  stroke: var(--hiw-accent);
-  stroke-width: 4;
-}
-
-.net-link-label {
-  fill: var(--text-1);
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* Latency: bars on one scale (0 to 7 game frames), notes beside each bar ===== */
-
-.lat-figure {
-  margin: var(--s-8) 0 var(--s-6);
-}
-
-.lat-group + .lat-group {
-  margin-top: var(--s-6);
-  padding-top: var(--s-5);
-  border-top: 1px solid var(--line);
-}
-
-.lat-group-title {
-  margin: 0 0 var(--s-3);
-  font-size: 1rem;
+.hiw > .section {
+  margin-top: var(--s-12);
 }
 
-.lat-group-ref .lat-group-title {
-  margin-bottom: var(--s-1);
+.hiw > .section > .label-tab {
+  margin-bottom: var(--s-5);
 }
 
-.lat-group-note {
-  margin: 0 0 var(--s-3);
-  color: var(--text-2);
-  font-size: 0.9375rem;
-  line-height: 1.45;
+.hiw > .section > p {
+  max-width: 64ch;
+  margin-bottom: var(--s-3);
 }
 
-.lat-rows {
+/* The three parts: numbered rows, the number in PBD Display beside the name. */
+.parts {
   margin: 0;
   padding: 0;
   list-style: none;
+  counter-reset: part;
+  border-top: 1px solid rgba(233, 238, 237, 0.08);
 }
 
-.lat-rows > li + li {
-  margin-top: var(--s-5);
-}
-
-.lat-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0 var(--s-3);
-  margin: 0 0 6px;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
-.lat-name {
-  color: var(--text-1);
-  font-weight: 600;
-}
-
-.lat-value {
-  color: var(--text-1);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.lat-row-ref .lat-name,
-.lat-row-ref .lat-value {
-  color: var(--text-2);
-}
-
-.lat-track {
-  display: block;
-  height: 14px;
-}
-
-.lat-bar {
-  display: block;
-  width: calc(var(--v) / 116.667 * 100%);   /* 7 game frames = 116.667 ms */
-  height: 100%;
-  border-radius: 0 2px 2px 0;
-  background: var(--hiw-accent);
-}
-
-/* Reference rows: hollow and neutral, never the online colour. */
-.lat-row-ref .lat-bar {
-  border: 1.5px solid var(--hiw-edge);
-  background: transparent;
-}
-
-.lat-note {
-  margin: 6px 0 0;
-  color: var(--text-2);
-  font-size: var(--fs-small);
-  line-height: 1.45;
-}
-
-/* The frame ruler under the bars */
-.lat-axis {
-  margin-top: var(--s-6);
-}
-
-.lat-ticks {
+.parts > li {
+  counter-increment: part;
   position: relative;
-  height: 26px;
   margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--hiw-edge);
-  list-style: none;
+  padding: var(--s-5) 0 var(--s-5) 52px;
+  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
 }
 
-.lat-ticks > li {
+.parts > li::before {
+  content: counter(part);
   position: absolute;
-  top: 0;
-  left: calc(var(--f) / 7 * 100%);
-  margin: 0;
-  padding-top: 8px;
-  color: var(--text-3);
-  font-size: var(--fs-small);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  transform: translateX(-50%);
+  left: 4px;
+  top: var(--s-5);
+  color: #C96678;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.1;
 }
 
-.lat-ticks > li::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 1px;
-  height: 6px;
-  background: var(--hiw-edge);
-}
-
-.lat-ticks > li:first-child {
-  transform: none;
-}
-
-.lat-ticks > li:first-child::before {
-  left: 0;
-}
-
-.lat-ticks > li:last-child {
-  transform: translateX(-100%);
-}
-
-.lat-ticks > li:last-child::before {
-  left: auto;
-  right: 0;
-}
-
-.lat-axis-label {
-  margin: var(--s-1) 0 0;
-  color: var(--text-3);
-  font-size: var(--fs-small);
-  line-height: 1.43;
-}
-
-/* The table under the bars */
-.lat-detail {
-  display: block;
-  color: var(--text-2);
+.part-name {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-display);
   font-weight: 400;
-  font-size: var(--fs-small);
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-transform: uppercase;
 }
 
-.lat-table sup {
-  line-height: 0;
+.parts p {
+  margin: 0;
+  color: var(--text-2);
 }
 
-/* Footnote links: a 28 px hit area without changing the line layout. */
-.lat-table sup a {
-  position: relative;
-  padding: 0 1px;
+/* The PC checklist: label left, value right, ruled like the launcher's settings rows. */
+.needs {
+  margin: 0;
+  border-top: 1px solid rgba(233, 238, 237, 0.08);
 }
 
-.lat-table sup a::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 28px;
-  height: 28px;
-  transform: translate(-50%, -50%);
-}
-
-/* Phones: Condition and Result stay on screen; n and Date scroll inside the box. */
-@media (max-width: 599.98px) {
-  .lat-table {
-    min-width: 0;
-    width: max-content;
-  }
-
-  .lat-table tbody th[scope="row"] {
-    width: 11rem;
-    min-width: 11rem;
-  }
-
-  .lat-table td:last-child {
-    min-width: 7.5rem;
-  }
-}
-
-/* Smallest phones: a narrower Condition column, and the Result details may wrap,
-   so Result still fits beside it. */
-@media (max-width: 399.98px) {
-  .lat-table tbody th[scope="row"] {
-    width: 8rem;
-    min-width: 8rem;
-  }
-
-  .lat-table tbody td:nth-child(2) {
-    min-width: 6rem;
-    white-space: normal;
-  }
-}
-
-/* Under 380 px Condition and Result filled the box (280 px wide at 320) and n
-   ended at its edge, so nothing showed that the table scrolls on (phones draw
-   no scrollbar). Both get narrower: n then shows in full and the Date column
-   is cut at the box's edge, which says the table goes on. From 380 px the
-   Date column's first characters show without this. */
-@media (max-width: 379.98px) {
-  .lat-table tbody th[scope="row"] {
-    width: 7rem;
-    min-width: 7rem;
-  }
-
-  .lat-table tbody td:nth-child(2) {
-    width: 6.5rem;
-  }
-}
-
-/* Why the name: the input strip with its notation under each arrow ========= */
-
-.name-figure {
-  margin: var(--s-6) 0;
-}
-
-.name-strip {
-  max-width: 376px;
-}
-
-.name-keys {
+.needs > div {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: calc(8 / 376 * 100%);
-  margin: var(--s-2) 0 0;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 0 var(--s-4);
+  padding: var(--s-3) var(--s-1);
+  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
+}
+
+.needs dt {
   color: var(--text-3);
-  font-size: var(--fs-small);
-  line-height: 1.2;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  line-height: 1.9;
+  text-transform: uppercase;
 }
 
-.name-keys > span {
-  display: flex;
-  justify-content: center;
-  white-space: nowrap;
+.needs dd {
+  margin: 0;
+  color: var(--text-1);
 }
 
-/* Small phones: the diagrams scale down with the screen, so their text is set
-   larger in SVG units to stay about 13.5 px on screen. */
-@media (max-width: 399.98px) {
-  .rb-num,
-  .rb-note {
-    font-size: 17px;
-  }
-
-  .rb-who {
-    font-size: 18px;
-  }
-
-  .net-sub,
-  .net-small {
-    font-size: 17px;
-  }
-
-  .net-title {
-    font-size: 18px;
+@media (max-width: 419.98px) {
+  .needs > div {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* Forced colours: keep the bars and the hollow reference bars visible. */
-@media (forced-colors: active) {
-  .lat-bar {
-    forced-color-adjust: none;
-    background: CanvasText;
-  }
+/* Link groups: a small capitals heading over each run of link rows. */
+.links-group {
+  margin: var(--s-8) 0 var(--s-2);
+  color: var(--text-3);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
 
-  .lat-row-ref .lat-bar {
-    border-color: CanvasText;
-    background: Canvas;
-  }
-
-  .conn-strip {
-    border-color: CanvasText;
-  }
+.hiw .label-tab + .links-group {
+  margin-top: 0;
 }

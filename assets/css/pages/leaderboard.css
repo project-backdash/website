@@ -1,0 +1,14 @@
+/* The leaderboard page (coming soon): the state, the title and one sentence, with room under them so
+   the footer does not ride up into a short page. */
+
+.leaderboard {
+  min-height: 36vh;
+}
+
+.lb-state {
+  margin: 0 0 var(--s-4);
+}
+
+.leaderboard .page-head {
+  margin: 0;
+}
