@@ -4,7 +4,7 @@
  * A top-down lever panel (a Japanese ball-top lever, drawn without its gate, and the four buttons nearest to
  * it, 1 2 over 3 4) plays the dash-cancel rhythm: back, neutral, back, down-back. Seen from directly above, the
  * ball hides the shaft in neutral; pushed, the ball moves off centre, a short piece of the shaft shows between
- * the mounting hole and the ball, and the dust washer at its base slides a fifth of the ball's travel. The
+ * the mounting hole and the ball, and the dust washer at its base stays put on the panel. The
  * input log under the panel shows each input as the game reads it, as a PBD block arrow
  * (docs/brand/assets/explore/block-arrows/), newest at the right and lit in the lighter rose of the
  * launcher's lever palette (pages/home.css; never crimson: the logo's down-back is the page's one
@@ -74,8 +74,8 @@
   //   buttons); d = the straight throw of the ball (a diagonal goes to the square gate's corner: d on each
   //   axis, so sqrt(2) d in distance; the gate itself is not drawn); w = the line width of
   //   the washer's ring; washer = the dust washer's radius (a flat disc a little larger
-  //   than the hole, drawn as a ring like the buttons, hidden under the ball in neutral), slide = its travel
-  //   as a share of the ball's; shaft = the shaft's width, drawn as a rounded bar from the mounting hole to
+  //   than the hole, drawn as a ring like the buttons, hidden under the ball in neutral and fixed on the panel
+  //   when the lever moves); shaft = the shaft's width, drawn as a rounded bar from the mounting hole to
   //   the ball's centre; cut = the thin gap in the ground colour that sets the ball off the shaft and the
   //   washer (a flat drawing has one colour for all of them). With d - r = 5 mm a short piece of the shaft
   //   shows on a straight push and more of it on a diagonal. The lever sits 72 mm left of button 1 (Sega
@@ -86,7 +86,7 @@
   //   left edge), so nothing crosses the viewBox's left edge.
   var G = {
     vb: [-113, -31, 163, 120],
-    lever: { x: -72, y: 24.5, r: 16, d: 21, w: 1.2, washer: 11.5, slide: 0.2, shaft: 6.5, cut: 1.2 },
+    lever: { x: -72, y: 24.5, r: 16, d: 21, w: 1.2, washer: 11.5, shaft: 6.5, cut: 1.2 },
     buttons: [[0, 0], [33, -14], [-7, 37], [26, 24]],
     btnR: 15,
     btnW: 1.2,
@@ -195,7 +195,6 @@
     }
     var out = {
       ball: [lv.x + x * lv.d, lv.y + y * lv.d],
-      washer: [lv.x + x * lv.d * lv.slide, lv.y + y * lv.d * lv.slide],
       log: []
     };
     // Entry i stands where the newer entries' arrivals have pushed it, one pitch each.
@@ -254,7 +253,7 @@
     });
     // The lever from the panel up: the dust washer, the shaft (with its cut), the ball's cut, the ball. The shaft runs from
     // the mounting hole to the ball's centre, under the ball (in neutral the ball hides it).
-    var washer = el('circle', { 'class': 'stick-washer', cx: lv.x, cy: lv.y, r: lv.washer, 'stroke-width': lv.w }, svg);
+    el('circle', { 'class': 'stick-washer', cx: lv.x, cy: lv.y, r: lv.washer, 'stroke-width': lv.w }, svg);
     var shaftCut = el('line', { 'class': 'stick-cut', x1: lv.x, y1: lv.y, x2: lv.x, y2: lv.y, 'stroke-width': lv.shaft + 2 * lv.cut }, svg);
     var shaft = el('line', { 'class': 'stick-shaft', x1: lv.x, y1: lv.y, x2: lv.x, y2: lv.y, 'stroke-width': lv.shaft }, svg);
     var ballCut = el('circle', { 'class': 'stick-cut', cx: lv.x, cy: lv.y, r: lv.r + lv.cut }, svg);
@@ -266,14 +265,13 @@
       var g = el('g', { 'class': 'stick-slot', display: 'none' }, log);
       slots.push({ g: g, path: el('path', { 'class': 'stick-block' }, g) });
     }
-    return { washer: washer, shaftCut: shaftCut, shaft: shaft, ballCut: ballCut, ball: ball, slots: slots };
+    return { shaftCut: shaftCut, shaft: shaft, ballCut: ballCut, ball: ball, slots: slots };
   }
 
   function render(t, settled) {
     var lg = G.log, p = pose(t, settled), bx = r3(p.ball[0]), by = r3(p.ball[1]);
     put(inst.ball, 'cx', bx); put(inst.ball, 'cy', by);
     put(inst.ballCut, 'cx', bx); put(inst.ballCut, 'cy', by);
-    put(inst.washer, 'cx', r3(p.washer[0])); put(inst.washer, 'cy', r3(p.washer[1]));
     [inst.shaftCut, inst.shaft].forEach(function (ln) { put(ln, 'x2', bx); put(ln, 'y2', by); });
     inst.slots.forEach(function (sl, i) {
       var en = p.log[i];
