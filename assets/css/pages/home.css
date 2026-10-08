@@ -128,8 +128,7 @@
   stroke: var(--stick-line);
 }
 
-.stick-shaft,
-.stick-smear {
+.stick-shaft {
   fill: none;
   stroke: var(--stick-line);
   stroke-linecap: round;

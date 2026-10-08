@@ -20,18 +20,23 @@
  * Behaviour
  *  - Starts when at least half of the drawing is on screen: the idle, the one-time lead-in (back, neutral,
  *    back), then the loop, over and over, for as long as it is on screen.
- *  - The Pause / Play button under the drawing stops and restarts it on the frame that is showing
- *    (WCAG 2.2.2: the motion runs longer than 5 s, so it can be paused).
+ *  - The Pause / Play button under the drawing stops it once the movement in progress has settled, and
+ *    restarts it from there (WCAG 2.2.2: the motion runs longer than 5 s, so it can be paused).
  *  - Pauses by itself when the drawing is fully off screen or the tab is hidden, and goes on from the same
  *    frame when it is back (unless the visitor paused it).
  *  - Reduced motion: the rest pose (the lever on down-back, the log ending in the lit down-back) and no
  *    clock; the button says Play, and plays on request.
  *  - No script: the static SVG in the partial is that rest pose, and the button stays hidden.
  *
- * Clock: requestAnimationFrame, frame = start frame + round(elapsed / 16.667 ms). The frame number comes
- * from the timestamps, never from counting callbacks, so the timing is right on 60, 120 or 144 Hz screens
- * and stays in time on a slow one. A frame is a pure function of its number, and the drawing changes only
- * when the number changes.
+ * Motion: the inputs are digital, but the lever moves as a hand moves it. Every input change starts a
+ * critically damped spring step toward the new direction (it leaves and arrives at rest and never
+ * overshoots), and a quick back, down-back, back flick blends into one curve. The input log scrolls the same
+ * way, and its newest arrow fades in where it lands.
+ *
+ * Clock: requestAnimationFrame timestamps, never a count of callbacks, give the time in frames (fractions
+ * included), and a pose is a pure function of that time, so the motion is the same on 60, 120 or 144 Hz
+ * screens and stays in time on a slow one. Frames are drawn only while something moves: a held input waits
+ * for the next change without a clock.
  */
 (function () {
   'use strict';
@@ -46,8 +51,6 @@
   var NS = svg.namespaceURI;  // the SVG namespace, taken from the page's own <svg>
 
   var VEC = { n: [0, 0], b: [-1, 0], f: [1, 0], u: [0, -1], d: [0, 1], db: [-1, 1], df: [1, 1], ub: [-1, -1], uf: [1, -1] };
-  var SMEAR_ALPHA = 0.16;  // the one-frame smear drawn on the frame an input changes
-  var SHIFT0 = 0.6;        // share of the one-entry log shift done on the frame a new input appears (the rest on the next)
 
   // The PBD block arrows, solid, in their 24-unit box (explore/block-arrows/arrows/*-solid.svg; site_sync.py
   // there writes this table). Square tails. Every diagonal is the straight arrow turned 45 degrees and scaled
@@ -80,7 +83,7 @@
   //   throw 4 mm in from the left edge, button 2's ring 1.4 mm in from the right).
   // log: y = the arrows' centre line, A = the arrow box, right = the newest box's right edge (the right edge
   //   of button 2's ring), pitch = box to box; older entries fade out between fade1 and fade0 (their box's
-  //   left edge), so nothing crosses the viewBox's left edge, even mid-shift.
+  //   left edge), so nothing crosses the viewBox's left edge.
   var G = {
     vb: [-113, -31, 163, 120],
     lever: { x: -72, y: 24.5, r: 16, d: 21, w: 1.2, washer: 11.5, slide: 0.2, shaft: 6.5, cut: 1.2 },
@@ -90,7 +93,28 @@
     log: { y: 82, A: 12, right: 48, pitch: 18, fade0: -111, fade1: -93 }
   };
 
-  var TL, MIRROR, FRAME_MS, PRE, LOOP, REST, inst;
+  // Motion. The inputs are digital, but the lever is drawn as a hand moves it: every input change starts a critically
+  // damped spring step toward the new direction (it leaves and arrives at rest, and never overshoots), and the lever's
+  // place is the sum of the steps of the recent changes, so a quick back, down-back, back flick blends into one curve. The
+  // input log scrolls the same way; its newest arrow fades in where it lands once the one before has made room. A pose is
+  // a pure function of the time in frames (fractions included), so any display rate draws the same motion, and a held
+  // input draws nothing.
+  var LEVER_RATE = 1.1;  // per frame: 84 % of a throw after 3 frames (50 ms)
+  var LOG_RATE = 1;
+  function spring(rate, tau) {
+    return tau <= 0 ? 0 : 1 - (1 + rate * tau) * Math.exp(-rate * tau);
+  }
+  function settleFrames(rate) {  // within 0.2 % of the end: nothing moves on screen any more
+    var tau = 0;
+    while (spring(rate, tau) < 0.998) tau += 0.25;
+    return tau;
+  }
+  var LEVER_SETTLE = settleFrames(LEVER_RATE);
+  var SETTLE = Math.max(LEVER_SETTLE, settleFrames(LOG_RATE));
+  var ENTER_SIZE = 0.7;  // the newest arrow grows from 70 % as it fades in
+  var ENTER_AFTER = 0.55; // and shows once the log has moved 55 % of a pitch, clear of the arrow before it
+
+  var TL, MIRROR, FRAME_MS, PRE, LOOP, REST, HISTORY, LINE, LIT, inst;
 
   function r3(v) {
     var x = Math.round(v * 1000) / 1000;
@@ -137,6 +161,12 @@
     return out;
   }
 
+  function nextChange(f) {
+    var k = inputAt(f), g = f + 1, end = f + PRE.length + LOOP.length + 1;
+    while (g < end && inputAt(g) === k) g++;
+    return g;
+  }
+
   // The rest pose: the first frame after an input change to rest_on (down-back) in the steady loop, far
   // enough in that every entry the log shows comes from the loop.
   function restFrame() {
@@ -149,6 +179,43 @@
     throw new Error('rest_on is not in the loop');
   }
 
+  /* ---- the pose at time t (in frames): what render draws. `settled` puts every motion at its end ---- */
+  function pose(t, settled) {
+    var lv = G.lever, lg = G.log;
+    var h = history(Math.max(0, Math.floor(t)), HISTORY);
+    function step(rate, start) { return settled ? 1 : spring(rate, t - start); }
+    // The newest change that has settled gives the base; the later ones add their steps.
+    var j = 0, i;
+    while (!settled && j < h.length - 1 && t - h[j].start < LEVER_SETTLE) j++;
+    var v = vec(h[j].k), x = v[0], y = v[1];
+    for (i = j - 1; i >= 0; i--) {
+      var a = vec(h[i].k), b = vec(h[i + 1].k), e = step(LEVER_RATE, h[i].start);
+      x += (a[0] - b[0]) * e;
+      y += (a[1] - b[1]) * e;
+    }
+    var out = {
+      ball: [lv.x + x * lv.d, lv.y + y * lv.d],
+      washer: [lv.x + x * lv.d * lv.slide, lv.y + y * lv.d * lv.slide],
+      log: []
+    };
+    // Entry i stands where the newer entries' arrivals have pushed it, one pitch each.
+    var push = 0, newest = step(LOG_RATE, h[0].start);
+    for (i = 0; i < inst.slots.length && i < h.length; i++) {
+      var arrive = i === 0 ? newest : step(LOG_RATE, h[i].start);
+      var lx = lg.right - lg.A - push * lg.pitch;
+      var visible = Math.max(0, (arrive - ENTER_AFTER) / (1 - ENTER_AFTER));
+      push += arrive;
+      out.log.push({
+        k: h[i].k,
+        x: lx,
+        alpha: visible * Math.min(1, Math.max(0, (lx - lg.fade0) / (lg.fade1 - lg.fade0))),
+        size: ENTER_SIZE + (1 - ENTER_SIZE) * arrive,
+        lit: i === 0 ? 1 : i === 1 ? 1 - newest : 0  // the lit colour passes to the arrow arriving
+      });
+    }
+    return out;
+  }
+
   /* ---- the drawing: rebuilt from the geometry (the partial's static copy is only the no-script pose) ---- */
   function el(tag, attrs, parent) {
     var e = document.createElementNS(NS, tag);
@@ -157,9 +224,25 @@
     return e;
   }
 
-  // Hidden parts use display, not visibility: a child with visibility=visible would show through a hidden parent.
-  function show(node, on) {
-    if (on) node.removeAttribute('display'); else node.setAttribute('display', 'none');
+  // Writes only what changed, so a held pose costs no style or paint work.
+  function put(node, name, value) {
+    var seen = node.pbdSet || (node.pbdSet = {});
+    if (seen[name] === value) return;
+    seen[name] = value;
+    if (name === 'color') node.style.color = value;
+    else if (value === null) node.removeAttribute(name);
+    else node.setAttribute(name, value);
+  }
+
+  function colour(value) {
+    var m = /^#([0-9a-f]{6})$/i.exec(String(value || '').trim());
+    if (!m) return null;
+    var n = parseInt(m[1], 16);
+    return [n >> 16, (n >> 8) & 255, n & 255];
+  }
+
+  function mix(u) {
+    return 'rgb(' + [0, 1, 2].map(function (c) { return Math.round(LINE[c] + (LIT[c] - LINE[c]) * u); }).join(', ') + ')';
   }
 
   function mount() {
@@ -169,68 +252,40 @@
     G.buttons.forEach(function (b) {
       el('circle', { 'class': 'stick-ring', cx: b[0], cy: b[1], r: G.btnR, 'stroke-width': G.btnW }, svg);
     });
-    // The lever from the panel up: the dust washer, the shaft (with its cut), the ball's cut, the ball's
-    // one-frame smear (over the cut, so the blur has no dark rim), the ball. The shaft runs from the mounting
-    // hole to the ball's centre, under the ball.
+    // The lever from the panel up: the dust washer, the shaft (with its cut), the ball's cut, the ball. The shaft runs from
+    // the mounting hole to the ball's centre, under the ball (in neutral the ball hides it).
     var washer = el('circle', { 'class': 'stick-washer', cx: lv.x, cy: lv.y, r: lv.washer, 'stroke-width': lv.w }, svg);
-    var shaftCut = el('line', { 'class': 'stick-cut', x1: lv.x, y1: lv.y, 'stroke-width': lv.shaft + 2 * lv.cut, display: 'none' }, svg);
-    var shaft = el('line', { 'class': 'stick-shaft', x1: lv.x, y1: lv.y, 'stroke-width': lv.shaft, display: 'none' }, svg);
+    var shaftCut = el('line', { 'class': 'stick-cut', x1: lv.x, y1: lv.y, x2: lv.x, y2: lv.y, 'stroke-width': lv.shaft + 2 * lv.cut }, svg);
+    var shaft = el('line', { 'class': 'stick-shaft', x1: lv.x, y1: lv.y, x2: lv.x, y2: lv.y, 'stroke-width': lv.shaft }, svg);
     var ballCut = el('circle', { 'class': 'stick-cut', cx: lv.x, cy: lv.y, r: lv.r + lv.cut }, svg);
-    var smear = el('line', { 'class': 'stick-smear', 'stroke-width': 2 * lv.r, 'stroke-opacity': SMEAR_ALPHA, display: 'none' }, svg);
     var ball = el('circle', { 'class': 'stick-ball', cx: lv.x, cy: lv.y, r: lv.r }, svg);
     var log = el('g', { 'class': 'stick-log' }, svg);
     var slots = [];
     var n = Math.ceil((lg.right - lg.A - lg.fade0) / lg.pitch) + 2;
     for (var i = 0; i < n; i++) {
       var g = el('g', { 'class': 'stick-slot', display: 'none' }, log);
-      slots.push({ g: g, path: el('path', { 'class': 'stick-block' }, g), key: null });
+      slots.push({ g: g, path: el('path', { 'class': 'stick-block' }, g) });
     }
-    return { washer: washer, shaftCut: shaftCut, shaft: shaft, smear: smear, ballCut: ballCut, ball: ball, slots: slots, last: -1 };
+    return { washer: washer, shaftCut: shaftCut, shaft: shaft, ballCut: ballCut, ball: ball, slots: slots };
   }
 
-  /* ---- one frame is a pure function of its number ---- */
-  function render(f) {
-    var lv = G.lever, lg = G.log;
-    var h = history(f, inst.slots.length + 1), cur = h[0], prev = h[1];
-    var s = f - cur.start;
-    function pos(k, t) { var v = vec(k); return [lv.x + v[0] * lv.d * t, lv.y + v[1] * lv.d * t]; }
-    var b = pos(cur.k, 1), w = pos(cur.k, lv.slide), off = cur.k !== 'n';
-    inst.ball.setAttribute('cx', r3(b[0]));
-    inst.ball.setAttribute('cy', r3(b[1]));
-    inst.ballCut.setAttribute('cx', r3(b[0]));
-    inst.ballCut.setAttribute('cy', r3(b[1]));
-    inst.washer.setAttribute('cx', r3(w[0]));
-    inst.washer.setAttribute('cy', r3(w[1]));
-    [inst.shaftCut, inst.shaft].forEach(function (ln) {  // in neutral the shaft is straight up, under the ball
-      if (off) {
-        ln.setAttribute('x2', r3(b[0]));
-        ln.setAttribute('y2', r3(b[1]));
-      }
-      show(ln, off);
-    });
-    if (s === 0 && prev) {                              // the lever is digital: no in-between, one smear frame
-      var p = pos(prev.k, 1);
-      inst.smear.setAttribute('x1', r3(p[0])); inst.smear.setAttribute('y1', r3(p[1]));
-      inst.smear.setAttribute('x2', r3(b[0])); inst.smear.setAttribute('y2', r3(b[1]));
-      show(inst.smear, true);
-    } else show(inst.smear, false);
-    var e = s === 0 && prev ? SHIFT0 : 1;
-    var xNow = lg.right - lg.A;
+  function render(t, settled) {
+    var lg = G.log, p = pose(t, settled), bx = r3(p.ball[0]), by = r3(p.ball[1]);
+    put(inst.ball, 'cx', bx); put(inst.ball, 'cy', by);
+    put(inst.ballCut, 'cx', bx); put(inst.ballCut, 'cy', by);
+    put(inst.washer, 'cx', r3(p.washer[0])); put(inst.washer, 'cy', r3(p.washer[1]));
+    [inst.shaftCut, inst.shaft].forEach(function (ln) { put(ln, 'x2', bx); put(ln, 'y2', by); });
     inst.slots.forEach(function (sl, i) {
-      var en = h[i];
-      var x = xNow - (i - 1 + e) * lg.pitch;           // the log moves as one piece; the new entry comes in from the right
-      var a = Math.min(1, Math.max(0, (x - lg.fade0) / (lg.fade1 - lg.fade0)));
-      if (!en || a <= 0) { show(sl.g, false); return; }
-      show(sl.g, true);
-      sl.g.setAttribute('transform', 'translate(' + r3(x) + ' ' + r3(lg.y - lg.A / 2) + ') scale(' + r3(lg.A / 24) + ')');
-      sl.g.setAttribute('opacity', r3(a));
-      sl.g.setAttribute('class', i === 0 ? 'stick-slot is-now' : 'stick-slot');
-      if (sl.key !== en.k) {
-        sl.path.setAttribute('d', BLOCK[screenDir(en.k)]);
-        sl.key = en.k;
-      }
+      var en = p.log[i];
+      if (!en || en.alpha < 0.002) { put(sl.g, 'display', 'none'); return; }
+      var s = en.size * lg.A, x = en.x + (lg.A - s) / 2, y = lg.y - s / 2;
+      put(sl.g, 'display', null);
+      put(sl.g, 'transform', 'translate(' + r3(x) + ' ' + r3(y) + ') scale(' + r3(s / 24) + ')');
+      put(sl.g, 'opacity', r3(en.alpha));
+      put(sl.g, 'class', i === 0 ? 'stick-slot is-now' : 'stick-slot');
+      if (LINE && LIT) put(sl.g, 'color', mix(Math.round(en.lit * 100) / 100));
+      put(sl.path, 'd', BLOCK[screenDir(en.k)]);
     });
-    inst.last = f;
   }
 
   try {
@@ -241,7 +296,11 @@
     LOOP = frames(TL.loop);
     if (LOOP.every(function (k) { return k === LOOP[0]; })) throw new Error('the loop needs two inputs');
     inst = mount();
+    HISTORY = inst.slots.length + 2;
     REST = restFrame();
+    var style = window.getComputedStyle ? window.getComputedStyle(svg) : null;
+    LINE = style && colour(style.getPropertyValue('--stick-line'));
+    LIT = style && colour(style.getPropertyValue('--stick-lit'));
   } catch (err) {
     return;  // bad data: keep the static rest pose, and no button
   }
@@ -251,7 +310,8 @@
   // ready (not started yet), playing, waiting (off screen or tab hidden: goes on by itself),
   // paused (the visitor paused it), rest (reduced motion: the rest pose, not started)
   var state = 'ready';
-  var raf = 0, t0 = null, base = 0;
+  var raf = 0, timer = 0, t0 = null, base = 0, shown = 0;
+  var stopAt = null;                                  // a pause's still frame, while the motion before it plays out
   var inView = !('IntersectionObserver' in window);  // any part on screen
   var seen = inView;                                  // at least half on screen once (starts the first play)
 
@@ -261,65 +321,101 @@
     if (btnLabel) btnLabel.textContent = s === 'paused' || s === 'rest' ? 'Play' : 'Pause';
   }
 
-  function stopClock() {
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-    t0 = null;
+  function draw(t, settled) {
+    render(t, settled);
+    shown = t;
   }
 
-  function tick(ts) {
+  function stopClock() {
+    if (raf) cancelAnimationFrame(raf);
+    if (timer) clearTimeout(timer);
     raf = 0;
-    if (t0 === null) t0 = ts;
-    var f = base + Math.round((ts - t0) / FRAME_MS);
-    if (f !== inst.last) render(f);
-    raf = requestAnimationFrame(tick);
+    timer = 0;
+    t0 = null;
   }
 
   function canRun() {
     return inView && !document.hidden;
   }
 
-  function run(from) {                                 // go on from frame `from`, now or as soon as it can
+  // Animation frames only while something moves; once the newest change has settled the clock sleeps until the next one.
+  function tick(ts) {
+    raf = 0;
+    if (!canRun()) { hold('waiting'); return; }
+    if (t0 === null) t0 = ts;
+    var t = base + (ts - t0) / FRAME_MS;
+    if (stopAt !== null && t >= stopAt) { finishPause(); return; }
+    draw(t);
+    var f = Math.floor(t), wait = (nextChange(f) - t) * FRAME_MS;
+    if (stopAt === null && t - history(f, 1)[0].start >= SETTLE && wait > 2 * FRAME_MS) {
+      timer = setTimeout(function () { timer = 0; raf = requestAnimationFrame(tick); }, wait - FRAME_MS);
+    } else raf = requestAnimationFrame(tick);
+  }
+
+  function run(from) {                                 // go on from `from`, now or as soon as it can
     stopClock();
+    stopAt = null;
     base = from;
-    if (inst.last !== from) render(from);
+    draw(from);
     if (canRun()) {
       setState('playing');
       raf = requestAnimationFrame(tick);
     } else setState('waiting');
   }
 
-  function hold(s) {                                   // stop on the frame that is showing
+  function finishPause() {
     stopClock();
-    var f = Math.max(0, inst.last);
-    if (s === 'paused') {                              // a visitor's pause never freezes the in-between frame
-      var h = history(f, 2);                           // (the smear and the half-done shift): take the next one
-      if (f === h[0].start && h[1]) render(++f);
-    }
-    base = f;
+    draw(stopAt, true);
+    base = stopAt;
+    stopAt = null;
+    setState('paused');
+  }
+
+  function hold(s) {                                   // stop on the pose that is showing
+    if (stopAt !== null) { finishPause(); return; }   // a pause on its way ends on its still frame
+    stopClock();
+    base = shown;
     setState(s);
+  }
+
+  // A visitor's pause never freezes a pose in motion: the motion plays out to the next frame where nothing moves.
+  function stillFrom(t) {
+    var f = Math.floor(t);
+    if (t - history(f, 1)[0].start >= SETTLE) return t;
+    for (var g = Math.ceil(t), end = g + PRE.length + 2 * LOOP.length; g < end; g++) {
+      if (g - history(g, 1)[0].start >= SETTLE) return g;
+    }
+    return Math.ceil(t);
+  }
+
+  function pause() {
+    stopAt = stillFrom(shown);
+    if (raf || timer) setState('paused');             // the clock runs on to stopAt (tick)
+    else finishPause();
   }
 
   function update() {
     if (state === 'ready') {
-      if (seen && !document.hidden && !reduce.matches) run(0);
-    } else if (state === 'playing') {
+      if (seen && canRun() && !reduce.matches) run(0);
+    } else if (state === 'playing' || (state === 'paused' && stopAt !== null)) {
       if (!canRun()) hold('waiting');
     } else if (state === 'waiting') {
-      if (canRun()) run(base);
+      if (reduce.matches) toRest();                    // reduced motion was asked for while it waited (its event may come later)
+      else if (canRun()) run(base);
     }
   }
 
   function toRest() {
     stopClock();
-    render(REST);
+    stopAt = null;
+    draw(REST, true);
     base = REST;
     setState('rest');
   }
 
   if (reduce.matches) toRest();
   else {
-    render(0);                                         // the idle pose the play starts from
+    draw(0);                                           // the idle pose the play starts from
     setState('ready');
   }
 
@@ -335,8 +431,11 @@
 
   if (btn) {
     btn.addEventListener('click', function () {
-      if (state === 'paused' || state === 'rest') run(base);   // the visitor pressed Play, so it plays even with reduced motion
-      else hold('paused');
+      if (state === 'paused' && stopAt !== null) {    // pressed again before the motion settled: it just goes on
+        stopAt = null;
+        setState('playing');
+      } else if (state === 'paused' || state === 'rest') run(base);  // the visitor pressed Play, so it plays even with reduced motion
+      else pause();
     });
     btn.hidden = false;
   }
