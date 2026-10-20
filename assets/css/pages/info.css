@@ -75,6 +75,13 @@
   color: var(--text-2);
 }
 
+/* A row still to be written (Known issues; a gated preview only: check.mjs fails a public build that
+   carries one). */
+[data-placeholder] {
+  outline: 2px dashed var(--warn);
+  outline-offset: 3px;
+}
+
 /* Forced colours drop the surface fill, so the contact box would lose its
    edge: draw it, as .notice does. */
 @media (forced-colors: active) {

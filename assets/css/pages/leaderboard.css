@@ -1,12 +1,12 @@
-/* The leaderboard page (coming soon): the state, the title and one sentence, with room under them so
-   the footer does not ride up into a short page. */
+/* The rated-play page: the title, one sentence and two links, with room under them so the footer does not ride up
+   into a short page. */
 
 .leaderboard {
   min-height: 36vh;
 }
 
-.lb-state {
-  margin: 0 0 var(--s-4);
+.lb-links {
+  margin-top: var(--s-5);
 }
 
 .leaderboard .page-head {

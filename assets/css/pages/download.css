@@ -1,6 +1,6 @@
 /* Download page only. Everything else is in site.css. */
 
-/* The download slot: the (disabled) primary, then one sentence under it. */
+/* The download slot: the primary, then one line under it. */
 .dl-slot {
   margin: 0 0 var(--s-8);
 }
@@ -9,11 +9,13 @@
   min-width: min(100%, 320px);
 }
 
-/* Release block (only once it is published): the file name may be long. */
-.release-file {
+/* The installer's SHA-256 is one long word: let it break anywhere on a phone. */
+.disclosure-body .hash {
   overflow-wrap: anywhere;
 }
 
-.release-mirrors { padding: 0; list-style: none; }
-.release-mirrors li + li { margin-top: 16px; }
-.release-mirrors:empty { display: none; }
+/* A value still to be filled (an offline or gated preview build only: check.mjs fails a public build that carries one). */
+[data-placeholder] {
+  outline: 2px dashed var(--warn);
+  outline-offset: 3px;
+}

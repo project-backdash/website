@@ -1053,22 +1053,6 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   text-decoration-thickness: 2px;
 }
 
-/* The private-test line under the app bar, on the bar's band. */
-.status-strip {
-  background: var(--band);
-  color: var(--text-2);
-  border-bottom: 1px solid var(--line);
-}
-
-.status-strip p {
-  max-width: calc(var(--col) + 2 * var(--s-5));
-  margin: 0 auto;
-  padding: var(--s-2) var(--s-5);
-  font-size: 0.9375rem;
-  line-height: 1.45;
-  text-align: center;
-}
-
 /* 4. Layouts =============================================================== */
 
 /* A full-width band (the coming-soon shell and the replay link page). */
@@ -1265,6 +1249,14 @@ svg.icon {
   color: var(--text-2);
   font-size: 1rem;
   line-height: 1.5;
+}
+
+/* The download arrow inside the primary: the same block arrow as the logo's, in the label's ink. */
+.dl-arrow {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
 }
 
 .links {
@@ -2366,7 +2358,6 @@ pre code {
 
 @media print {
   .app-bar,
-  .status-strip,
   .sidebar,
   .skip-link {
     display: none !important;

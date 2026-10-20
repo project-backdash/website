@@ -193,10 +193,8 @@ line.stick-cut {
 }
 
 /* ---- Download: the page's one big block. ---------------------------------------------------
-   Its size lives here and its look in site.css's .btn-primary: while it is disabled it takes the
-   launcher's disabled look (faint edge and fill, grey label and arrow, never crimson), so it does not
-   read as a live button; once a release turns it into a link without .is-disabled, the same rules give
-   it the crimson primary with an ink label and arrow. */
+   Its size lives here and its look in site.css's .btn-primary (the crimson primary with an ink label and
+   arrow); the line under it is site.css's .download-note. */
 
 .home-download {
   margin: 0;
@@ -213,32 +211,14 @@ line.stick-cut {
   line-height: 1.15;
 }
 
-.dl-arrow {
-  flex: none;
+.home-download .dl-arrow {
   width: 22px;
   height: 22px;
-  fill: currentColor;
 }
 
-/* The label over its state, both left-aligned beside the arrow. */
-.dl-text {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-
-/* The state: small capitals in Barlow (PBD Display never goes below 18 px), gold as in the launcher. */
-.dl-state {
-  flex: none;
-  color: var(--link);
-  font-family: var(--font-ui);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  line-height: 1.2;
-  text-transform: uppercase;
+.home-download .download-note {
+  text-align: center;
+  text-wrap: balance;
 }
 
 /* ---- Accounts: the shared round icons (resurrection.css), centred under the download block --- */
@@ -405,18 +385,12 @@ line.stick-cut {
   }
 
   .home-mark .mark-arrow,
-  .home-mark .mark-lit,
-  .dl-arrow {
+  .home-mark .mark-lit {
     fill: CanvasText;
   }
 
   .feature-icon {
     stroke: CanvasText;
-  }
-
-  .home-download .btn-primary.is-disabled {
-    border: 1px solid GrayText;
-    color: GrayText;
   }
 
   .chip-soon {

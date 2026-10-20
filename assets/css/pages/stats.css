@@ -1,0 +1,155 @@
+/* The Stats page: totals as tiles, two bar lists and the top-players table.
+   stats.js sets data-state on .stats: "loading" while it asks, "up" once the numbers are in, "down" when they
+   cannot be read (the page's own value, so a page without scripts shows the warming-up note).
+   Every colour is a site.css token, so `node contrast.mjs` covers the text. */
+
+.stats-state {
+  margin: 0 0 var(--s-6);
+  color: var(--text-2);
+}
+
+.stats-loading,
+.stats-warm,
+.stats-updated:empty,
+.stats-live {
+  display: none;
+}
+
+.stats[data-state="loading"] .stats-loading,
+.stats[data-state="down"] .stats-warm {
+  display: inline;
+}
+
+.stats[data-state="up"] .stats-live {
+  display: block;
+}
+
+.stats[data-state="down"] .stats-warm {
+  color: var(--text-1);
+}
+
+/* Totals: two tiles a row on a phone, three from 600 px. */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+}
+
+@media (min-width: 600px) {
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.stat-grid > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  padding: var(--s-4);
+  border-radius: var(--r-box);
+  background: var(--surface);
+}
+
+.stat-grid dt {
+  color: var(--text-2);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.stat-grid dd {
+  margin: 0 0 2px;
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* Bar lists: the name, a bar against the largest value, the number. */
+.bars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bars > li {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, 9rem) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 32px;
+}
+
+.bars > li + li {
+  border-top: 1px solid var(--line);
+}
+
+.bar-name {
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.bar-track {
+  height: 10px;
+  border-radius: var(--r-slab);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  background: var(--mark-lit);
+}
+
+.bar-value {
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.bars-empty {
+  color: var(--text-2);
+}
+
+.bars > li.bars-empty {
+  display: block;
+}
+
+/* Top players: on a phone the character sits under the player's name, so all of the table fits a 320 px
+   screen with the MMR column in view. */
+.top-char {
+  display: none;
+}
+
+@media (max-width: 479.98px) {
+  .top-table .col-char {
+    display: none;
+  }
+
+  .top-char {
+    display: block;
+    color: var(--text-2);
+    font-weight: 400;
+    font-size: 0.9375rem;
+  }
+}
+
+/* Forced colours drop the fills: draw the tiles and bars. */
+@media (forced-colors: active) {
+  .stat-grid > div {
+    border: 1px solid CanvasText;
+  }
+
+  .bar-track {
+    border: 1px solid CanvasText;
+  }
+
+  .bar-fill {
+    background: CanvasText;
+  }
+}

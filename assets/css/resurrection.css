@@ -68,7 +68,6 @@ html, body { background: #140608; }
 /* ---- The frame: black bar, status strip, sidebar and drawer (site.css); the page you are on is a
    gold edge and wash, as a selected row in the launcher, and the row under the pointer a faint gold. -- */
 .app-bar { border-bottom-color: rgba(233,238,237,.12); }
-.status-strip { border-bottom-color: rgba(233,238,237,.06); }
 .nav-list a:hover { background: rgba(244,182,63,.08); }
 .nav-list a[aria-current="page"] {
   color: #F4B63F;
