@@ -233,6 +233,28 @@ line.stick-cut {
   margin: 0;
 }
 
+.home-stats { margin-top: var(--s-16); }
+.home-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1.5rem 0 .75rem; }
+.home-section-head h2, .home-section-head h3 { margin: 0; }
+.home-section-head h3 { font-size: 1.1rem; }
+.home-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 0; background: rgba(233,238,237,.18); border: 1px solid rgba(233,238,237,.18); }
+.home-stat-grid > div { min-width: 0; background: #18090d; padding: 1rem; }
+.home-stat-grid > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.home-stat-grid dt { color: var(--text-2); font-size: .875rem; }
+.home-stat-grid dd { margin: .25rem 0 0; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.home-stats-status { color: var(--text-2); font-size: .875rem; }
+.home-player-search { margin: 1.5rem 0; }
+.home-player-search label { display: block; margin-bottom: .5rem; font-weight: 700; }
+.home-player-search > div { display: flex; gap: .5rem; }
+.home-player-search input { min-width: 0; flex: 1; min-height: 48px; padding: .6rem .75rem; border: 1px solid var(--text-2); background: #18090d; color: var(--text-1); font: inherit; }
+.home-player-search button { min-height: 48px; padding: .6rem 1rem; }
+.home-leaderboard { padding: 0; margin: 0; list-style: none; counter-reset: leader; }
+.home-leaderboard li { display: flex; align-items: baseline; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid rgba(233,238,237,.18); counter-increment: leader; }
+.home-leaderboard li::before { content: counter(leader); color: var(--text-2); width: 1.5rem; }
+.home-leaderboard a { overflow-wrap: anywhere; }
+.home-leaderboard span { margin-left: auto; text-align: right; color: var(--text-2); }
+@media (max-width: 380px) { .home-player-search > div { flex-wrap: wrap; } .home-player-search input { flex-basis: 100%; } }
+
 /* ---- Features: ruled rows like the launcher's menu, each with a small drawn icon ---------- */
 
 .home-features {

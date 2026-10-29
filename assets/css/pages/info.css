@@ -75,8 +75,7 @@
   color: var(--text-2);
 }
 
-/* A row still to be written (Known issues; a gated preview only: check.mjs fails a public build that
-   carries one). */
+/* Mark preview-only placeholders. */
 [data-placeholder] {
   outline: 2px dashed var(--warn);
   outline-offset: 3px;

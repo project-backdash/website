@@ -2,28 +2,195 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://lobby.backdash.gg; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project Backdash</title>
-<meta name="description" content="Join Project Backdash on Discord.">
-<meta http-equiv="refresh" content="0; url=https://discord.gg/tCajXfKHjQ">
-<meta name="robots" content="noindex, nofollow">
+<script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
+<title>Project Backdash: rollback netplay for Tekken 5 Dark Resurrection</title>
+<meta name="description" content="Free rollback netplay on Windows for Tekken 5 Dark Resurrection, with your own copy of the game: online lobbies, Ranked, a modern Practice mode and full match replays.">
+<link rel="canonical" href="https://backdash.gg/">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#140608">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Backdash">
-<meta property="og:title" content="Project Backdash">
-<meta property="og:description" content="Join us on Discord.">
+<meta property="og:title" content="Project Backdash: rollback netplay for Tekken 5 Dark Resurrection">
+<meta property="og:description" content="Free rollback netplay on Windows for Tekken 5 Dark Resurrection, with your own copy of the game: online lobbies, Ranked, a modern Practice mode and full match replays.">
+<meta property="og:url" content="https://backdash.gg/">
 <meta property="og:image" content="https://backdash.gg/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Project Backdash">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Project Backdash: rollback netplay for Tekken 5 Dark Resurrection">
+<meta name="twitter:description" content="Free rollback netplay on Windows for Tekken 5 Dark Resurrection, with your own copy of the game: online lobbies, Ranked, a modern Practice mode and full match replays.">
+<meta name="twitter:image" content="https://backdash.gg/og.png">
+<meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
 <link rel="icon" href="/favicon.svg?v=0ef5d2c4bc" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4e8aadd988">
-<script>location.replace('https://discord.gg/tCajXfKHjQ');</script>
+<link rel="manifest" href="/site.webmanifest?v=6c2b5d36f0">
+<link rel="preload" href="/assets/fonts/barlow-400.woff2?v=dabe85d6ba" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
+<link rel="stylesheet" href="/assets/css/site.css?v=fbc11efad8">
+<link rel="stylesheet" href="/assets/css/resurrection.css?v=7a94d21223">
+<link rel="stylesheet" href="/assets/css/pages/home.css?v=c00f7c80c8">
+<script src="/assets/js/site.js?v=8e39d6083c" defer></script>
+<script src="/assets/js/stick.js?v=3d01e2521a" defer></script>
+<script type="module" src="/assets/js/home-stats.js?v=be034dfa0d"></script>
 </head>
-<body style="margin:0;padding:24px;background:#140608;color:#f4f0f0;font:16px/1.5 system-ui,sans-serif">
-<p><a href="https://discord.gg/tCajXfKHjQ" style="color:#e3304f">Join Project Backdash on Discord</a></p>
+<body class="field home-page">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="app-bar">
+  <div class="app-bar-inner">
+    <details class="drawer" data-drawer>
+      <summary><span class="drawer-button"><span class="burger" aria-hidden="true"></span></span><span class="visually-hidden">Menu</span></summary>
+      <div class="drawer-panel">
+        <div class="drawer-head">
+          <a class="lockup" href="/" aria-label="Project Backdash home">
+            <svg class="mark" viewBox="0 0 73.799 24" aria-hidden="true" focusable="false" fill="none"><path class="mark-arrow mark-solid" fill="currentColor" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/><path class="mark-lit mark-solid" fill="#E3304F" d="M27 21.8995L27 4.9289L27.7071 4.2218L33.364 9.8787L41.1421 2.1005L46.799 7.7574L39.0208 15.5355L44.6777 21.1924L43.9706 21.8995Z"/><path class="mark-arrow mark-solid" fill="currentColor" d="M49.799 12L61.799 0L62.799 0L62.799 8L73.799 8L73.799 16L62.799 16L62.799 24L61.799 24Z"/></svg>
+            <svg class="wordmark" viewBox="0 0 13399 700" overflow="visible" role="img" aria-label="Project Backdash" focusable="false" fill="currentColor"><path class="wordmark-project" d="M0 700L128 700L128 438L519 438L687 354L687 42L603 0L0 0ZM128 364L128 92L559 92L559 364ZM819 700L947 700L947 438L1193 438L1391 700L1541 700L1343 438L1431 438L1514 396L1514 42L1431 0L819 0ZM947 364L947 92L1387 92L1387 364ZM1689 700L2282 700L2450 616L2450 42L2367 0L1774 0L1606 84L1606 658ZM1733 608L1733 92L2323 92L2323 608ZM2611 700L3010 700L3178 616L3178 0L3051 0L3051 608L2655 608L2655 410L2527 410L2527 658ZM3321 700L3937 700L3937 608L3449 608L3449 379L3884 379L3884 305L3449 305L3449 92L3937 92L3937 0L3321 0ZM4111 700L4599 700L4767 616L4767 608L4155 608L4155 92L4767 92L4767 42L4683 0L4196 0L4028 84L4028 658ZM4816 92L5096 92L5096 700L5223 700L5223 92L5503 92L5503 0L4816 0Z"/><path class="wordmark-main" d="M5939 700L6591 700L6759 616L6759 310L6711 286L6711 42L6627 0L5939 0ZM6135 560L6135 398L6563 398L6563 560ZM6135 286L6135 140L6515 140L6515 286ZM6847 700L7053 700L7117 560L7517 560L7581 700L7787 700L7467 0L7167 0ZM7168 448L7317 122L7466 448ZM7929 700L8517 700L8685 616L8685 560L8041 560L8041 140L8685 140L8685 42L8601 0L8013 0L7845 84L7845 658ZM8775 700L8971 700L8971 510L9093 510L9192 413L9389 700L9615 700L9328 281L9615 0L9381 0L8971 401L8971 0L8775 0ZM9715 700L10325 700L10565 580L10565 120L10325 0L9715 0ZM9911 560L9911 140L10369 140L10369 560ZM10623 700L10829 700L10893 560L11293 560L11357 700L11563 700L11243 0L10943 0ZM10944 448L11093 122L11242 448ZM11735 398L12255 398L12255 560L11651 560L11651 658L11735 700L12283 700L12451 616L12451 328L12367 286L11847 286L11847 140L12451 140L12451 42L12367 0L11819 0L11651 84L11651 356ZM12599 700L12795 700L12795 398L13203 398L13203 700L13399 700L13399 0L13203 0L13203 286L12795 286L12795 0L12599 0Z"/></svg>
+          </a>
+        </div>
+        <nav class="drawer-nav" aria-label="Main">
+<ul class="nav-list">
+  <li><a href="/" aria-current="page">Home</a></li>
+  <li><a href="/how-it-works/">How it works</a></li>
+  <li><a href="/download/">Download</a></li>
+  <li><a href="/stats/">Stats</a></li>
+  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/source/">Source</a></li>
+  <li><a href="/privacy/">Privacy</a></li>
+</ul>
+        </nav>
+      </div>
+    </details>
+    <a class="lockup lockup-game" href="/" aria-label="Project Backdash for Tekken 5 DR, home">
+      <svg class="mark" viewBox="0 0 73.799 24" aria-hidden="true" focusable="false" fill="none"><path class="mark-arrow mark-solid" fill="currentColor" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/><path class="mark-lit mark-solid" fill="#E3304F" d="M27 21.8995L27 4.9289L27.7071 4.2218L33.364 9.8787L41.1421 2.1005L46.799 7.7574L39.0208 15.5355L44.6777 21.1924L43.9706 21.8995Z"/><path class="mark-arrow mark-solid" fill="currentColor" d="M49.799 12L61.799 0L62.799 0L62.799 8L73.799 8L73.799 16L62.799 16L62.799 24L61.799 24Z"/></svg>
+      <svg class="wordmark" viewBox="0 0 13399 700" overflow="visible" role="img" aria-label="Project Backdash" focusable="false" fill="currentColor"><path class="wordmark-project" d="M0 700L128 700L128 438L519 438L687 354L687 42L603 0L0 0ZM128 364L128 92L559 92L559 364ZM819 700L947 700L947 438L1193 438L1391 700L1541 700L1343 438L1431 438L1514 396L1514 42L1431 0L819 0ZM947 364L947 92L1387 92L1387 364ZM1689 700L2282 700L2450 616L2450 42L2367 0L1774 0L1606 84L1606 658ZM1733 608L1733 92L2323 92L2323 608ZM2611 700L3010 700L3178 616L3178 0L3051 0L3051 608L2655 608L2655 410L2527 410L2527 658ZM3321 700L3937 700L3937 608L3449 608L3449 379L3884 379L3884 305L3449 305L3449 92L3937 92L3937 0L3321 0ZM4111 700L4599 700L4767 616L4767 608L4155 608L4155 92L4767 92L4767 42L4683 0L4196 0L4028 84L4028 658ZM4816 92L5096 92L5096 700L5223 700L5223 92L5503 92L5503 0L4816 0Z"/><path class="wordmark-main" d="M5939 700L6591 700L6759 616L6759 310L6711 286L6711 42L6627 0L5939 0ZM6135 560L6135 398L6563 398L6563 560ZM6135 286L6135 140L6515 140L6515 286ZM6847 700L7053 700L7117 560L7517 560L7581 700L7787 700L7467 0L7167 0ZM7168 448L7317 122L7466 448ZM7929 700L8517 700L8685 616L8685 560L8041 560L8041 140L8685 140L8685 42L8601 0L8013 0L7845 84L7845 658ZM8775 700L8971 700L8971 510L9093 510L9192 413L9389 700L9615 700L9328 281L9615 0L9381 0L8971 401L8971 0L8775 0ZM9715 700L10325 700L10565 580L10565 120L10325 0L9715 0ZM9911 560L9911 140L10369 140L10369 560ZM10623 700L10829 700L10893 560L11293 560L11357 700L11563 700L11243 0L10943 0ZM10944 448L11093 122L11242 448ZM11735 398L12255 398L12255 560L11651 560L11651 658L11735 700L12283 700L12451 616L12451 328L12367 286L11847 286L11847 140L12451 140L12451 42L12367 0L11819 0L11651 84L11651 356ZM12599 700L12795 700L12795 398L13203 398L13203 700L13399 700L13399 0L13203 0L13203 286L12795 286L12795 0L12599 0Z"/></svg>
+      <span class="lockup-for">for Tekken 5 DR</span>
+    </a>
+    <a class="btn btn-sm app-bar-action" href="/how-it-works/">How it works</a>
+  </div>
+</header>
+<!-- check-allow: ranked -->
+<main id="main" tabindex="-1" class="home">
+
+  <header class="home-brand">
+    <svg class="home-mark" viewBox="0 0 51 44.799" aria-hidden="true" focusable="false"><path class="mark-arrow" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/><path class="mark-arrow" d="M27 12L39 0L40 0L40 8L51 8L51 16L40 16L40 24L39 24Z"/><path class="mark-lit" d="M15.6005 44.799L15.6005 27.8284L16.3076 27.1213L21.9645 32.7782L29.7426 25L35.3995 30.6569L27.6213 38.435L33.2782 44.0919L32.5711 44.799Z"/></svg>
+    <h1 class="home-title"><svg class="wordmark" viewBox="0 0 13399 700" overflow="visible" role="img" aria-label="Project Backdash" focusable="false" fill="currentColor"><path class="wordmark-project" d="M0 700L128 700L128 438L519 438L687 354L687 42L603 0L0 0ZM128 364L128 92L559 92L559 364ZM819 700L947 700L947 438L1193 438L1391 700L1541 700L1343 438L1431 438L1514 396L1514 42L1431 0L819 0ZM947 364L947 92L1387 92L1387 364ZM1689 700L2282 700L2450 616L2450 42L2367 0L1774 0L1606 84L1606 658ZM1733 608L1733 92L2323 92L2323 608ZM2611 700L3010 700L3178 616L3178 0L3051 0L3051 608L2655 608L2655 410L2527 410L2527 658ZM3321 700L3937 700L3937 608L3449 608L3449 379L3884 379L3884 305L3449 305L3449 92L3937 92L3937 0L3321 0ZM4111 700L4599 700L4767 616L4767 608L4155 608L4155 92L4767 92L4767 42L4683 0L4196 0L4028 84L4028 658ZM4816 92L5096 92L5096 700L5223 700L5223 92L5503 92L5503 0L4816 0Z"/><path class="wordmark-main" d="M5939 700L6591 700L6759 616L6759 310L6711 286L6711 42L6627 0L5939 0ZM6135 560L6135 398L6563 398L6563 560ZM6135 286L6135 140L6515 140L6515 286ZM6847 700L7053 700L7117 560L7517 560L7581 700L7787 700L7467 0L7167 0ZM7168 448L7317 122L7466 448ZM7929 700L8517 700L8685 616L8685 560L8041 560L8041 140L8685 140L8685 42L8601 0L8013 0L7845 84L7845 658ZM8775 700L8971 700L8971 510L9093 510L9192 413L9389 700L9615 700L9328 281L9615 0L9381 0L8971 401L8971 0L8775 0ZM9715 700L10325 700L10565 580L10565 120L10325 0L9715 0ZM9911 560L9911 140L10369 140L10369 560ZM10623 700L10829 700L10893 560L11293 560L11357 700L11563 700L11243 0L10943 0ZM10944 448L11093 122L11242 448ZM11735 398L12255 398L12255 560L11651 560L11651 658L11735 700L12283 700L12451 616L12451 328L12367 286L11847 286L11847 140L12451 140L12451 42L12367 0L11819 0L11651 84L11651 356ZM12599 700L12795 700L12795 398L13203 398L13203 700L13399 700L13399 0L13203 0L13203 286L12795 286L12795 0L12599 0Z"/></svg></h1>
+    <p class="home-pitch"><span class="pitch-line">Rollback netplay for <span class="pitch-name">Tekken 5 Dark Resurrection</span> on Windows.</span> <span class="pitch-line">Bring your own game.</span></p>
+  </header>
+
+  <div class="home-hero">
+<div class="hero-stick" data-stick='{ "fps": 60, "back_is": "left", "idle": { "input": "n", "frames": 30 }, "lead_in": [ { "input": "b", "frames": 3 }, { "input": "n", "frames": 3 } ], "loop": [ { "input": "b", "frames": 12 }, { "input": "db", "frames": 3 }, { "input": "b", "frames": 2 }, { "input": "n", "frames": 3 } ], "rest_on": "db" }'>
+<svg class="stick" viewBox="-113 -31 163 120" aria-hidden="true" focusable="false"><circle class="stick-ring" cx="0" cy="0" r="15" stroke-width="1.2"/><circle class="stick-ring" cx="33" cy="-14" r="15" stroke-width="1.2"/><circle class="stick-ring" cx="-7" cy="37" r="15" stroke-width="1.2"/><circle class="stick-ring" cx="26" cy="24" r="15" stroke-width="1.2"/><circle class="stick-washer" cx="-72" cy="24.5" r="11.5" stroke-width="1.2"/><line class="stick-cut" x1="-72" y1="24.5" stroke-width="8.9" x2="-93" y2="45.5"/><line class="stick-shaft" x1="-72" y1="24.5" stroke-width="6.5" x2="-93" y2="45.5"/><circle class="stick-cut" cx="-93" cy="45.5" r="17.2"/><circle class="stick-ball" cx="-93" cy="45.5" r="16"/><g class="stick-log"><g class="stick-slot is-now" transform="translate(36 76) scale(0.5)" opacity="1"><path class="stick-block" d="M2 22L2 3L2.7917 2.2083L9.125 8.5417L17.6667 0L24 6.3333L15.4583 14.875L21.7917 21.2083L21 22Z"/></g><g class="stick-slot" transform="translate(18 76) scale(0.5)" opacity="1"><path class="stick-block" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/></g><g class="stick-slot" transform="translate(0 76) scale(0.5)" opacity="1"><path class="stick-block" d="M8 9L10 8L15 8L16 8.5L16 15L14 16L9 16L8 15.5Z"/></g><g class="stick-slot" transform="translate(-18 76) scale(0.5)" opacity="1"><path class="stick-block" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/></g><g class="stick-slot" transform="translate(-36 76) scale(0.5)" opacity="1"><path class="stick-block" d="M2 22L2 3L2.7917 2.2083L9.125 8.5417L17.6667 0L24 6.3333L15.4583 14.875L21.7917 21.2083L21 22Z"/></g><g class="stick-slot" transform="translate(-54 76) scale(0.5)" opacity="1"><path class="stick-block" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/></g><g class="stick-slot" transform="translate(-72 76) scale(0.5)" opacity="1"><path class="stick-block" d="M8 9L10 8L15 8L16 8.5L16 15L14 16L9 16L8 15.5Z"/></g><g class="stick-slot" transform="translate(-90 76) scale(0.5)" opacity="1"><path class="stick-block" d="M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z"/></g><g class="stick-slot" transform="translate(-108 76) scale(0.5)" opacity="0.167"><path class="stick-block" d="M2 22L2 3L2.7917 2.2083L9.125 8.5417L17.6667 0L24 6.3333L15.4583 14.875L21.7917 21.2083L21 22Z"/></g></g></svg>
+<button type="button" class="stick-toggle" hidden><span class="stick-toggle-label">Pause</span><span class="visually-hidden"> lever animation</span></button>
+</div>
+  </div>
+
+  <div class="download home-download">
+<a class="btn-primary btn-lg dl-button btn-block" href="https://dl.backdash.gg/releases/0.54.5/Project%20Backdash%20Setup%200.54.5.exe"><svg class="dl-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="dl-label">Download for Windows</span></a>
+<p class="download-note">Version 0.54.5 · 171 MB · Updates itself</p>
+    <p class="download-note">Needs Windows 10 or 11 (64-bit), a CPU with AVX2, 8 GB of memory and your own game files. <a href="/download/#need">Details</a></p>
+  </div>
+
+  <div class="home-social">
+<ul class="social-links" aria-label="Project Backdash elsewhere">
+  <li><a class="social-icon" href="https://github.com/project-backdash" rel="me noopener"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span class="visually-hidden">Project Backdash on GitHub</span></a></li>
+  <li><a class="social-icon" href="https://x.com/ProjectBackdash" rel="me noopener"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg><span class="visually-hidden">Project Backdash on X</span></a></li>
+  <li><a class="social-icon" href="https://www.youtube.com/@ProjectBackdash" rel="me noopener"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg><span class="visually-hidden">Project Backdash on YouTube</span></a></li>
+  <li><a class="social-icon" href="https://discord.gg/j8TwvFdmsd" rel="me noopener"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg><span class="visually-hidden">Join the Project Backdash Discord</span></a></li>
+</ul>
+  </div>
+
+  <section class="home-stats" aria-labelledby="home-stats-title" data-home-stats="https://lobby.backdash.gg/v1/public/stats">
+    <div class="home-section-head"><h2 class="label-tab" id="home-stats-title">Ranked stats</h2><a href="/stats/">All stats</a></div>
+    <dl class="home-stat-grid">
+      <div><dt>Players who played</dt><dd data-home-count="playersWhoPlayed">—</dd></div>
+      <div><dt>Ranked sets</dt><dd aria-label="Unavailable">—</dd></div>
+      <div><dt>Ranked games</dt><dd data-home-count="rankedGames">—</dd></div>
+      <div><dt>Sets · last 24 hours</dt><dd aria-label="Unavailable">—</dd></div>
+      <div><dt>Searching / playing</dt><dd aria-label="Unavailable">—</dd></div>
+    </dl>
+    <p class="home-stats-status" role="status" data-home-status>Enable JavaScript to view stats.</p>
+    <form class="home-player-search" action="/stats/players/" method="get" role="search">
+      <label for="home-player">Find a player</label>
+      <div><input id="home-player" type="search" name="q" maxlength="45" placeholder="Name or Name#tag" required><button class="btn-primary" type="submit">Search</button></div>
+    </form>
+    <div class="home-section-head"><h3>Top players</h3><a href="/stats/leaderboard/">Leaderboard</a></div>
+    <ol class="home-leaderboard" data-home-leaders><li>Loading…</li></ol>
+    <div class="home-section-head"><h3>Recent Ranked matches</h3></div>
+    <p class="home-stats-status">Recent matches are unavailable right now.</p>
+  </section>
+
+  <section class="home-features" aria-labelledby="features-title">
+    <h2 class="label-tab" id="features-title">Features</h2>
+    <ul class="feature-rows">
+      <li class="feature-row">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 14h5v5H3zM9.5 14h5v5h-5zM16 14h5v5h-5z"/><path d="M20 9H11M14 6l-3 3 3 3"/></svg>
+        <div class="feature-text">
+          <h3 class="feature-title">Rollback netcode</h3>
+          <p>A direct connection, with the game state checked every frame.</p>
+        </div>
+      </li>
+      <li class="feature-row">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="7" cy="8" r="2.5"/><circle cx="17" cy="8" r="2.5"/><path d="M3 19v-1.5A3.5 3.5 0 0 1 6.5 14h1A3.5 3.5 0 0 1 11 17.5V19M13 19v-1.5a3.5 3.5 0 0 1 3.5-3.5h1a3.5 3.5 0 0 1 3.5 3.5V19"/></svg>
+        <div class="feature-text">
+          <h3 class="feature-title">Online lobbies</h3>
+          <p>Rooms that play <span class="nowrap">first-to-N</span> sets.</p>
+        </div>
+      </li>
+      <li class="feature-row">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.75"/></svg>
+        <div class="feature-text">
+          <h3 class="feature-title">Modern Practice</h3>
+          <ul class="feature-chips">
+            <li>Custom dummy behaviour</li>
+            <li>Position reset</li>
+            <li class="is-soon">Real-time frame data <span class="chip-soon"><span class="visually-hidden">(</span>Soon<span class="visually-hidden">)</span></span></li>
+            <li class="is-soon">Distance from your opponent <span class="chip-soon"><span class="visually-hidden">(</span>Soon<span class="visually-hidden">)</span></span></li>
+            <li class="is-soon">Save states <span class="chip-soon"><span class="visually-hidden">(</span>Soon<span class="visually-hidden">)</span></span></li>
+          </ul>
+        </div>
+      </li>
+      <li class="feature-row">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/><path d="M10.5 9.2v5.6L15 12z"/></svg>
+        <div class="feature-text">
+          <h3 class="feature-title">Replays</h3>
+          <p>Save full replays of your matches and watch them back with modern controls.</p>
+        </div>
+      </li>
+      <li class="feature-row">
+        <svg class="feature-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 20h18"/><path d="M4 20v-6h5v6M9.5 20V9h5v11M15 20v-4h5v4"/><path d="M12 3.5l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 5.6l2-.3z"/></svg>
+        <div class="feature-text">
+          <h3 class="feature-title">Ranked</h3>
+          <p>Rated sets with MMR, ranks and a <a href="/ranked/">leaderboard</a>.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <p class="hero-compat home-compat">A modified RPCS3 emulator for Tekken 5 Dark Resurrection (PS3, NPUB30009). You supply your own game and its licence file. <a href="/how-it-works/">How it works</a></p>
+
+</main>
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    
+    <nav class="footer-nav" aria-label="Footer">
+      <ul>
+        <li><a href="/how-it-works/">How it works</a></li>
+        <li><a href="/stats/">Stats</a></li>
+        <li><a href="/ranked/">Ranked</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/source/">Source</a></li>
+        <li><a href="/privacy/">Privacy</a></li>
+      </ul>
+    </nav>
+    <p class="contact">Email: <a href="mailto:deesam@backdash.gg">deesam@backdash.gg</a></p>
+    <p class="footer-free">Free. No ads, no payments.</p>
+    <p class="footer-fine">Independent fan project, not affiliated with or endorsed by the game or platform publishers or the RPCS3 team. Tekken 5 Dark Resurrection is named only to say which game this works with; its trademarks belong to their owner. Windows is a Microsoft trademark.</p>
+  </div>
+</footer>
 </body>
 </html>

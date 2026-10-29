@@ -5,7 +5,7 @@ import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
 import { playersView, matchupsView, leaderboardView } from '/assets/js/ranked-views.mjs?v=d13d5ce210';
 import { charactersView } from '/assets/js/ranked-characters.mjs?v=fa4d1c8698';
 import { populationView } from '/assets/js/ranked-population.mjs?v=1370d17cbd';
-import { profileView } from '/assets/js/ranked-profile.mjs?v=fcfcd46790';
+import { profileView } from '/assets/js/ranked-profile.mjs?v=0bc62cbd49';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
 
 function mount(root, view, player) {

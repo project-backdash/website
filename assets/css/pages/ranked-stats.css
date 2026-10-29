@@ -362,6 +362,7 @@
 }
 .ranked-replay {
   display: inline-flex;
+  grid-column: 1 / -1;
   align-items: center;
   min-height: 44px;
 }

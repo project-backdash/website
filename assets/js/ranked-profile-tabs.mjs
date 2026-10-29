@@ -12,8 +12,16 @@ export function profileTabs(content) {
   const tabs = [];
   const activate = (index, focus = false) => {
     panels.forEach((panel, i) => {
-      panel.hidden = i !== index;
+      const inOverview = index === 0 && i < 3;
+      panel.hidden = i !== index && !inOverview;
       if (panel.tagName === 'DETAILS') panel.open = i === index;
+      if (i === index) {
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tabs[i].id);
+      } else {
+        panel.removeAttribute('role');
+        panel.removeAttribute('aria-labelledby');
+      }
       tabs[i].setAttribute('aria-selected', String(i === index));
       tabs[i].tabIndex = i === index ? 0 : -1;
     });

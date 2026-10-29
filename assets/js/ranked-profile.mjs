@@ -4,9 +4,9 @@ import { characterName, profileEndpoint, fetchRanked } from '/assets/js/ranked-d
 import { profileAggregates, profileFilters, playedQuery } from '/assets/js/ranked-profile-extra.mjs?v=82fb88205c';
 import { profileSummary } from '/assets/js/ranked-profile-summary.mjs?v=b98417c5ff';
 import { ratingSection } from '/assets/js/ranked-rating.mjs?v=fa53aca150';
-import { matchRow } from '/assets/js/ranked-game.mjs?v=50e87c3364';
+import { matchRow } from '/assets/js/ranked-game.mjs?v=788e907764';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { profileTabs } from '/assets/js/ranked-profile-tabs.mjs?v=762277eec4';
+import { profileTabs } from '/assets/js/ranked-profile-tabs.mjs?v=54e71df810';
 import { el, table, number, percent, note, section } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
 
 function paginate(app, parent, label, endpoint, kind, getCursor, receive, getQuery = () => ({})) {

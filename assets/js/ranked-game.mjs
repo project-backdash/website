@@ -53,15 +53,15 @@ export function matchRow(game, player) {
     game.build ? `Build ${game.build}` : null,
   ].filter(Boolean);
   const replay = replayPath(game.sharedReplayUrl);
-  if (facts.length || replay) {
+  if (replay) {
+    const link = el('a', 'ranked-replay', 'Shared replay');
+    link.href = replay;
+    item.append(link);
+  }
+  if (facts.length) {
     const details = el('details', 'ranked-game-details');
     details.append(el('summary', '', 'Details'));
     if (facts.length) details.append(el('p', 'ranked-note', facts.join(' · ')));
-    if (replay) {
-      const link = el('a', 'ranked-replay', 'Shared replay');
-      link.href = replay;
-      details.append(link);
-    }
     item.append(details);
   }
   return item;
