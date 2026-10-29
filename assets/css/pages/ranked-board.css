@@ -64,16 +64,25 @@
 .board-table-title { margin-bottom: .75rem; }
 .ranked-leaderboard .ranked-board { margin: 0; background: #211319; border-color: #56363d; border-radius: 14px; }
 .ranked-leaderboard .ranked-board caption { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.ranked-leaderboard .ranked-board .data { font-size: .9375rem; }
-.ranked-leaderboard .ranked-board :is(th,td) { padding: .55rem .7rem; vertical-align: middle; }
+.ranked-leaderboard .ranked-board .data { width: 100%; table-layout: fixed; font-size: .9375rem; }
+.ranked-leaderboard .ranked-board :is(th,td) { padding: .65rem .7rem; vertical-align: middle; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(1) { width: 5%; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(2) { width: 32%; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(3) { width: 20%; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(4) { width: 12%; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(5) { width: 9%; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(6) { width: 10%; }
+.ranked-leaderboard .ranked-board :is(th,td):nth-child(7) { width: 12%; }
 .ranked-leaderboard .ranked-board thead th { color: var(--text-2); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
 .ranked-leaderboard .ranked-board tbody tr:hover { background: rgba(244,182,63,.06); }
 .ranked-leaderboard .ranked-board tbody td:nth-child(4) { color: #F4B63F; font-weight: 700; }
-.ranked-leaderboard .ranked-board .ranked-player { font-weight: 600; }
+.ranked-leaderboard .ranked-board .ranked-player { color: var(--text-1); font-weight: 700; text-decoration: none; }
+.ranked-leaderboard .ranked-board a.ranked-player:hover, .ranked-leaderboard .ranked-board a.ranked-player:focus-visible { color: #F4B63F; text-decoration: underline; }
 .ranked-leaderboard .ranked-board .ranked-sub { font-size: .8125rem; }
-.ranked-leaderboard .ranked-board .character-badge { font-size: .75rem; }
+.ranked-leaderboard .ranked-board .character-badge { display: block; padding: 0; border: 0; background: transparent; font-size: .8125rem; }
+.ranked-leaderboard .ranked-board td > .board-rank .board-rank-image { width: 84px; height: 42px; object-position: left center; }
 .board-player-cell { display: flex; align-items: center; gap: .65rem; min-width: 0; }
-.board-player-text { min-width: 0; }
+.board-player-text { display: grid; justify-items: start; gap: .1rem; min-width: 0; }
 .board-row-portrait { flex: 0 0 48px; width: 48px; height: 48px; }
 .board-mobile-rank { display: none; }
 .ranked-leaderboard .ranked-content > .ranked-note { font-size: .875rem; text-align: right; }
@@ -124,4 +133,9 @@
 }
 @media (max-width: 359.98px) { .board-search { flex-wrap: wrap; } .board-search-label { flex-basis: 100%; } }
 @media (max-width: 599.98px) { .board-mobile-rank { display: flex; margin-top: .2rem; } .board-mobile-rank .board-rank-image { width: 86px; max-height: 28px; } }
+@media (max-width: 599.98px) {
+  .ranked-leaderboard .ranked-board :is(th,td):nth-child(1) { width: 12%; }
+  .ranked-leaderboard .ranked-board :is(th,td):nth-child(2) { width: 58%; }
+  .ranked-leaderboard .ranked-board :is(th,td):nth-child(4) { width: 30%; }
+}
 @media (forced-colors: active) { .board-podium-card { border: 1px solid CanvasText; } }

@@ -377,7 +377,11 @@ export function leaderboardView(app) {
         const player = el('div', 'board-player-cell');
         const portrait = boardPortrait(row.character, 'board-row-portrait');
         const playerText = el('div', 'board-player-text');
-        playerText.append(playerLink(row.player));
+        const link = playerLink(row.player);
+        const avatar = link.querySelector('.character-badge');
+        avatar?.remove();
+        playerText.append(link);
+        if (avatar) playerText.append(avatar);
         if (row.player.avatarCharacter !== row.character)
           playerText.append(el('small', 'ranked-sub', `Ranked: ${characterName(row.character)}`));
         const mobileRank = boardRank(row);
