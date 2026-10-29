@@ -27,11 +27,13 @@
 .board-roster-header { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: .65rem; margin: 0 0 .8rem; }
 .board-roster-header h2 { margin: 0; color: var(--text-2); font: 700 .8125rem/1.3 var(--font-ui); letter-spacing: .1em; text-transform: uppercase; }
 .board-roster-selection { color: #F4B63F; font-size: .8125rem; }
-.board-roster-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; }
-.board-roster-grid button { display: grid; place-items: center; position: relative; flex: 0 0 62px; width: 62px; height: 62px; padding: 0; overflow: hidden; border: 2px solid #60434b; border-radius: 50%; background: #301a22; color: var(--text-1); font: 700 .75rem/1.1 var(--font-ui); cursor: pointer; }
-.board-roster-grid button:hover, .board-roster-grid button:focus-visible { border-color: #F4B63F; }
-.board-roster-grid button[aria-pressed='true'] { border-color: #F4B63F; box-shadow: 0 0 0 2px #F4B63F; }
-.board-roster-portrait { width: 100%; height: 100%; border-radius: 50%; transform: scale(1.13); }
+.board-roster-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem; }
+.board-roster-grid button { display: grid; place-items: center; position: relative; flex: 0 0 68px; width: 68px; height: 68px; padding: 2px; border: 2px solid transparent; border-radius: 12px; background: transparent; color: var(--text-1); font: 700 .75rem/1.1 var(--font-ui); cursor: pointer; transition: background-color .15s, border-color .15s, box-shadow .15s; }
+.board-roster-grid button:hover, .board-roster-grid button:focus-visible { background: #48232e; border-color: #c49245; }
+.board-roster-grid button[aria-pressed='true'] { background: #48232e; border-color: #F4B63F; box-shadow: 0 0 0 1px #F4B63F; }
+.board-roster-grid .no-image { background: #301a22; border-color: #60434b; }
+.board-roster-grid .no-image:hover, .board-roster-grid .no-image:focus-visible, .board-roster-grid .no-image[aria-pressed='true'] { border-color: #F4B63F; }
+.board-roster-portrait { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 .board-roster-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .board-roster-grid .no-image .board-roster-name { position: static; width: auto; height: auto; max-width: 90%; overflow: visible; clip-path: none; white-space: normal; overflow-wrap: anywhere; }
 @media (min-width: 700px) { .ranked-leaderboard .board-character-select, .ranked-leaderboard .board-region-select { display: none; } }
