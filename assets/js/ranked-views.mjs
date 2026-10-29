@@ -7,6 +7,16 @@ import { el, table, number, percent, note, playerLink, select, characterOptions 
 
 function boardPortrait(character, className = '') {
   if (!CHARACTERS.includes(character)) return null;
+  if (character === 'panda') {
+    const frame = el('span', 'board-portrait board-panda-portrait ' + className);
+    const panda = el('img', 'board-panda-image');
+    panda.src = '/assets/portraits/panda.png?v=24148bc8d6';
+    panda.alt = '';
+    panda.decoding = 'async';
+    panda.addEventListener('error', () => { frame.dispatchEvent(new Event('error')); frame.remove(); });
+    frame.append(panda);
+    return frame;
+  }
   const image = el('img', 'board-portrait ' + className);
   image.src = `/assets/portraits/${character}.png`;
   image.alt = '';
@@ -19,7 +29,7 @@ function boardPortrait(character, className = '') {
 
 function boardRank(row) {
   const rank = el('span', 'board-rank');
-  const label = el('span', 'board-rank-label', row.rank ?? 'Unranked');
+  const label = el('span', 'board-rank-label', row.rank ?? (row.rankId ? 'Ranked' : 'Unranked'));
   if (/^rank_(0\d|[12]\d|3[0-4])$/.test(row.rankId ?? '')) {
     const image = el('img', 'board-rank-image');
     image.src = `/assets/rank-plates/${row.rankId}.png`;
@@ -198,7 +208,6 @@ export function leaderboardView(app) {
     region = REGIONS.some(([id]) => id === app.params.get('region')) ? app.params.get('region') : '';
   let rows = [],
     cursor = null,
-    total = null,
     generation = 0;
   app.title.parentElement.classList.add('board-hero');
   app.title.parentElement.prepend(el('p', 'board-eyebrow', 'PROJECT BACKDASH  /  RANKED'));
@@ -358,14 +367,17 @@ export function leaderboardView(app) {
     return grid;
   };
   const render = (data) => {
-    rows = data.rows;
+    rows = data.rows.filter((row) => /^rank_(0\d|[12]\d|3[0-4])$/.test(row.rankId ?? '') ||
+      (typeof row.rank === 'string' && row.rank.trim() && row.rank.trim().toLowerCase() !== 'unranked'))
+      .map((row, index) => ({ ...row, position: index + 1 }));
     cursor = data.nextCursor;
-    total = data.total;
-    if (!data.rows.length) return app.content.append(note('No Ranked players for these filters yet.'));
+    if (!rows.length) {
+      app.content.append(note(cursor ? 'No ranked players in this page. Load more to continue.' : character ? `No ranked ${characterName(character)} players for this region yet. Select All characters to see the full leaderboard.` : 'No ranked players for this region yet.'));
+    } else {
     const boardHead = el('div', 'board-heading');
     const title = el('div');
     title.append(el('p', 'board-eyebrow', 'THE LADDER'), el('h2', '', 'Top players'));
-    boardHead.append(title, el('p', 'board-count', `${number(total)} player / character entries`));
+    boardHead.append(title, el('p', 'board-count', `${number(rows.length)} ranked ${rows.length === 1 ? 'entry' : 'entries'}${cursor ? ' shown' : ''}`));
     const podium = el('ol', 'board-podium');
     podium.setAttribute('aria-label', 'Top three player and character entries');
     for (const row of rows.slice(0, 3)) podium.append(podiumCard(row));
@@ -373,7 +385,7 @@ export function leaderboardView(app) {
     const board = table(
       'Leaderboard · set results',
       ['#', 'Player / character', 'Rank', 'MMR', 'Wins', 'Losses', 'Region'],
-      data.rows.map((row) => {
+      rows.map((row) => {
         const player = el('div', 'board-player-cell');
         const portrait = boardPortrait(row.character, 'board-row-portrait');
         const playerText = el('div', 'board-player-text');
@@ -411,8 +423,7 @@ export function leaderboardView(app) {
     );
     board.classList.add('ranked-board');
     app.content.append(board);
-    if (total != null)
-      app.content.append(note(`${number(rows.length)} of ${number(total)} player / character entries`));
+    }
     if (cursor) {
       const more = el('button', 'btn', 'More players');
       more.type = 'button';
@@ -467,7 +478,7 @@ export function leaderboardView(app) {
   rosterGrid.setAttribute('aria-labelledby', 'board-roster-title');
   const updateCharacters = () => {
     for (const button of rosterGrid.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.character === character));
-    rosterSelection.textContent = character ? characterName(character) : 'All characters';
+    rosterSelection.textContent = character ? `${characterName(character)} selected · choose All to reset` : 'All characters';
   };
   for (const [id, name] of [['', 'All characters'], ...characterOptions(CHARACTERS)]) {
     const button = el('button', 'board-roster-button');
