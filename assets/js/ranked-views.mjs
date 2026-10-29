@@ -5,6 +5,38 @@ import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
 import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=b41ebf2a92';
 import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
 
+function boardPortrait(character, className = '') {
+  if (!CHARACTERS.includes(character)) return null;
+  const image = el('img', 'board-portrait ' + className);
+  image.src = `/assets/portraits/${character}.png`;
+  image.alt = '';
+  image.width = 144;
+  image.height = 144;
+  image.decoding = 'async';
+  image.addEventListener('error', () => image.remove());
+  return image;
+}
+
+function boardRank(row) {
+  const rank = el('span', 'board-rank');
+  const label = el('span', 'board-rank-label', row.rank ?? 'Unranked');
+  if (/^rank_(0\d|[12]\d|3[0-4])$/.test(row.rankId ?? '')) {
+    const image = el('img', 'board-rank-image');
+    image.src = `/assets/rank-plates/${row.rankId}.png`;
+    image.alt = '';
+    image.width = 160;
+    image.height = 52;
+    image.hidden = true;
+    image.decoding = 'async';
+    image.addEventListener('load', () => { image.hidden = false; rank.classList.add('has-image'); });
+    image.addEventListener('error', () => { rank.classList.remove('has-image'); image.remove(); });
+    rank.append(image);
+  }
+  rank.append(label);
+  if (row.provisional === true) rank.append(el('small', 'ranked-sub', 'Provisional'));
+  return rank;
+}
+
 export function playersView(app) {
   const form = el('form', 'ranked-filters ranked-search-form');
   form.method = 'get';
@@ -233,16 +265,17 @@ export function leaderboardView(app) {
     const card = el('li', 'board-podium-card');
     card.dataset.place = row.position;
     const place = el('div', 'board-place', `#${number(row.position)}`);
-    const emblem = el('div', 'board-emblem');
-    emblem.setAttribute('aria-hidden', 'true');
-    emblem.append(el('span', '', String(row.position).padStart(2, '0')));
-    const rank = el('p', 'board-card-rank', `${row.rank ?? 'Unranked'}${row.provisional ? ' · Provisional' : ''}`);
+    const portrait = boardPortrait(row.character, 'board-podium-portrait');
+    const rank = boardRank(row);
+    rank.classList.add('board-card-rank');
     const name = playerLink(row.player);
     const played = el('p', 'board-card-character', characterName(row.character));
     const mmr = el('p', 'board-card-mmr', number(row.mmr));
     mmr.append(el('small', '', ' MMR'));
     const record = el('p', 'board-card-record', `${number(row.wins)}W  /  ${number(row.losses)}L · ${REGIONS.find(([id]) => id === row.region)?.[1] || 'Region unknown'}`);
-    card.append(place, emblem, rank, name, played, mmr, record);
+    card.append(place);
+    if (portrait) card.append(portrait);
+    card.append(rank, name, played, mmr, record);
     return card;
   };
   const insights = () => {
@@ -259,8 +292,10 @@ export function leaderboardView(app) {
       grid.append(box);
       return body;
     };
-    const ranks = panel('Rank distribution', 'All ranks', '/stats/ranks/');
     const characters = panel('Most picked characters', 'All characters', '/stats/characters/');
+    const winners = panel('Highest win rates', 'All characters', '/stats/characters/?sort=winRate&view=characters');
+    const ranks = panel('Rank distribution', 'All ranks', '/stats/ranks/');
+    ranks.parentElement.classList.add('board-insight-ranks');
     const fill = (target, values, empty) => {
       target.replaceChildren();
       if (!values.length) return target.append(note(empty));
@@ -279,6 +314,30 @@ export function leaderboardView(app) {
       }
       target.append(list);
     };
+    const fillCharacters = (target, values, metric) => {
+      target.replaceChildren();
+      if (!values.length) return target.append(note('No character data yet.'));
+      const list = el('ol', 'board-character-list');
+      for (const row of values) {
+        const item = el('li');
+        const image = boardPortrait(row.character, 'board-insight-portrait');
+        const link = el('a', 'board-character-name', characterName(row.character));
+        link.href = '/stats/characters/?character=' + encodeURIComponent(row.character);
+        const text = el('div', 'board-character-info');
+        const track = el('div', 'board-insight-track');
+        track.setAttribute('aria-hidden', 'true');
+        const bar = el('span');
+        bar.style.width = `${Math.max(0, Math.min(100, row[metric] * 100))}%`;
+        track.append(bar);
+        text.append(link, track);
+        const value = el('div', 'board-character-value');
+        value.append(el('strong', '', percent(row[metric])), el('small', '', `${number(row.games)} games`));
+        if (image) item.append(image);
+        item.append(text, value);
+        list.append(item);
+      }
+      target.append(list);
+    };
     fetchRanked(app.base, 'rank-distribution', 'rank-distribution', { character, region, population: 'highest' })
       .then((data) => {
         if (current !== generation) return;
@@ -289,10 +348,12 @@ export function leaderboardView(app) {
     fetchRanked(app.base, 'characters', 'characters', { rankBand: 'all', region })
       .then((data) => {
         if (current !== generation) return;
-        fill(characters, data.rows.filter((row) => row.pickRate != null).sort((a, b) => b.pickRate - a.pickRate).slice(0, 4).map((row) => [characterName(row.character), row.pickRate]), 'No character data yet.');
+        fillCharacters(characters, data.rows.filter((row) => row.pickRate != null).sort((a, b) => b.pickRate - a.pickRate).slice(0, 5), 'pickRate');
+        fillCharacters(winners, data.rows.filter((row) => row.winRate != null).sort((a, b) => b.winRate - a.winRate).slice(0, 5), 'winRate');
         characters.append(el('p', 'board-insight-note', 'Share of Ranked character picks'));
+        winners.append(el('p', 'board-insight-note', 'Win rate excludes draws'));
       })
-      .catch(() => { if (current === generation) characters.textContent = 'Character data is unavailable.'; });
+      .catch(() => { if (current === generation) { characters.textContent = 'Character data is unavailable.'; winners.textContent = 'Character data is unavailable.'; } });
     return grid;
   };
   const render = (data) => {
@@ -312,19 +373,25 @@ export function leaderboardView(app) {
       'Leaderboard · set results',
       ['#', 'Player / character', 'Rank', 'MMR', 'Wins', 'Losses', 'Region'],
       data.rows.map((row) => {
-        const player = el('div');
-        player.append(playerLink(row.player));
+        const player = el('div', 'board-player-cell');
+        const portrait = boardPortrait(row.character, 'board-row-portrait');
+        const playerText = el('div', 'board-player-text');
+        playerText.append(playerLink(row.player));
         if (row.player.avatarCharacter !== row.character)
-          player.append(el('small', 'ranked-sub', `Ranked: ${characterName(row.character)}`));
-        player.append(
+          playerText.append(el('small', 'ranked-sub', `Ranked: ${characterName(row.character)}`));
+        const mobileRank = boardRank(row);
+        mobileRank.classList.add('board-mobile-rank');
+        playerText.append(mobileRank);
+        playerText.append(
           el(
             'small',
             'ranked-sub ranked-mobile',
-            `${row.rank ?? 'Unranked'}${row.provisional ? ' · Provisional' : ''} · ${number(row.wins)}W ${number(row.losses)}L · ${row.region?.toUpperCase() || '—'}`,
+            `${number(row.wins)}W ${number(row.losses)}L · ${row.region?.toUpperCase() || '—'}`,
           ),
         );
-        const rank = el('span', '', row.rank ?? 'Unranked');
-        if (row.provisional === true) rank.append(el('small', 'ranked-sub', 'Provisional'));
+        if (portrait) player.append(portrait);
+        player.append(playerText);
+        const rank = boardRank(row);
         return [
           number(row.position),
           player,

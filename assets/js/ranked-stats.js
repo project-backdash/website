@@ -2,7 +2,7 @@
 // <!-- check-allow: profiles -->
 import { fetchRanked, RANK_BANDS, parsePlayerPath, StatsError } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
 import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
-import { playersView, matchupsView, leaderboardView } from '/assets/js/ranked-views.mjs?v=28f4737e84';
+import { playersView, matchupsView, leaderboardView } from '/assets/js/ranked-views.mjs?v=a50e786761';
 import { charactersView } from '/assets/js/ranked-characters.mjs?v=0acd5e8526';
 import { populationView } from '/assets/js/ranked-population.mjs?v=96740fc168';
 import { profileView } from '/assets/js/ranked-profile.mjs?v=225a28a906';
