@@ -1,6 +1,6 @@
 // <!-- check-allow: ranked -->
-import { el, table, number, change, dateLabel, note } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
-import { characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
+import { el, table, number, change, dateLabel, note } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
+import { characterName } from '/assets/js/ranked-data.mjs?v=2fa1825259';
 
 const ranks = [
   'Beginner',

@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
-import { replayPath, characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { el, playerLink, number, change, dateLabel } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
-import { REGIONS } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
+import { replayPath, characterName } from '/assets/js/ranked-data.mjs?v=2fa1825259';
+import { el, playerLink, number, change, dateLabel } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
+import { REGIONS } from '/assets/js/ranked-filters.mjs?v=a47ec7b13c';
 
 export function matchRow(game, player) {
   const item = el('li', 'ranked-game');

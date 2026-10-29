@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
-import { fetchRanked, characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
+import { fetchRanked, characterName } from '/assets/js/ranked-data.mjs?v=2fa1825259';
+import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=a47ec7b13c';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
 import {
   el,
@@ -13,7 +13,7 @@ import {
   note,
   playerLink,
   dateLabel,
-} from '/assets/js/ranked-ui.mjs?v=c2eca76225';
+} from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
 
 export function profileFilters(app, characters, onChange) {
   let query = {

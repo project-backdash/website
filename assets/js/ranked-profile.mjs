@@ -1,13 +1,13 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
-import { characterName, profileEndpoint, fetchRanked } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { profileAggregates, profileFilters, playedQuery } from '/assets/js/ranked-profile-extra.mjs?v=983beac685';
-import { profileSummary } from '/assets/js/ranked-profile-summary.mjs?v=130ffec10d';
-import { ratingSection } from '/assets/js/ranked-rating.mjs?v=fa53aca150';
-import { matchRow } from '/assets/js/ranked-game.mjs?v=927cbd8c2b';
+import { characterName, profileEndpoint, fetchRanked } from '/assets/js/ranked-data.mjs?v=2fa1825259';
+import { profileAggregates, profileFilters, playedQuery } from '/assets/js/ranked-profile-extra.mjs?v=4a1c93bafe';
+import { profileSummary } from '/assets/js/ranked-profile-summary.mjs?v=da08f38759';
+import { ratingSection } from '/assets/js/ranked-rating.mjs?v=55c042d0fb';
+import { matchRow } from '/assets/js/ranked-game.mjs?v=2fe03cbea2';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { profileTabs } from '/assets/js/ranked-profile-tabs.mjs?v=54e71df810';
-import { el, table, number, percent, note, section } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
+import { profileTabs } from '/assets/js/ranked-profile-tabs.mjs?v=d4ecbad60a';
+import { el, table, number, percent, note, section } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
 
 function paginate(app, parent, label, endpoint, kind, getCursor, receive, getQuery = () => ({})) {
   const button = el('button', 'btn ranked-more', label);

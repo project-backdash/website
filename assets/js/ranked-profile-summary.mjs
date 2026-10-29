@@ -1,9 +1,9 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
-import { characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=e42d5b4041';
-import { REGIONS } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
-import { el, number, percent, dateLabel } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
+import { characterName } from '/assets/js/ranked-data.mjs?v=2fa1825259';
+import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=1cc811626f';
+import { REGIONS } from '/assets/js/ranked-filters.mjs?v=a47ec7b13c';
+import { el, number, percent, dateLabel } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
 
 export function profileSummary(title, data) {
   const header = title.parentElement;

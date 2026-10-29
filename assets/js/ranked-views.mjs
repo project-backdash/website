@@ -1,9 +1,9 @@
 // <!-- check-allow: ranked -->
-import { characterName, RANK_BANDS, CHARACTERS, fetchRanked } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { gameFilters, gameQuery, REGIONS } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
+import { characterName, RANK_BANDS, CHARACTERS, fetchRanked } from '/assets/js/ranked-data.mjs?v=2fa1825259';
+import { gameFilters, gameQuery, REGIONS } from '/assets/js/ranked-filters.mjs?v=a47ec7b13c';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=b41ebf2a92';
-import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
+import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=e6c90153d0';
+import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
 
 function boardPortrait(character, className = '') {
   if (!CHARACTERS.includes(character)) return null;
@@ -194,8 +194,8 @@ export function matchupsView(app) {
 }
 
 export function leaderboardView(app) {
-  let character = app.params.get('character') || '',
-    region = app.params.get('region') || '';
+  let character = CHARACTERS.includes(app.params.get('character')) ? app.params.get('character') : '',
+    region = REGIONS.some(([id]) => id === app.params.get('region')) ? app.params.get('region') : '';
   let rows = [],
     cursor = null,
     total = null,
@@ -269,13 +269,14 @@ export function leaderboardView(app) {
     const rank = boardRank(row);
     rank.classList.add('board-card-rank');
     const name = playerLink(row.player);
+    const identity = el('div', 'board-podium-identity');
+    if (portrait) identity.append(portrait);
+    identity.append(name);
     const played = el('p', 'board-card-character', characterName(row.character));
     const mmr = el('p', 'board-card-mmr', number(row.mmr));
     mmr.append(el('small', '', ' MMR'));
     const record = el('p', 'board-card-record', `${number(row.wins)}W  /  ${number(row.losses)}L · ${REGIONS.find(([id]) => id === row.region)?.[1] || 'Region unknown'}`);
-    card.append(place);
-    if (portrait) card.append(portrait);
-    card.append(rank, name, played, mmr, record);
+    card.append(place, rank, identity, played, mmr, record);
     return card;
   };
   const insights = () => {
@@ -449,16 +450,33 @@ export function leaderboardView(app) {
       updateCharacters();
       load();
     });
-  const roster = el('details', 'board-roster');
-  roster.append(el('summary', '', 'Browse character leaderboards'));
+  characterControl.classList.add('board-character-select');
+  const roster = el('section', 'board-roster');
+  const rosterHeader = el('div', 'board-roster-header');
+  const rosterTitle = el('h2', '', 'Character leaderboards');
+  rosterTitle.id = 'board-roster-title';
+  const rosterSelection = el('span', 'board-roster-selection');
+  rosterHeader.append(rosterTitle, rosterSelection);
+  roster.append(rosterHeader);
   const rosterGrid = el('div', 'board-roster-grid');
+  rosterGrid.setAttribute('role', 'group');
+  rosterGrid.setAttribute('aria-labelledby', 'board-roster-title');
   const updateCharacters = () => {
     for (const button of rosterGrid.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.character === character));
+    rosterSelection.textContent = character ? characterName(character) : 'All characters';
   };
   for (const [id, name] of [['', 'All characters'], ...characterOptions(CHARACTERS)]) {
-    const button = el('button', '', name);
+    const button = el('button', 'board-roster-button');
     button.type = 'button';
     button.dataset.character = id;
+    button.setAttribute('aria-label', name);
+    button.title = name;
+    const portrait = id ? boardPortrait(id, 'board-roster-portrait') : null;
+    if (portrait) {
+      portrait.addEventListener('error', () => button.classList.add('no-image'));
+      button.append(portrait);
+    } else button.classList.add('no-image');
+    button.append(el('span', 'board-roster-name', id ? name : 'All'));
     button.addEventListener('click', () => {
       characterControl.querySelector('select').value = id;
       characterControl.querySelector('select').dispatchEvent(new Event('change', { bubbles: true }));
@@ -467,28 +485,30 @@ export function leaderboardView(app) {
   }
   roster.append(rosterGrid);
   updateCharacters();
-  app.filters.append(
-    characterControl,
-    select(
-      'Region',
-      [
-        ['', 'All regions'],
-        ['na', 'North America'],
-        ['sa', 'South America'],
-        ['eu', 'Europe'],
-        ['af', 'Africa'],
-        ['asia', 'Asia'],
-        ['oceania', 'Oceania'],
-        ['other', 'Other'],
-      ],
-      region,
-      (value) => {
-        region = value;
-        app.setParam('region', value);
-        load();
-      },
-    ),
-    roster,
-  );
+  const regionButtons = el('div', 'board-regions');
+  regionButtons.setAttribute('role', 'group');
+  regionButtons.setAttribute('aria-label', 'Filter by region');
+  const updateRegions = () => {
+    for (const button of regionButtons.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.region === region));
+  };
+  const regionControl = select('Region', REGIONS, region, (value) => {
+    region = value;
+    app.setParam('region', value);
+    updateRegions();
+    load();
+  });
+  regionControl.classList.add('board-region-select');
+  for (const [id, name] of REGIONS) {
+    const button = el('button', '', name);
+    button.type = 'button';
+    button.dataset.region = id;
+    button.addEventListener('click', () => {
+      regionControl.querySelector('select').value = id;
+      regionControl.querySelector('select').dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    regionButtons.append(button);
+  }
+  updateRegions();
+  app.filters.append(regionButtons, characterControl, regionControl, roster);
   load();
 }

@@ -1,6 +1,6 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
-import { el } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
+import { el } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
 
 export function profileTabs(content) {
   const nav = el('nav', 'ranked-nav ranked-profile-tabs');
