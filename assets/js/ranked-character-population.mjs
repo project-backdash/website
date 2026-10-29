@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
 import { fetchRanked, characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { metricBars } from '/assets/js/ranked-metrics.mjs?v=55f1c9861f';
+import { metricBars } from '/assets/js/ranked-metrics.mjs?v=b41ebf2a92';
 import { section, el, table, number, percent, playerLink, note } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
 
 export function characterPopulation(app, character, region) {

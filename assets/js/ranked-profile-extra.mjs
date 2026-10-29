@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
 import { fetchRanked, characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=f183e44333';
+import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
 import {
   el,

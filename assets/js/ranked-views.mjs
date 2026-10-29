@@ -1,8 +1,8 @@
 // <!-- check-allow: ranked -->
 import { characterName, RANK_BANDS, CHARACTERS, fetchRanked } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=f183e44333';
+import { gameFilters, gameQuery, REGIONS } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=55f1c9861f';
+import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=b41ebf2a92';
 import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
 
 export function playersView(app) {
@@ -168,11 +168,146 @@ export function leaderboardView(app) {
     cursor = null,
     total = null,
     generation = 0;
+  app.title.parentElement.classList.add('board-hero');
+  app.title.parentElement.prepend(el('p', 'board-eyebrow', 'PROJECT BACKDASH  /  RANKED'));
+  app.title.parentElement.querySelector('.lead').textContent = 'The ladder. Every character. One place.';
+  const search = el('form', 'board-search');
+  search.action = '/stats/players/';
+  search.method = 'get';
+  search.setAttribute('role', 'search');
+  const searchLabel = el('label', 'board-search-label', 'Find a player');
+  const searchInput = el('input');
+  searchInput.type = 'search';
+  searchInput.name = 'q';
+  searchInput.placeholder = 'Name or Name#tag';
+  searchInput.maxLength = 45;
+  searchInput.required = true;
+  searchInput.autocomplete = 'off';
+  searchLabel.append(searchInput);
+  const searchButton = el('button', 'btn-primary', 'Search');
+  searchButton.type = 'submit';
+  const suggestions = el('div', 'board-search-results');
+  suggestions.hidden = true;
+  const searchStatus = el('p', 'board-search-status');
+  searchStatus.setAttribute('role', 'status');
+  const results = el('ul', 'board-search-list');
+  suggestions.append(searchStatus, results);
+  search.append(searchLabel, searchButton, suggestions);
+  let timer, searchRequest, searchRevision = 0;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(timer);
+    searchRequest?.abort();
+    const revision = ++searchRevision;
+    const value = searchInput.value.trim();
+    results.replaceChildren();
+    suggestions.hidden = value.length < 2;
+    if (suggestions.hidden) return;
+    searchStatus.textContent = 'Searching…';
+    timer = setTimeout(async () => {
+      const controller = new AbortController();
+      searchRequest = controller;
+      try {
+        const answer = await fetchRanked(app.base, 'players', 'players', { q: value, limit: 8 }, controller.signal);
+        if (revision !== searchRevision) return;
+        searchStatus.textContent = answer.players.length ? 'Players' : 'No players found.';
+        for (const player of answer.players) {
+          const item = el('li');
+          item.append(playerLink(player));
+          results.append(item);
+        }
+      } catch {
+        if (revision === searchRevision) searchStatus.textContent = 'Search is unavailable. Try again.';
+      }
+    }, 500);
+  });
+  searchInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      clearTimeout(timer);
+      searchRequest?.abort();
+      searchRevision++;
+      suggestions.hidden = true;
+    }
+  });
+  app.filters.append(search);
+  const podiumCard = (row) => {
+    const card = el('li', 'board-podium-card');
+    card.dataset.place = row.position;
+    const place = el('div', 'board-place', `#${number(row.position)}`);
+    const emblem = el('div', 'board-emblem');
+    emblem.setAttribute('aria-hidden', 'true');
+    emblem.append(el('span', '', String(row.position).padStart(2, '0')));
+    const rank = el('p', 'board-card-rank', `${row.rank ?? 'Unranked'}${row.provisional ? ' · Provisional' : ''}`);
+    const name = playerLink(row.player);
+    const played = el('p', 'board-card-character', characterName(row.character));
+    const mmr = el('p', 'board-card-mmr', number(row.mmr));
+    mmr.append(el('small', '', ' MMR'));
+    const record = el('p', 'board-card-record', `${number(row.wins)}W  /  ${number(row.losses)}L · ${REGIONS.find(([id]) => id === row.region)?.[1] || 'Region unknown'}`);
+    card.append(place, emblem, rank, name, played, mmr, record);
+    return card;
+  };
+  const insights = () => {
+    const current = generation;
+    const grid = el('div', 'board-insights');
+    const panel = (heading, linkText, href) => {
+      const box = el('section', 'board-insight');
+      const head = el('div', 'board-insight-head');
+      const link = el('a', '', linkText);
+      link.href = href;
+      head.append(el('h3', '', heading), link);
+      const body = el('div', 'board-insight-body', 'Loading…');
+      box.append(head, body);
+      grid.append(box);
+      return body;
+    };
+    const ranks = panel('Rank distribution', 'All ranks', '/stats/ranks/');
+    const characters = panel('Most picked characters', 'All characters', '/stats/characters/');
+    const fill = (target, values, empty) => {
+      target.replaceChildren();
+      if (!values.length) return target.append(note(empty));
+      const list = el('ol', 'board-insight-list');
+      for (const [label, amount] of values) {
+        const row = el('li');
+        const line = el('div', 'board-insight-line');
+        line.append(el('span', '', label), el('strong', '', percent(amount)));
+        const track = el('div', 'board-insight-track');
+        track.setAttribute('aria-hidden', 'true');
+        const bar = el('span');
+        bar.style.width = `${Math.max(0, Math.min(100, amount * 100))}%`;
+        track.append(bar);
+        row.append(line, track);
+        list.append(row);
+      }
+      target.append(list);
+    };
+    fetchRanked(app.base, 'rank-distribution', 'rank-distribution', { character, region, population: 'highest' })
+      .then((data) => {
+        if (current !== generation) return;
+        fill(ranks, data.rows.filter((row) => row.players > 0 && row.share != null).sort((a, b) => b.players - a.players).slice(0, 4).map((row) => [row.rank ?? 'Unranked', row.share]), 'No rank data yet.');
+        ranks.append(el('p', 'board-insight-note', `${number(data.total)} players · highest rating per player`));
+      })
+      .catch(() => { if (current === generation) ranks.textContent = 'Rank data is unavailable.'; });
+    fetchRanked(app.base, 'characters', 'characters', { rankBand: 'all', region })
+      .then((data) => {
+        if (current !== generation) return;
+        fill(characters, data.rows.filter((row) => row.pickRate != null).sort((a, b) => b.pickRate - a.pickRate).slice(0, 4).map((row) => [characterName(row.character), row.pickRate]), 'No character data yet.');
+        characters.append(el('p', 'board-insight-note', 'Share of Ranked character picks'));
+      })
+      .catch(() => { if (current === generation) characters.textContent = 'Character data is unavailable.'; });
+    return grid;
+  };
   const render = (data) => {
     rows = data.rows;
     cursor = data.nextCursor;
     total = data.total;
     if (!data.rows.length) return app.content.append(note('No Ranked players for these filters yet.'));
+    const boardHead = el('div', 'board-heading');
+    const title = el('div');
+    title.append(el('p', 'board-eyebrow', 'THE LADDER'), el('h2', '', 'Top players'));
+    boardHead.append(title, el('p', 'board-count', `${number(total)} player / character entries`));
+    const podium = el('ol', 'board-podium');
+    podium.setAttribute('aria-label', 'Top three player and character entries');
+    for (const row of rows.slice(0, 3)) podium.append(podiumCard(row));
+    app.content.append(boardHead, podium, el('h2', 'board-table-title', 'Full standings'));
     const board = table(
       'Leaderboard · set results',
       ['#', 'Player / character', 'Rank', 'MMR', 'Wins', 'Losses', 'Region'],
@@ -221,10 +356,6 @@ export function leaderboardView(app) {
             cursor,
           });
           if (current !== generation) return;
-          if (answer.updatedAt !== data.updatedAt) {
-            load();
-            return;
-          }
           app.content.replaceChildren();
           render({ ...answer, rows: [...rows, ...answer.rows] });
           app.status.textContent = 'Loaded.';
@@ -239,17 +370,38 @@ export function leaderboardView(app) {
       });
       app.content.append(more);
     }
+    app.content.append(insights());
   };
   const load = () => {
     generation++;
     return app.load('leaderboard', { character, region, limit: 100 }, render);
   };
-  app.filters.append(
-    select('Character', [['', 'All characters'], ...characterOptions(CHARACTERS)], character, (value) => {
+  const characterControl = select('Character', [['', 'All characters'], ...characterOptions(CHARACTERS)], character, (value) => {
       character = value;
       app.setParam('character', value);
+      updateCharacters();
       load();
-    }),
+    });
+  const roster = el('details', 'board-roster');
+  roster.append(el('summary', '', 'Browse character leaderboards'));
+  const rosterGrid = el('div', 'board-roster-grid');
+  const updateCharacters = () => {
+    for (const button of rosterGrid.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.character === character));
+  };
+  for (const [id, name] of [['', 'All characters'], ...characterOptions(CHARACTERS)]) {
+    const button = el('button', '', name);
+    button.type = 'button';
+    button.dataset.character = id;
+    button.addEventListener('click', () => {
+      characterControl.querySelector('select').value = id;
+      characterControl.querySelector('select').dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    rosterGrid.append(button);
+  }
+  roster.append(rosterGrid);
+  updateCharacters();
+  app.filters.append(
+    characterControl,
     select(
       'Region',
       [
@@ -269,6 +421,7 @@ export function leaderboardView(app) {
         load();
       },
     ),
+    roster,
   );
   load();
 }

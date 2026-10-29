@@ -2,7 +2,7 @@
 // <!-- check-allow: profiles -->
 import { characterName } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
 import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=e42d5b4041';
-import { REGIONS } from '/assets/js/ranked-filters.mjs?v=f183e44333';
+import { REGIONS } from '/assets/js/ranked-filters.mjs?v=f92f56adc1';
 import { el, number, percent, dateLabel } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
 
 export function profileSummary(title, data) {

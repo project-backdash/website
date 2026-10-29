@@ -17,16 +17,16 @@ export const gameQuery = (params) =>
     ['region', 'build', 'from', 'to'].filter((key) => params.get(key)).map((key) => [key, params.get(key)]),
   );
 
-export function gameFilters(app, onApply, { match = false, opponent = false } = {}) {
+export function gameFilters(app, onApply, { match = false, opponent = false, regionContainer = null, onRegionChange = null } = {}) {
   const details = el('details', 'ranked-filter-panel');
   details.append(el('summary', '', 'More filters'));
   const form = el('form', 'ranked-filters');
   const query = gameQuery(app.params);
-  form.append(
-    select('Game region', REGIONS, query.region || '', (value) => {
-      query.region = value;
-    }),
-  );
+  const region = select('Game region', REGIONS, query.region || '', (value) => {
+    query.region = value;
+    onRegionChange?.(value);
+  });
+  (regionContainer || form).append(region);
   const builds = select(
     'Build',
     [['', 'All builds'], ...(query.build ? [[query.build, query.build]] : [])],

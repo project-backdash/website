@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://lobby.backdash.gg; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Ranked | Project Backdash</title>
-<meta name="description" content="Ranked in Project Backdash: rated sets with MMR and ranks. Log in with Discord in the launcher to play.">
+<meta name="description" content="Explore the Project Backdash Ranked leaderboard by character and region.">
 <link rel="canonical" href="https://backdash.gg/ranked/">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#140608">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Backdash">
 <meta property="og:title" content="Ranked | Project Backdash">
-<meta property="og:description" content="Ranked in Project Backdash: rated sets with MMR and ranks. Log in with Discord in the launcher to play.">
+<meta property="og:description" content="Explore the Project Backdash Ranked leaderboard by character and region.">
 <meta property="og:url" content="https://backdash.gg/ranked/">
 <meta property="og:image" content="https://backdash.gg/og.png">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Project Backdash">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Ranked | Project Backdash">
-<meta name="twitter:description" content="Ranked in Project Backdash: rated sets with MMR and ranks. Log in with Discord in the launcher to play.">
+<meta name="twitter:description" content="Explore the Project Backdash Ranked leaderboard by character and region.">
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
@@ -33,8 +33,10 @@
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
 <link rel="stylesheet" href="/assets/css/site.css?v=fbc11efad8">
 <link rel="stylesheet" href="/assets/css/resurrection.css?v=7a94d21223">
-<link rel="stylesheet" href="/assets/css/pages/leaderboard.css?v=a3d2b45cfd">
+<link rel="stylesheet" href="/assets/css/pages/ranked-stats.css?v=6fff8b85ab">
 <script src="/assets/js/site.js?v=8e39d6083c" defer></script>
+<link rel="stylesheet" href="/assets/css/pages/ranked-board.css?v=307828aabb">
+<script type="module" src="/assets/js/ranked-stats.js?v=bba214ef8c"></script>
 </head>
 <body class="field page-body">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -72,7 +74,6 @@
   </div>
 </header>
 <!-- check-allow: ranked -->
-<!-- check-allow: sign in -->
 <div class="page">
 <nav class="sidebar" aria-label="Main">
   <div class="sidebar-inner">
@@ -89,18 +90,13 @@
   </div>
 </nav>
 <main id="main" tabindex="-1" class="page-main">
-  <div class="page-col leaderboard">
-
-    <header class="page-head">
-      <h1>Ranked</h1>
-      <p class="lead">Rated sets with MMR and ranks. Log in with Discord in the launcher, then choose <span class="ui">Ranked</span>.</p>
-    </header>
-    <ul class="links lb-links">
-      <li><a href="/stats/leaderboard/">Leaderboard</a></li>
-      <li><a href="/download/">Download</a></li>
-    </ul>
-
-  </div>
+  <div class="page-col ranked-stats" data-ranked-view="leaderboard" data-ranked-api="https://lobby.backdash.gg/v1/stats">
+  <header class="page-head">
+    <h1>Ranked</h1>
+    <p class="lead">Active-season Ranked.</p>
+  </header>
+  <p data-ranked-fallback>Enable JavaScript to view these stats.</p>
+</div>
 </main>
 </div>
 <footer class="site-footer">

@@ -2,10 +2,10 @@
 // <!-- check-allow: profiles -->
 import { fetchRanked, RANK_BANDS, parsePlayerPath, StatsError } from '/assets/js/ranked-data.mjs?v=89a7890dfb';
 import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=c2eca76225';
-import { playersView, matchupsView, leaderboardView } from '/assets/js/ranked-views.mjs?v=d13d5ce210';
-import { charactersView } from '/assets/js/ranked-characters.mjs?v=fa4d1c8698';
-import { populationView } from '/assets/js/ranked-population.mjs?v=1370d17cbd';
-import { profileView } from '/assets/js/ranked-profile.mjs?v=0bc62cbd49';
+import { playersView, matchupsView, leaderboardView } from '/assets/js/ranked-views.mjs?v=28f4737e84';
+import { charactersView } from '/assets/js/ranked-characters.mjs?v=0acd5e8526';
+import { populationView } from '/assets/js/ranked-population.mjs?v=96740fc168';
+import { profileView } from '/assets/js/ranked-profile.mjs?v=225a28a906';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
 
 function mount(root, view, player) {
@@ -18,7 +18,9 @@ function mount(root, view, player) {
   retry.type = 'button';
   retry.hidden = true;
   const content = el('div', 'ranked-content');
-  root.append(statsNav(view === 'profile' ? '' : location.pathname), filters, status, retry, content);
+  if (view === 'leaderboard') root.classList.add('ranked-leaderboard');
+  if (view === 'characters') root.classList.add('ranked-analytics');
+  root.append(statsNav(view === 'profile' ? '' : view === 'leaderboard' ? '/stats/leaderboard/' : location.pathname), filters, status, retry, content);
   root.querySelector('[data-ranked-fallback]')?.remove();
   let pending, repeat;
   const app = {
