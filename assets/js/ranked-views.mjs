@@ -302,8 +302,6 @@ export function leaderboardView(app) {
       grid.append(box);
       return body;
     };
-    const characters = panel('Most picked characters', 'All characters', '/stats/characters/');
-    const winners = panel('Highest win rates', 'All characters', '/stats/characters/?sort=winRate&view=characters');
     const ranks = panel('Rank distribution', 'All ranks', '/stats/ranks/');
     ranks.parentElement.classList.add('board-insight-ranks');
     const fill = (target, values, empty) => {
@@ -324,30 +322,6 @@ export function leaderboardView(app) {
       }
       target.append(list);
     };
-    const fillCharacters = (target, values, metric) => {
-      target.replaceChildren();
-      if (!values.length) return target.append(note('No character data yet.'));
-      const list = el('ol', 'board-character-list');
-      for (const row of values) {
-        const item = el('li');
-        const image = boardPortrait(row.character, 'board-insight-portrait');
-        const link = el('a', 'board-character-name', characterName(row.character));
-        link.href = '/stats/characters/?character=' + encodeURIComponent(row.character);
-        const text = el('div', 'board-character-info');
-        const track = el('div', 'board-insight-track');
-        track.setAttribute('aria-hidden', 'true');
-        const bar = el('span');
-        bar.style.width = `${Math.max(0, Math.min(100, row[metric] * 100))}%`;
-        track.append(bar);
-        text.append(link, track);
-        const value = el('div', 'board-character-value');
-        value.append(el('strong', '', percent(row[metric])), el('small', '', `${number(row.games)} games`));
-        if (image) item.append(image);
-        item.append(text, value);
-        list.append(item);
-      }
-      target.append(list);
-    };
     fetchRanked(app.base, 'rank-distribution', 'rank-distribution', { character, region, population: 'highest' })
       .then((data) => {
         if (current !== generation) return;
@@ -355,15 +329,6 @@ export function leaderboardView(app) {
         ranks.append(el('p', 'board-insight-note', `${number(data.total)} players · highest rating per player`));
       })
       .catch(() => { if (current === generation) ranks.textContent = 'Rank data is unavailable.'; });
-    fetchRanked(app.base, 'characters', 'characters', { rankBand: 'all', region })
-      .then((data) => {
-        if (current !== generation) return;
-        fillCharacters(characters, data.rows.filter((row) => row.pickRate != null).sort((a, b) => b.pickRate - a.pickRate).slice(0, 5), 'pickRate');
-        fillCharacters(winners, data.rows.filter((row) => row.winRate != null).sort((a, b) => b.winRate - a.winRate).slice(0, 5), 'winRate');
-        characters.append(el('p', 'board-insight-note', 'Share of Ranked character picks'));
-        winners.append(el('p', 'board-insight-note', 'Win rate excludes draws'));
-      })
-      .catch(() => { if (current === generation) { characters.textContent = 'Character data is unavailable.'; winners.textContent = 'Character data is unavailable.'; } });
     return grid;
   };
   const render = (data) => {
