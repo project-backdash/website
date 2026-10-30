@@ -1,5 +1,28 @@
 /* Download page only. Everything else is in site.css. */
 
+.game-requirement {
+  margin: 0 0 var(--s-6);
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.game-requirement h2 {
+  margin: 0 0 .6rem;
+  font-size: 1.15rem;
+}
+
+.game-requirement p {
+  margin: .45rem 0 0;
+  color: var(--text-2);
+  font-size: .9375rem;
+  line-height: 1.45;
+}
+
+.game-requirement strong { color: var(--text-1); }
+.game-file { color: var(--text-1); overflow-wrap: anywhere; }
+
 /* The download slot: the primary, then one line under it. */
 .dl-slot {
   margin: 0 0 var(--s-8);
