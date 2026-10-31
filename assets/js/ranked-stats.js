@@ -50,7 +50,7 @@ function mount(root, view, player) {
         if (pending !== controller) return;
         await render(data);
         if (pending !== controller) return;
-        status.textContent = `${data.season === 'preseason-1' ? 'Preseason' : 'Launch season'} · Updated ${dateLabel(data.updatedAt)}`;
+        status.textContent = `${data.season === 'preseason-1' ? 'Preseason' : 'Beta Season'} · Updated ${dateLabel(data.updatedAt)}`;
       } catch (error) {
         if (pending !== controller) return;
         content.replaceChildren();
