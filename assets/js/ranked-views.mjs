@@ -346,11 +346,15 @@ export function leaderboardView(app) {
     const podium = el('ol', 'board-podium');
     podium.setAttribute('aria-label', 'Top three player and character entries');
     for (const row of rows.slice(0, 3)) podium.append(podiumCard(row));
-    app.content.append(boardHead, podium, el('h2', 'board-table-title', 'Full standings'));
+    app.content.append(boardHead, podium);
+    // The standings carry on from the podium rather than repeating it.
+    const standings = rows.slice(3);
+    if (standings.length) {
+    app.content.append(el('h2', 'board-table-title', 'Standings'));
     const board = table(
       'Leaderboard · set results',
       ['#', 'Player / character', 'Rank', 'MMR', 'Wins', 'Losses', 'Region'],
-      rows.map((row) => {
+      standings.map((row) => {
         const player = el('div', 'board-player-cell');
         const portrait = boardPortrait(row.character, 'board-row-portrait');
         const playerText = el('div', 'board-player-text');
@@ -388,6 +392,7 @@ export function leaderboardView(app) {
     );
     board.classList.add('ranked-board');
     app.content.append(board);
+    }
     }
     if (cursor) {
       const more = el('button', 'btn', 'More players');
