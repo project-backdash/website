@@ -74,17 +74,6 @@
 .ranked-filter-panel form {
   padding-block: var(--s-4);
 }
-.ranked-aggregate > summary {
-  cursor: pointer;
-  min-height: 44px;
-  color: var(--focus);
-}
-.ranked-aggregate > summary h2 {
-  display: inline-block;
-}
-.ranked-aggregate > div {
-  padding-block: var(--s-4);
-}
 .ranked-status,
 .ranked-note,
 .ranked-sub {
@@ -95,9 +84,6 @@
 }
 .ranked-note {
   margin: var(--s-2) 0;
-}
-.ranked-summary {
-  font-size: var(--fs-lead);
 }
 .ranked-metrics {
   display: grid;
@@ -199,83 +185,6 @@
   text-decoration: none;
   overflow-wrap: anywhere;
 }
-.ranked-profile-head {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-3);
-}
-.ranked-profile-head h1 {
-  min-width: 0;
-  max-width: 100%;
-  margin: 0;
-}
-.ranked-stats .ranked-profile-head {
-  padding: var(--s-5);
-  border: 1px solid var(--line);
-  background: var(--surface);
-  gap: var(--s-4);
-}
-.ranked-profile-head h1 {
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  line-height: 1.15;
-}
-.ranked-profile-summary {
-  width: 100%;
-  min-width: 0;
-}
-.ranked-profile-filters {
-  padding-block: var(--s-3);
-  border-bottom: 1px solid var(--line);
-}
-.ranked-profile-filters > .ranked-filter-panel {
-  flex: 1 1 10rem;
-}
-.ranked-profile-filters > .ranked-note {
-  flex-basis: 100%;
-  font-size: 0.875rem;
-}
-.ranked-profile-identity {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--s-2) var(--s-4);
-}
-.ranked-profile-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-4) var(--s-6);
-  margin: var(--s-5) 0 0;
-}
-.ranked-profile-facts > div {
-  min-width: 0;
-}
-.ranked-profile-facts dt {
-  color: var(--text-2);
-  font-size: 0.875rem;
-}
-.ranked-profile-facts dd {
-  margin: var(--s-1) 0 0;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.ranked-game-players {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: var(--s-3);
-  align-items: center;
-}
-.ranked-game-players > div {
-  min-width: 0;
-}
-.ranked-game-players .ranked-player {
-  min-height: 44px;
-  justify-content: center;
-}
-.ranked-game-vs {
-  color: var(--text-2);
-  font-size: 0.875rem;
-}
 .ranked-results {
   list-style: none;
   padding: 0;
@@ -310,112 +219,11 @@
 .ranked-matrix th {
   min-width: 9rem;
 }
-.ranked-games {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--line);
-}
-.ranked-game {
-  display: grid;
-  grid-template-columns: 8rem 4rem minmax(0, 1fr) 4rem;
-  align-items: center;
-  gap: var(--s-2) var(--s-3);
-  min-width: 0;
-  border-bottom: 1px solid var(--line);
-  padding: var(--s-3) 0;
-  overflow-wrap: anywhere;
-  font-variant-numeric: tabular-nums;
-}
-.ranked-game-date {
-  font-size: 0.875rem;
-  color: var(--text-2);
-}
-.ranked-game-date small {
-  font-size: 0.8125rem;
-}
-.ranked-game-delta {
-  text-align: right;
-  font-weight: 600;
-}
-.ranked-game[data-result='win'] .ranked-game-head strong {
-  color: var(--focus);
-}
-.ranked-game-details {
-  grid-column: 1 / -1;
-  font-size: 0.875rem;
-}
-.ranked-game p {
-  margin: var(--s-2) 0;
-}
-.ranked-game-head {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.ranked-game summary {
-  min-height: 44px;
-  padding-block: 10px;
-  cursor: pointer;
-  color: var(--focus);
-}
-.ranked-replay {
-  display: inline-flex;
-  grid-column: 1 / -1;
-  align-items: center;
-  min-height: 44px;
-}
-.ranked-chart {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.rating-figure {
-  margin: var(--s-3) 0 var(--s-5);
-}
-.ranked-chart text {
-  fill: var(--text-2);
-  font: 17px var(--font-ui);
-}
-.rating-grid {
-  stroke: var(--line);
-  stroke-width: 1;
-}
-.rating-line {
-  stroke: var(--focus);
-  stroke-width: 2;
-  fill: none;
-}
-.rating-point {
-  fill: var(--focus);
-  stroke: transparent;
-  stroke-width: 20;
-  cursor: pointer;
-}
-.rating-point:focus {
-  stroke: var(--text-1);
-  stroke-width: 3;
-  outline: none;
-}
 .ranked-rating-decisions > summary {
   min-height: 44px;
   padding-block: 10px;
   cursor: pointer;
   color: var(--focus);
-}
-.ranked-profile-tabs {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: var(--s-5);
-}
-.ranked-profile-tabs a {
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-.ranked-profile-tabs [aria-selected='true'] {
-  color: var(--focus);
-  border-bottom: 2px solid currentColor;
 }
 .stats-loading-indicator {
   display: inline-flex;
@@ -492,19 +300,11 @@
     opacity: 1;
   }
 }
-.ranked-more {
-  margin-block: var(--s-3);
-}
 .ranked-status:has(> .stats-loading-indicator) {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 160px;
-}
-.ranked-aggregate [role='status']:has(.stats-loading-indicator) {
-  display: flex;
-  justify-content: center;
-  min-height: 120px;
 }
 .stats-loading:has(.stats-loading-indicator) {
   width: 100%;
@@ -527,9 +327,6 @@
   z-index: 3;
   padding: var(--s-5);
 }
-.ranked-mobile {
-  display: none;
-}
 .ranked-stats [hidden] {
   display: none;
 }
@@ -543,36 +340,6 @@
   .ranked-stats > .ranked-nav a,
   .stats > .ranked-nav a {
     flex-shrink: 0;
-  }
-  .ranked-chart text {
-    font-size: 24px;
-  }
-  .ranked-game {
-    grid-template-columns: minmax(0, 1fr) auto auto;
-  }
-  .ranked-game-date {
-    grid-column: 1;
-  }
-  .ranked-game-head {
-    flex-direction: row;
-    gap: var(--s-3);
-  }
-  .ranked-game-players {
-    grid-row: 2;
-    grid-column: 1 / -1;
-  }
-  .ranked-game-delta {
-    grid-column: 3;
-    grid-row: 1;
-  }
-  .ranked-profile-head {
-    padding: var(--s-4);
-  }
-  .ranked-board :is(th, td):is(:nth-child(3), :nth-child(5), :nth-child(6), :nth-child(7)) {
-    display: none;
-  }
-  .ranked-mobile {
-    display: block;
   }
 }
 @media (max-width: 479.98px) {

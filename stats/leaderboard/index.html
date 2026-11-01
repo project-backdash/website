@@ -2,26 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://lobby.backdash.gg; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI=' 'sha256-IYsUhSkkpH7axYQ74xAWHWdOXvFBQ5rn0Jp4L8oBxpY='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Leaderboard | Project Backdash</title>
-<meta name="description" content="Project Backdash Ranked leaderboard by character and region, with MMR, ranks and set results.">
-<link rel="canonical" href="https://backdash.gg/stats/leaderboard/">
+<meta name="description" content="The Project Backdash leaderboard is on the Ranked page.">
+<meta name="robots" content="noindex">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#140608">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Backdash">
 <meta property="og:title" content="Leaderboard | Project Backdash">
-<meta property="og:description" content="Project Backdash Ranked leaderboard by character and region, with MMR, ranks and set results.">
-<meta property="og:url" content="https://backdash.gg/stats/leaderboard/">
+<meta property="og:description" content="The Project Backdash leaderboard is on the Ranked page.">
 <meta property="og:image" content="https://backdash.gg/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Project Backdash">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Leaderboard | Project Backdash">
-<meta name="twitter:description" content="Project Backdash Ranked leaderboard by character and region, with MMR, ranks and set results.">
+<meta name="twitter:description" content="The Project Backdash leaderboard is on the Ranked page.">
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
@@ -31,12 +30,10 @@
 <link rel="preload" href="/assets/fonts/barlow-400.woff2?v=dabe85d6ba" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
-<link rel="stylesheet" href="/assets/css/site.css?v=e4cfce6c5a">
+<link rel="stylesheet" href="/assets/css/site.css?v=f6d47f5733">
 <link rel="stylesheet" href="/assets/css/resurrection.css?v=aae1cc3bec">
-<link rel="stylesheet" href="/assets/css/pages/ranked-stats.css?v=6fff8b85ab">
 <script src="/assets/js/site.js?v=8e39d6083c" defer></script>
-<script type="module" src="/assets/js/ranked-stats.js?v=41a17d1a22"></script>
-<link rel="stylesheet" href="/assets/css/pages/ranked-board.css?v=743e5f7b67">
+<script>location.replace('/ranked/' + location.search);</script>
 </head>
 <body class="field page-body">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -56,8 +53,8 @@
   <li><a href="/">Home</a></li>
   <li><a href="/how-it-works/">How it works</a></li>
   <li><a href="/download/">Download</a></li>
-  <li><a href="/stats/" aria-current="page">Stats</a></li>
-  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
+  <li><a href="/stats/" aria-current="page">Stats<small class="nav-sub">The game</small></a></li>
   <li><a href="/about/">About</a></li>
   <li><a href="/privacy/">Privacy</a></li>
 </ul>
@@ -70,6 +67,7 @@
       <span class="lockup-for">for Tekken 5 DR</span>
     </a>
     <a class="btn btn-sm app-bar-action" href="/how-it-works/">How it works</a>
+    
   </div>
 </header>
 <!-- check-allow: ranked -->
@@ -80,21 +78,20 @@
   <li><a href="/">Home</a></li>
   <li><a href="/how-it-works/">How it works</a></li>
   <li><a href="/download/">Download</a></li>
-  <li><a href="/stats/" aria-current="page">Stats</a></li>
-  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
+  <li><a href="/stats/" aria-current="page">Stats<small class="nav-sub">The game</small></a></li>
   <li><a href="/about/">About</a></li>
   <li><a href="/privacy/">Privacy</a></li>
 </ul>
   </div>
 </nav>
 <main id="main" tabindex="-1" class="page-main">
-  <div class="page-col ranked-stats" data-ranked-view="leaderboard" data-ranked-api="https://lobby.backdash.gg/v1/stats">
-  <header class="page-head">
-    <h1>Leaderboard</h1>
-    <p class="lead">Active-season Ranked.</p>
-  </header>
-  <p data-ranked-fallback>Enable JavaScript to view these stats.</p>
-</div>
+  <div class="page-col">
+    <header class="page-head">
+      <h1>Leaderboard</h1>
+      <p class="lead">The leaderboard is on <a href="/ranked/">Ranked</a>.</p>
+    </header>
+  </div>
 </main>
 </div>
 <footer class="site-footer">
@@ -108,8 +105,8 @@
     <nav class="footer-nav" aria-label="Footer">
       <ul>
         <li><a href="/how-it-works/">How it works</a></li>
-        <li><a href="/stats/" aria-current="page">Stats</a></li>
         <li><a href="/ranked/">Ranked</a></li>
+        <li><a href="/stats/" aria-current="page">Stats</a></li>
         <li><a href="/about/">About</a></li>
         <li><a href="/source/">Source code</a></li>
         <li><a href="/privacy/">Privacy</a></li>

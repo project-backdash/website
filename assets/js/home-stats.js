@@ -1,6 +1,7 @@
 // <!-- check-allow: ranked -->
 import { readStats } from '/assets/js/stats.js?v=0a4e010ab3';
-import { playerPath } from '/assets/js/ranked-data.mjs?v=2fa1825259';
+import { fetchRanked, playerPath } from '/assets/js/ranked-data.mjs?v=928834e0ba';
+import { feedRow } from '/assets/js/ranked-kit.mjs?v=a7b28d1a10';
 
 const root = document.querySelector('[data-home-stats]');
 const counts = root.querySelectorAll('[data-home-count]');
@@ -37,3 +38,19 @@ async function update() {
 }
 update();
 setInterval(() => { if (!document.hidden) update(); }, 300000);
+
+// The latest sets stay hidden until the stats service sends them, and while there are none.
+const matches = root.querySelector('[data-home-matches]');
+const matchesHead = root.querySelector('[data-home-matches-head]');
+async function updateMatches() {
+  try {
+    const data = await fetchRanked(matches.dataset.rankedApi, 'recent-sets', 'recent-sets', { limit: 4 });
+    matches.replaceChildren(...data.rows.map(feedRow));
+    matches.hidden = matchesHead.hidden = !data.rows.length;
+  } catch (error) {
+    matches.hidden = matchesHead.hidden = true;
+    if (error.status === 404) clearInterval(matchesTimer);
+  }
+}
+const matchesTimer = setInterval(() => { if (!document.hidden) updateMatches(); }, 60000);
+updateMatches();

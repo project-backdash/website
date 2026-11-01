@@ -1,6 +1,6 @@
 // <!-- check-allow: ranked -->
-import { characterName, playerPath } from '/assets/js/ranked-data.mjs?v=2fa1825259';
-import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=1cc811626f';
+import { characterName, playerPath } from '/assets/js/ranked-data.mjs?v=928834e0ba';
+import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=4b07d8a542';
 
 export const number = (value) =>
   value == null ? '—' : new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
@@ -97,7 +97,6 @@ export function statsNav(current) {
     ['/stats/players/', 'Players'],
     ['/stats/characters/', 'Characters'],
     ['/stats/matchups/', 'Matchups'],
-    ['/stats/leaderboard/', 'Leaderboard'],
     ['/stats/ranks/', 'Ranks'],
   ]) {
     const link = el('a', '', title);

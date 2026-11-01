@@ -1,14 +1,19 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
-import { fetchRanked, RANK_BANDS, parsePlayerPath, StatsError } from '/assets/js/ranked-data.mjs?v=2fa1825259';
-import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
-import { playersView, matchupsView, leaderboardView } from '/assets/js/ranked-views.mjs?v=4278445667';
-import { charactersView } from '/assets/js/ranked-characters.mjs?v=e9f3c8a232';
-import { populationView } from '/assets/js/ranked-population.mjs?v=b35786fe33';
-import { profileView } from '/assets/js/ranked-profile.mjs?v=a680aaf9c8';
+import { fetchRanked, RANK_BANDS, parsePlayerRoute, StatsError } from '/assets/js/ranked-data.mjs?v=928834e0ba';
+import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
 
-function mount(root, view, player) {
+// Each page loads only its own view: a player page (404.html) never waits for the Stats views, nor they for it.
+const VIEWS = {
+  players: () => import('/assets/js/ranked-views.mjs?v=6b2e6a3437').then((m) => m.playersView),
+  matchups: () => import('/assets/js/ranked-views.mjs?v=6b2e6a3437').then((m) => m.matchupsView),
+  characters: () => import('/assets/js/ranked-characters.mjs?v=384e17e5ee').then((m) => m.charactersView),
+  ranks: () => import('/assets/js/ranked-population.mjs?v=92b722eb10').then((m) => m.populationView),
+};
+
+async function mount(root, view) {
+  const show = VIEWS[view]?.();
   const params = new URLSearchParams(location.search);
   const heading = root.querySelector('h1');
   const filters = el('div', 'ranked-filters');
@@ -18,9 +23,8 @@ function mount(root, view, player) {
   retry.type = 'button';
   retry.hidden = true;
   const content = el('div', 'ranked-content');
-  if (view === 'leaderboard') root.classList.add('ranked-leaderboard');
   if (view === 'characters') root.classList.add('ranked-analytics');
-  root.append(statsNav(view === 'profile' ? '' : view === 'leaderboard' ? '/stats/leaderboard/' : location.pathname), filters, status, retry, content);
+  root.append(statsNav(location.pathname), filters, status, retry, content);
   root.querySelector('[data-ranked-fallback]')?.remove();
   let pending, repeat;
   const app = {
@@ -62,28 +66,22 @@ function mount(root, view, player) {
     },
   };
   retry.addEventListener('click', () => repeat?.());
-  if (view === 'profile') profileView(app, player);
-  else
-    ({
-      players: playersView,
-      characters: charactersView,
-      matchups: matchupsView,
-      leaderboard: leaderboardView,
-      ranks: populationView,
-    })[view]?.(app);
+  (await show)?.(app);
 }
 
-const player = parsePlayerPath(location.pathname);
-let root = document.querySelector('[data-ranked-view]');
-if (player && document.querySelector('[data-player-route]')) {
+// GitHub Pages answers every unknown address with 404.html, so player pages are drawn from there. Its inline
+// script has already framed the page for an address shaped like a player's; one that does not read as a player
+// goes back to the plain missing page.
+const route = parsePlayerRoute(location.pathname);
+const playerRoute = document.querySelector('[data-player-route]');
+const root = document.querySelector('[data-ranked-view]');
+if (route && playerRoute)
+  import('/assets/js/ranked-player.mjs?v=fab7a1a13b').then(({ playerPage }) =>
+    playerPage(document.querySelector('main'), route, playerRoute.dataset.playerRoute),
+  );
+else if (playerRoute && document.documentElement.classList.contains('is-player')) {
   const main = document.querySelector('main');
-  main.className = 'page-main';
-  root = el('div', 'page-col ranked-stats');
-  root.dataset.rankedApi = document.querySelector('[data-player-route]').dataset.playerRoute;
-  const header = el('header', 'page-head');
-  header.append(el('h1', '', `${player.name}#${player.tag}`));
-  root.append(header);
-  main.replaceChildren(root);
-  document.title = `${player.name}#${player.tag} | Project Backdash`;
-  mount(root, 'profile', player);
+  if (main.parentElement.classList.contains('page')) main.parentElement.replaceWith(main);
+  main.className = 'nf';
+  document.documentElement.classList.remove('is-player');
 } else if (root) mount(root, root.dataset.rankedView);

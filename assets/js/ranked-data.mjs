@@ -74,6 +74,24 @@ export function parsePlayerPath(pathname) {
   }
 }
 
+// A player page and its views: /player/Name-1234, then /sets, /matchups, /vs, /vs/Other-5678 or /set/<id>.
+export function parsePlayerRoute(pathname) {
+  const match = /^(\/player\/[^/]+-\d{4})(?:\/(sets|matchups|vs(?:\/([^/]+-\d{4}))?|set\/([0-9a-f]{16})))?\/?$/.exec(
+    pathname,
+  );
+  const player = match && parsePlayerPath(match[1]);
+  if (!player) return null;
+  const opponent = match[3] ? parsePlayerPath(`/player/${match[3]}`) : null;
+  if (match[3] && !opponent) return null;
+  const view = match[4] ? 'set' : match[2]?.startsWith('vs') ? 'vs' : (match[2] ?? 'overview');
+  return { player, view, opponent, setId: match[4] ?? null };
+}
+
+export function setPath(player, id) {
+  const path = playerPath(player);
+  return path && /^[0-9a-f]{16}$/.test(id ?? '') ? `${path}/set/${id}` : null;
+}
+
 export function profileEndpoint(player) {
   return `players/${encodeURIComponent(player.name)}/${player.tag}`;
 }
@@ -110,13 +128,61 @@ const player = (value) =>
   text(value.name) &&
   value.name.length <= 40 &&
   (value.tag === null || /^\d{4}$/.test(value.tag)) &&
-  (value.avatarCharacter == null || CHARACTERS.includes(value.avatarCharacter));
+  (value.avatarCharacter == null || CHARACTERS.includes(value.avatarCharacter)) &&
+  (value.region == null || text(value.region));
+const rankId = (value) => typeof value === 'string' && /^rank_(0\d|[12]\d|3[0-4])$/.test(value);
+// Rating fields a newer stats service adds; each may be missing, and a present one must be usable.
+const RATING_EXTRAS = [
+  'rd',
+  'peakMmr',
+  'placementSets',
+  'placementTotal',
+  'todayChange',
+  'todayWins',
+  'todayLosses',
+  'position',
+  'total',
+  'regionPosition',
+  'regionTotal',
+  'ratedSets',
+  'setWins',
+  'setLosses',
+];
+const extras = (value) =>
+  RATING_EXTRAS.every((key) => value[key] == null || Number.isSafeInteger(value[key])) &&
+  (value.peakRankId == null || rankId(value.peakRankId));
 const cursor = (value) => value === null || text(value) || (typeof value === 'string' && value.length <= 4096);
 const rating = (value) =>
   value &&
   nullable(text, value.rank) &&
   nullable(Number.isFinite, value.mmr) &&
-  nullable((v) => typeof v === 'boolean', value.provisional);
+  nullable((v) => typeof v === 'boolean', value.provisional) &&
+  extras(value);
+const side = (value) =>
+  value &&
+  player(value.player) &&
+  nullable(text, value.character) &&
+  nullable(count, value.score) &&
+  typeof value.won === 'boolean' &&
+  nullable((v) => v && ['before', 'after', 'change'].every((key) => Number.isFinite(v[key])), value.ratingChange);
+const set = (row) =>
+  row &&
+  text(row.id) &&
+  date(row.date) &&
+  count(row.games) &&
+  ['completed', 'quit'].includes(row.outcome) &&
+  nullable(text, row.replayUrl) &&
+  Array.isArray(row.players) &&
+  row.players.length === 2 &&
+  row.players.every(side) &&
+  (row.gameList === undefined ||
+    (Array.isArray(row.gameList) &&
+      row.gameList.every(
+        (game) =>
+          game &&
+          (game.winner === null || game.winner === 0 || game.winner === 1) &&
+          nullable((v) => Array.isArray(v) && v.length === 2 && v.every(count), game.rounds),
+      )));
 const games = (row) =>
   row &&
   text(row.character) &&
@@ -150,7 +216,8 @@ export function readRanked(value, kind) {
     value.version !== 1 ||
     value.mode !== 'ranked' ||
     !['launch-1', 'preseason-1'].includes(value.season) ||
-    !date(value.updatedAt)
+    !date(value.updatedAt) ||
+    (value.seasonLabel !== undefined && !text(value.seasonLabel))
   )
     throw new Error('Invalid stats response.');
   let valid = false;
@@ -166,10 +233,30 @@ export function readRanked(value, kind) {
       cursor(value.matchesCursor) &&
       Array.isArray(value.ratingHistory) &&
       value.ratingHistory.every(point) &&
-      cursor(value.ratingHistoryCursor);
+      cursor(value.ratingHistoryCursor) &&
+      (value.recentSets === undefined || (Array.isArray(value.recentSets) && value.recentSets.every(set)));
   if (kind === 'matches' || kind === 'rating-history')
     valid =
       Array.isArray(value.rows) && value.rows.every(kind === 'matches' ? match : point) && cursor(value.nextCursor);
+  if (kind === 'recent-sets' || kind === 'sets')
+    valid = Array.isArray(value.rows) && cursor(value.nextCursor) && value.rows.every(set);
+  if (kind === 'set') valid = set(value.set);
+  if (kind === 'ranks')
+    valid =
+      text(value.table) &&
+      nullable(date, value.startedAt) &&
+      count(value.uncertainDeviation) &&
+      count(value.placementSets) &&
+      count(value.newCharacterPlacementSets) &&
+      Array.isArray(value.ranks) &&
+      value.ranks.length === 35 &&
+      value.ranks.every(
+        (row, index) =>
+          row &&
+          row.rankId === `rank_${String(index).padStart(2, '0')}` &&
+          text(row.rank) &&
+          nullable(Number.isFinite, row.from),
+      );
   if (kind === 'characters' || kind === 'matchups')
     valid =
       RANK_BANDS.some(([id]) => id === value.rankBand) &&

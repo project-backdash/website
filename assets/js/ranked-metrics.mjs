@@ -1,5 +1,5 @@
 // <!-- check-allow: ranked -->
-import { el } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
+import { el } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
 
 export function summaryFacts(entries) {
   const grid = el('dl', 'ranked-metrics');

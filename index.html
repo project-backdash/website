@@ -31,12 +31,13 @@
 <link rel="preload" href="/assets/fonts/barlow-400.woff2?v=dabe85d6ba" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
-<link rel="stylesheet" href="/assets/css/site.css?v=e4cfce6c5a">
+<link rel="stylesheet" href="/assets/css/site.css?v=f6d47f5733">
 <link rel="stylesheet" href="/assets/css/resurrection.css?v=aae1cc3bec">
 <link rel="stylesheet" href="/assets/css/pages/home.css?v=4dda6e682d">
 <script src="/assets/js/site.js?v=8e39d6083c" defer></script>
 <script src="/assets/js/stick.js?v=213be8aa4b" defer></script>
-<script type="module" src="/assets/js/home-stats.js?v=a4b6647bb3"></script>
+<script type="module" src="/assets/js/home-stats.js?v=1051baffab"></script>
+<link rel="stylesheet" href="/assets/css/pages/ranked.css?v=3c5a1fd90e">
 </head>
 <body class="field home-page">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -56,8 +57,8 @@
   <li><a href="/" aria-current="page">Home</a></li>
   <li><a href="/how-it-works/">How it works</a></li>
   <li><a href="/download/">Download</a></li>
-  <li><a href="/stats/">Stats</a></li>
-  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
+  <li><a href="/stats/">Stats<small class="nav-sub">The game</small></a></li>
   <li><a href="/about/">About</a></li>
   <li><a href="/privacy/">Privacy</a></li>
 </ul>
@@ -70,6 +71,7 @@
       <span class="lockup-for">for Tekken 5 DR</span>
     </a>
     <a class="btn btn-sm app-bar-action" href="/how-it-works/">How it works</a>
+    
   </div>
 </header>
 <!-- check-allow: ranked -->
@@ -117,10 +119,10 @@
       <label for="home-player">Find a player</label>
       <div><input id="home-player" type="search" name="q" maxlength="45" placeholder="Name or Name#tag" required><button class="btn-primary" type="submit">Search</button></div>
     </form>
-    <div class="home-section-head"><h3>Top players</h3><a href="/stats/leaderboard/">Leaderboard</a></div>
+    <div class="home-section-head"><h3>Top players</h3><a href="/ranked/">Leaderboard</a></div>
     <ol class="home-leaderboard" data-home-leaders><li>Loading…</li></ol>
-    <div class="home-section-head"><h3>Recent Ranked matches</h3></div>
-    <p class="home-stats-status">Recent matches are unavailable right now.</p>
+    <div class="home-section-head" data-home-matches-head hidden><h3>Latest sets</h3><a href="/ranked/sets/">All sets</a></div>
+    <div class="rk-feed rk-panel" data-home-matches data-ranked-api="https://lobby.backdash.gg/v1/stats" hidden></div>
   </section>
 
   <section class="home-features" aria-labelledby="features-title">
@@ -179,8 +181,8 @@
     <nav class="footer-nav" aria-label="Footer">
       <ul>
         <li><a href="/how-it-works/">How it works</a></li>
-        <li><a href="/stats/">Stats</a></li>
         <li><a href="/ranked/">Ranked</a></li>
+        <li><a href="/stats/">Stats</a></li>
         <li><a href="/about/">About</a></li>
         <li><a href="/source/">Source code</a></li>
         <li><a href="/privacy/">Privacy</a></li>

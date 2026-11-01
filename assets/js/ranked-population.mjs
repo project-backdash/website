@@ -1,8 +1,8 @@
 // <!-- check-allow: ranked -->
-import { CHARACTERS } from '/assets/js/ranked-data.mjs?v=2fa1825259';
-import { REGIONS } from '/assets/js/ranked-filters.mjs?v=a47ec7b13c';
-import { el, select, characterOptions, table, number, percent, note } from '/assets/js/ranked-ui.mjs?v=dcce91eb97';
-import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=e6c90153d0';
+import { CHARACTERS } from '/assets/js/ranked-data.mjs?v=928834e0ba';
+import { REGIONS } from '/assets/js/ranked-filters.mjs?v=be962e69d0';
+import { el, select, characterOptions, table, number, percent, note } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
+import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=dfb030f87e';
 
 export function populationView(app) {
   let character = app.params.get('character') || '',

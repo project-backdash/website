@@ -966,6 +966,14 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   margin-left: auto;
 }
 
+/* What a page is about, small at the row's right end: one page is about the players, the next about the game. */
+.nav-list .nav-sub {
+  margin-left: auto;
+  color: var(--text-3);
+  font-weight: 400;
+  font-size: 0.8125rem;
+}
+
 /* Download, while there is no public release: not a link, so nothing to
    focus or press. The launcher's disabled look, as on Home's download block:
    a faint light fill and edge, the arrow and label in text-3 (never crimson),
