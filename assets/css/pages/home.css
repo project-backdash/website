@@ -1,428 +1,474 @@
-/* Home: one centred column that reads like a link page. From the top: the stacked mark and the
-   wordmark (the h1), one line of pitch, the animated lever as the hero, the one download block and the
-   accounts under it, the feature rows, the compatibility line, then the shared footer's links.
-   The red field behind it is resurrection.css's .field; this file only centres it. */
+/* <!-- check-allow: ranked --> */
+/* Home. The first screen answers a first visit (the game, free, Windows, your own copy, DOWNLOAD and How it works)
+   and a returning player (who is online, the sets of the last 24 hours) side by side; the board, the latest sets
+   and the characters start right under it, and a short "What is Project Backdash" with the three steps closes it.
+   The Ranked pages' type scale and panels (pages/ranked.css, linked after this file) are used throughout; small
+   labels are monospaced capitals, and crimson stays on DOWNLOAD, the logo and the sets being played now. */
 
-.home {
-  --home-col: 560px;
-  width: 100%;
-  max-width: calc(var(--home-col) + 2 * var(--s-4));
-  margin: 0 auto;
-  padding: var(--s-12) var(--s-4) var(--s-8);
-}
-
-@media (min-width: 720px) {
-  .home {
-    padding-top: var(--s-16);
-  }
-}
-
-/* The launcher's field is centred on its emblem at 64 % across; here it is centred on the column:
-   a field 1.6 times the window wide, shifted so that its 64 % point lands mid-window. */
-.home-page.field::before {
-  background-size: 160% 100%;
-  background-position: 87.33% 0;
-}
-
-/* ---- Brand: stacked mark, wordmark, pitch --------------------------------------------- */
-
-.home-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-/* Two backs over the down-back, every arrow the same size: the avatar form of the mark. */
-.home-mark {
-  display: block;
-  width: 60px;
-  height: auto;
-  aspect-ratio: 51 / 44.799;
-  margin: 0 0 var(--s-6);
-}
-
-.home-mark .mark-arrow {
-  fill: var(--text-1);
-}
-
-.home-mark .mark-lit {
-  fill: var(--mark-lit);
-}
-
-/* The wordmark is the h1. Its cap is set so the full name fits a phone column. */
-.home-title {
-  --cap: min(24px, calc((100vw - 40px) / 19.2));
-  margin: 0;
-  line-height: 0;
-}
-
-.home-title .wordmark {
-  display: block;
-  width: auto;
-  height: var(--cap);
+.hub {
+  --hub-mono: var(--font-mono);
   color: var(--text-1);
+  font-size: var(--fs-3);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+.hub a { color: inherit; }
+.hub img { display: block; }
+.hub-in {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.hub-mono {
+  font-family: var(--hub-mono);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-/* The pitch names the game in full: one sentence per line, each balanced when a phone wraps it. The
-   name is an inline block, so it moves to the next line whole, and only wraps inside itself when it is
-   wider than the column on its own (enlarged text on a narrow phone). */
-.home-pitch {
-  margin: var(--s-5) 0 0;
+/* ---- The bar on Home: lockup, the page names, the player search and DOWNLOAD -------------------------------- */
+.app-bar-hub .app-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.app-bar-hub .lockup { flex: none; }
+.app-bar-hub .drawer { display: none; }
+.bar-links { display: flex; flex: none; gap: 2px; }
+.bar-links a {
+  padding: 8px 12px;
+  border-radius: var(--r-control);
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1;
+  text-decoration: none;
+}
+.bar-links a:hover { color: var(--text-1); background: var(--hover); }
+/* The search follows the page names and DOWNLOAD sits at the far right. The search is never wider than the room
+   DOWNLOAD's full label leaves it (the lockup and the page names take about 600 px, the label about 245), so when
+   DOWNLOAD grows from its arrow to its label only the free space between them shrinks: nothing else in the bar moves. */
+.app-bar-hub .app-bar-inner > .bar-search { flex: 0 1 300px; justify-content: flex-start; min-width: 0; padding-left: 0; }
+.app-bar-hub .bar-search .rk-search { width: 100%; }
+@media (max-width: 1239.98px) {
+  .app-bar-hub .app-bar-inner > .bar-search { flex-basis: 240px; }
+}
+/* Crimson with the ink label at 20 px display caps, as every primary (4.05:1 counts as large text). While the big
+   DOWNLOAD is on screen this one is a quiet outlined arrow (its name stays "Download"), so a screen never shows two
+   DOWNLOADs; it turns into the crimson button once the big one has scrolled away under the bar. */
+.bar-download {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 44px;
+  margin-left: auto;
+  padding: 0 18px;
+  border: 1.5px solid var(--verm-500);
+  border-radius: var(--r-control);
+  background: var(--verm-500);
+  color: var(--on-verm);
+  font: 800 1.25rem/1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color var(--t-fast) linear, color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+.bar-download svg { width: 16px; height: 16px; fill: currentColor; }
+.bar-download:hover { background: var(--verm-400); border-color: var(--verm-400); color: var(--on-verm); }
+.bar-download.is-quiet { width: 44px; padding: 0; background: transparent; border-color: var(--control-edge); color: var(--text-1); }
+.bar-download.is-quiet:hover { border-color: var(--text-1); background: var(--hover); color: var(--text-1); }
+.bar-download:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.bar-download.is-quiet span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Without the page names the search box gets its full width, and DOWNLOAD is its arrow alone: outlined while the big
+   one is on screen, crimson after. */
+@media (max-width: 1179.98px) {
+  .bar-links { display: none; }
+  .app-bar-hub .drawer { display: block; }
+  .app-bar-hub .app-bar-inner { gap: 12px; padding: 0 16px 0 8px; }
+  .app-bar-hub .app-bar-inner > .bar-search { flex-basis: 380px; }
+  .app-bar-hub .bar-download { width: 44px; padding: 0; }
+  .app-bar-hub .bar-download span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+/* Under 900 px the search box would be too short to type in: the bar shows its icon beside DOWNLOAD, which opens the
+   box in a row under the bar (pages/ranked.css does the same under 768 px on every page). */
+@media (max-width: 899.98px) {
+  .app-bar-hub .app-bar-inner > .bar-search { flex: none; margin-left: auto; }
+  .app-bar-hub .bar-download { margin-left: 0; }
+}
+@media (min-width: 768px) and (max-width: 899.98px) {
+  .app-bar-hub .bar-search-open { display: inline-flex; }
+  .app-bar-hub .bar-search .rk-search { display: none; position: fixed; top: var(--bar-h); right: 0; left: 0; width: auto; max-width: none; padding: 8px 12px; background: var(--band); border-bottom: 1px solid var(--line); }
+  .app-bar-hub .bar-search.is-open .rk-search { display: block; }
+  .app-bar-hub .bar-search .rk-search-box { width: 100%; height: 44px; }
+  .app-bar-hub .bar-search .rk-search-list { position: static; width: auto; margin-top: 4px; }
+}
+/* Phones: the lockup at the left, then the search icon, DOWNLOAD as its arrow alone (outlined while the big one is
+   on screen, crimson after) and the menu, as on every page. The wordmark shrinks to leave the three buttons their
+   room (12 + 8 px of bar padding, 40 + 40 + 4 + 44 px of buttons, the lockup's 8 px); under 360 px it would be too
+   small to read, so the mark stands alone. */
+@media (max-width: 599.98px) {
+  .app-bar-hub .app-bar-inner { gap: 0; padding: 0 8px 0 12px; }
+  .app-bar.app-bar-hub .app-bar-inner > .lockup { --cap: min(11px, calc((100vw - 156px) / 26.3)); margin-right: auto; }
+  .app-bar-hub .app-bar-inner > .bar-search { order: 1; margin-left: 0; }
+  .app-bar-hub .bar-search-open { width: 40px; }
+  .app-bar-hub .bar-download { order: 2; width: 40px; height: 40px; }
+  .app-bar-hub .bar-download svg { width: 18px; height: 18px; }
+  .app-bar-hub .drawer { order: 3; margin-left: 4px; }
+}
+@media (max-width: 359.98px) {
+  .app-bar.app-bar-hub .app-bar-inner > .lockup { --cap: 11px; }
+  .app-bar-hub .app-bar-inner > .lockup .wordmark { display: none; }
+}
+
+/* ---- First screen ------------------------------------------------------------------------------------------- */
+.hub-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+  gap: 32px 48px;
+  align-items: center;
+  padding-top: 44px;
+  padding-bottom: 36px;
+}
+.hub-eyebrow {
+  margin: 0;
+  color: var(--text-2);
+  font-family: var(--hub-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* The line breaks between its parts, never inside one. */
+.hub-eyebrow span { white-space: nowrap; }
+.hub-title {
+  margin: 14px 0 0;
+  font: 400 clamp(1.75rem, 0.95rem + 2vw, 2.625rem)/1.1 var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.hub-lead {
+  max-width: 33em;
+  margin: 18px 0 0;
   color: var(--text-2);
   font-size: var(--fs-lead);
   line-height: 1.5;
 }
-
-.pitch-line {
-  display: block;
-  text-wrap: balance;
-}
-
-.pitch-name {
-  display: inline-block;
-}
-
-/* ---- The animated hero (hero-stick partial, drawn and played by assets/js/stick.js) ---------
-   A top-down lever panel (a ball-top lever without its gate, and the four nearest buttons) with
-   its input log of block arrows. The colours are the launcher's own lever palette: the drawing
-   and older inputs in a dark rose, the newest input in a lighter rose, and the thin cuts that set
-   the ball off the shaft and the washer in a near-black red, as on the launcher's main menu.
-   Never crimson: the logo's down-back is the one crimson mark at the top of the page. */
-
-.home-hero {
-  display: flex;
-  justify-content: center;
-  margin: var(--s-10) 0 0;
-  padding-bottom: var(--s-12);   /* room for Pause / Play, which hangs under the drawing */
-}
-
-.hero-stick {
-  position: relative;
-  width: min(100%, 440px);
-}
-
-.stick {
-  --stick-line: #74313D;
-  --stick-lit: #C96678;
-  --stick-ground: #21090E;
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 163 / 120;
-  overflow: visible;
-}
-
-.stick-ring {
-  fill: none;
-  stroke: var(--stick-line);
-}
-
-.stick-ball {
-  fill: var(--stick-line);
-}
-
-/* The dust washer: a flat disc, drawn as a ring like the buttons. */
-.stick-washer {
-  fill: var(--stick-ground);
-  stroke: var(--stick-line);
-}
-
-.stick-shaft {
-  fill: none;
-  stroke: var(--stick-line);
-  stroke-linecap: round;
-}
-
-.stick-cut {
-  fill: var(--stick-ground);
-  stroke: none;
-}
-
-line.stick-cut {
-  fill: none;
-  stroke: var(--stick-ground);
-  stroke-linecap: round;
-}
-
-/* The log: solid block arrows, no frame counts, the newest lit. */
-.stick-slot {
-  color: var(--stick-line);
-}
-
-.stick-slot.is-now {
-  color: var(--stick-lit);
-}
-
-.stick-block {
-  fill: currentColor;
-  stroke: none;
-}
-
-/* Pause / Play: a small quiet word under the log's right end, shown by stick.js (without
-   JavaScript nothing moves, so there is nothing to pause). It hangs in the padding below the
-   drawing, so showing it moves nothing; 44 x 44 px to hit, label at the right edge so "Pause"
-   and "Play" end in the same place. */
-.stick-toggle {
-  position: absolute;
-  top: 100%;
-  right: 1.23%;
-  min-width: 44px;
-  min-height: 44px;
-  margin: 0;
-  padding: 0 2px;
-  border: 0;
-  background: none;
-  color: var(--text-3);
-  font: inherit;
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  line-height: 1.2;
-  text-align: right;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.stick-toggle:hover {
-  color: var(--text-1);
-}
-
-.stick-toggle[hidden] {
-  display: none;
-}
-
-/* ---- Download: the page's one big block. ---------------------------------------------------
-   Its size lives here and its look in site.css's .btn-primary (the crimson primary with an ink label and
-   arrow); the line under it is site.css's .download-note. */
-
-.home-download {
-  margin: 0;
-}
-
-.home-download .btn-primary {
-  display: flex;
-  align-items: center;
-  gap: var(--s-4);
-  min-height: 76px;
-  padding: var(--s-4) var(--s-5);
-  font-size: clamp(1.1875rem, 0.95rem + 0.9vw, 1.375rem);   /* 19 -> 22 px: large text, with the bold the one-weight face draws as is */
-  letter-spacing: 0.06em;
-  line-height: 1.15;
-}
-
-.home-download .dl-arrow {
-  width: 22px;
-  height: 22px;
-}
-
-.home-download .download-note {
-  text-align: center;
-  text-wrap: balance;
-}
-
-/* ---- Accounts: the shared round icons (resurrection.css), centred under the download block --- */
-
-.home-social {
-  margin: var(--s-6) 0 0;
-}
-
-.home-social .social-links {
-  justify-content: center;
-  gap: var(--s-3);
-  margin: 0;
-}
-
-.home-stats { margin-top: var(--s-16); }
-.home-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin: 1.5rem 0 .75rem; }
-.home-section-head h2, .home-section-head h3 { margin: 0; }
-.home-section-head h3 { font-size: 1.1rem; }
-.home-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 0; background: rgba(233,238,237,.18); border: 1px solid rgba(233,238,237,.18); }
-.home-stat-grid > div { min-width: 0; background: #18090d; padding: 1rem; }
-.home-stat-grid > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.home-stat-grid dt { color: var(--text-2); font-size: .875rem; }
-.home-stat-grid dd { margin: .25rem 0 0; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.home-stats-status { color: var(--text-2); font-size: .875rem; }
-.home-player-search { margin: 1.5rem 0; }
-.home-player-search label { display: block; margin-bottom: .5rem; font-weight: 700; }
-.home-player-search > div { display: flex; gap: .5rem; }
-.home-player-search input { min-width: 0; flex: 1; min-height: 48px; padding: .6rem .75rem; border: 1px solid var(--text-2); background: #18090d; color: var(--text-1); font: inherit; }
-.home-player-search button { min-height: 48px; padding: .6rem 1rem; }
-.home-leaderboard { padding: 0; margin: 0; list-style: none; counter-reset: leader; }
-.home-leaderboard li { display: flex; align-items: baseline; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid rgba(233,238,237,.18); counter-increment: leader; }
-.home-leaderboard li::before { content: counter(leader); color: var(--text-2); width: 1.5rem; }
-.home-leaderboard a { overflow-wrap: anywhere; }
-.home-leaderboard span { margin-left: auto; text-align: right; color: var(--text-2); }
-@media (max-width: 380px) { .home-player-search > div { flex-wrap: wrap; } .home-player-search input { flex-basis: 100%; } }
-
-/* ---- Features: ruled rows like the launcher's menu, each with a small drawn icon ---------- */
-
-.home-features {
-  margin: var(--s-16) 0 0;
-}
-
-.home-features .label-tab {
-  margin-bottom: var(--s-2);
-}
-
-.feature-rows {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid rgba(233, 238, 237, 0.08);
-}
-
-.feature-rows > li + li {
-  margin-top: 0;
-}
-
-.feature-row {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 0 var(--s-4);
-  padding: var(--s-5) var(--s-1);
-  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
-}
-
-.feature-icon {
-  width: 24px;
-  height: 24px;
-  margin-top: 1px;
-  fill: none;
-  stroke: #C96678;
-  stroke-width: 1.75;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.feature-title {
-  margin: 0;
-  color: var(--text-1);
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.25rem;
-  letter-spacing: 0.08em;
-  line-height: 1.25;
-  text-transform: uppercase;
-}
-
-.feature-text p {
-  margin: var(--s-1) 0 0;
-  color: var(--text-2);
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-/* Practice lists its parts as small chips rather than a long sentence. A part the Practice guide
-   does not have yet is quieter and carries a small gold "Soon", the Coming soon pill's style. */
-.feature-chips {
+.hub-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s-2);
-  margin: var(--s-3) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.feature-chips > li {
-  margin: 0;
-  padding: 3px 9px 4px;
-  border: 1px solid rgba(233, 238, 237, 0.16);
-  border-radius: var(--r-slab);
-  background: rgba(11, 3, 4, 0.5);
-  color: var(--text-2);
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.feature-chips > li.is-soon {
-  display: inline-flex;
   align-items: center;
-  gap: var(--s-2);
-  border-style: dashed;
-  color: var(--text-3);
+  gap: 12px;
+  margin: 28px 0 0;
 }
+.hub-actions .dl-arrow { width: 20px; height: 20px; flex: none; fill: currentColor; }
+/* "DOWNLOAD FOR WINDOWS" needs about 500 px. In a narrower column the button says DOWNLOAD on one line, and
+   "for Windows" stays in its name and in the line under it. */
+.hub-pitch { container-type: inline-size; }
+@container (max-width: 559.98px) {
+  .hub-actions .dl-for { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+.hub-how { min-height: 56px; padding: 0 22px; font-size: 1.0625rem; }
+.hub-facts {
+  margin: 14px 0 0;
+  color: var(--text-2);
+  font-size: var(--fs-2);
+}
+.hub-facts + .hub-facts { margin-top: 4px; }
+.hub-facts a { color: var(--link); text-underline-offset: 3px; white-space: nowrap; }
 
-.chip-soon {
-  padding: 2px 5px;
-  border: 1px solid rgba(244, 182, 63, 0.4);
+/* The live panel: one big number, the grid of the latest Ranked sets, and the headline counts. */
+.hub-panel {
+  border: 1px solid var(--panel-edge);
+  border-radius: 0 4px 4px 4px;
+  background: var(--panel);
+  box-shadow: inset 0 1px 0 rgba(233, 238, 237, 0.06);
+}
+.hub-live { border-radius: 4px; padding: 18px 22px 0; }
+.hub-live-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hub-live-head h2 { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--text-2); }
+.hub-pill {
+  padding: 4px 8px;
+  border: 1px solid rgba(244, 182, 63, 0.55);
   border-radius: 3px;
-  background: #0B0304;
-  color: #F4B63F;
-  font-weight: 700;
-  font-size: 0.6875rem;
+  color: var(--gold);
+  font: 700 var(--fs-1)/1.1 var(--font-ui);
   letter-spacing: 0.12em;
-  line-height: 1.2;
-  text-transform: uppercase;
+  white-space: nowrap;
 }
-
-.feature-row.is-soon .feature-title,
-.feature-row.is-soon .feature-icon {
-  opacity: 0.7;
+.hub-link {
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: var(--fs-2);
+  text-decoration: underline;
+  text-decoration-color: rgba(233, 238, 237, 0.35);
+  text-underline-offset: 3px;
+  white-space: nowrap;
 }
+.hub-link:hover { color: var(--text-1); text-decoration-color: currentColor; }
+.hub-big { display: flex; flex-direction: column; margin: 14px 0 14px; }
+/* The number's line keeps its height while the loader's keys stand in for it. */
+.hub-num { display: flex; align-items: center; min-height: 0.9em; font: 400 4.5rem/0.9 var(--font-display); letter-spacing: 0.02em; }
+.hub-num .rk-input { gap: 10px; }
+.hub-num .rk-input svg { width: 22px; height: 22px; }
+.hub-big-label { margin-top: 10px; color: var(--text-3); }
 
-.feature-row .pill {
-  align-self: center;
+/* One square per set, newest first at the top left; brighter is more recent, an outline is a forfeit, crimson is
+   a set being played right now. home-hub.mjs sizes the squares (--sq, --gap) so they all fit this fixed box. */
+.hub-grid {
+  --sq: 10px;
+  --gap: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--gap);
+  height: 136px;
+  overflow: hidden;
 }
-
-/* Phones: the "Coming soon" pill drops under the text instead of squeezing it, and the titles step
-   down to 18 px (PBD Display's smallest size) so each keeps to one line at 360 px. */
-@media (max-width: 419.98px) {
-  .feature-row {
-    grid-template-columns: 24px minmax(0, 1fr);
-  }
-
-  .feature-title {
-    font-size: 1.125rem;
-    letter-spacing: 0.06em;
-  }
-
-  .feature-row .pill {
-    grid-column: 2;
-    justify-self: start;
-    margin-top: var(--s-3);
-  }
+.hub-grid i { flex: none; width: var(--sq); height: var(--sq); border-radius: 1px; background: rgba(233, 238, 237, 0.14); }
+.hub-grid .g1 { background: rgba(233, 238, 237, 0.66); }
+.hub-grid .g2 { background: rgba(233, 238, 237, 0.42); }
+.hub-grid .g3 { background: rgba(233, 238, 237, 0.26); }
+.hub-grid .g-q { background: transparent; box-shadow: inset 0 0 0 1px rgba(233, 238, 237, 0.42); }
+.hub-grid .g-live { background: var(--verm-500); animation: hub-live 1.2s ease-in-out infinite alternate; }
+@keyframes hub-live { to { opacity: 0.45; } }
+@media (hover: hover) and (pointer: fine) {
+  .hub-grid i { cursor: pointer; }
+  .hub-grid i:hover { background: var(--gold); box-shadow: none; }
 }
-
-/* ---- The compatibility line, quiet, under the rows ---------------------------------------- */
-
-.home-compat {
-  max-width: none;
-  margin: var(--s-10) 0 0;
+/* The legend, or the set under the pointer: its players and characters give way (cut short at the end) before
+   its time, which always shows. Names keep their own capitals. Phones have no pointer, so there the legend wraps
+   rather than lose its end. */
+.hub-readout {
+  display: flex;
+  margin: 10px 0 0;
   color: var(--text-3);
-  font-size: 0.9375rem;
-  line-height: 1.55;
-  text-align: center;
-  text-wrap: balance;
+  white-space: nowrap;
+}
+.hub-readout > span { flex: none; }
+.hub-readout > span:first-child { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.hub-readout.is-set { color: var(--text-2); letter-spacing: 0.04em; text-transform: none; }
+/* Players, online now and lobbies open, then Ranked games and searching / playing now on a row of two. */
+.hub-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin: 16px -22px 0; padding: 0; border-top: 1px solid var(--hairline); }
+.hub-tiles > div { grid-column: span 2; min-width: 0; padding: 12px 16px 14px 22px; }
+.hub-tiles > div:nth-child(n + 4) { grid-column: span 3; border-top: 1px solid var(--hairline); }
+.hub-tiles > div:not(:first-child, :nth-child(4)) { border-left: 1px solid var(--hairline); }
+.hub-tiles dt { color: var(--text-3); font-family: var(--hub-mono); font-size: 11px; line-height: 1.3; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+.hub-tiles dd { margin: 6px 0 0; font: 400 1.75rem/1 var(--font-display); }
+.hub-tiles .hub-sub { margin-top: 6px; overflow: hidden; color: var(--text-3); font: 500 var(--fs-1)/1.3 var(--font-ui); text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---- The board, the latest sets and the characters --------------------------------------------------------- */
+.hub-body { display: grid; gap: 36px; padding-bottom: 56px; }
+/* Side by side, the two panels of a row end on the same line. */
+.hub-cols { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px; }
+.hub-cols-even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.hub-cols > section { display: flex; flex-direction: column; }
+.hub-cols > section > .hub-panel { flex: 1 0 auto; }
+/* The site's list spacing (li + li) is for reading text; Home's lists are rows and steps that line up. */
+.hub li + li { margin-top: 0; }
+.hub-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 -1px; }
+.hub-head .hub-link { padding-bottom: 8px; }
+/* The launcher's label tab with a crimson edge, as the Ranked pages' section heads. */
+.hub-tab { padding: 9px 30px 8px 14px; border-left: 3px solid var(--verm-500); font-size: var(--fs-3); letter-spacing: 0.16em; }
+.hub-msg { padding: 20px 16px; color: var(--text-2); font-size: var(--fs-2); }
+.hub .hub-f32 { width: 32px; height: 32px; }
+
+/* Rows hold their place while they load, so nothing under them moves when they arrive. */
+.hub-board, .hub-feed, .hub-chars { margin: 0; padding: 6px 0; list-style: none; }
+.hub-board { min-height: 678px; }
+.hub-feed { min-height: 678px; }
+.hub-chars { min-height: 412px; padding: 8px 0; }
+
+.hub-row {
+  display: grid;
+  grid-template-columns: 34px 40px minmax(0, 1fr) 140px 76px 56px 48px;
+  align-items: center;
+  gap: 12px;
+  min-height: 63px;
+  padding: 6px 16px;
+  text-decoration: none;
+}
+.hub-board li:nth-child(odd) .hub-row { background: var(--row-alt); }
+.hub-board li:first-child .hub-row { background: none; }
+a.hub-row:hover, a.hub-row:focus-visible { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--gold); outline-offset: -2px; }
+.hub-cap { min-height: 34px; color: var(--text-3); font-family: var(--hub-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+.hub-r { text-align: right; }
+/* Display figures are wide; a number never breaks inside itself. */
+.hub-place, .hub-mmr, .hub-pct, .hub-score, .hub-num, .hub-tiles dd { overflow-wrap: normal; white-space: nowrap; }
+.hub-place { color: var(--text-2); font: 400 var(--fs-4)/1 var(--font-display); text-align: right; }
+.hub-board li:nth-child(2) .hub-place { color: var(--gold); }
+.hub-who { min-width: 0; }
+/* A name too long for its column wraps at its natural breaks; a part still too wide takes the smaller size, and only
+   past that breaks anywhere (player-name.mjs), so it is never cut short. */
+.hub-who b { display: block; font-weight: 600; font-size: var(--fs-3); line-height: 1.2; }
+.hub .pbd-name.is-small { font-size: var(--fs-1); }
+.hub .pbd-name.is-tight { overflow-wrap: anywhere; }
+.hub-who span { display: block; color: var(--text-3); font-size: var(--fs-1); line-height: 1.3; }
+.hub-badge { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--text-2); font-size: var(--fs-2); }
+.hub-badge img { flex: none; width: 56px; height: 28px; }
+.hub-badge span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hub-mmr { font: 400 var(--fs-4)/1 var(--font-display); text-align: right; }
+.hub-row .hub-sub { color: var(--text-2); font-weight: 600; font-size: var(--fs-2); text-align: right; }
+
+/* Every row has the same columns (the score's is fixed), so the scores and the losers line up down the list; when
+   the set was played goes on a line of its own under the names. */
+.hub-set {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 52px 32px minmax(0, 1fr);
+  align-items: center;
+  gap: 1px 10px;
+  min-height: 62px;
+  padding: 6px 16px;
+  text-decoration: none;
+}
+.hub-feed li + li { border-top: 1px solid var(--hairline); }
+a.hub-set:hover, a.hub-set:focus-visible { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--gold); outline-offset: -2px; }
+.hub-side { min-width: 0; }
+.hub-side b { display: block; font-weight: 600; font-size: var(--fs-2); line-height: 1.25; }
+.hub-side > span { display: block; color: var(--text-3); font-size: var(--fs-1); line-height: 1.3; }
+.hub-shift { white-space: nowrap; }
+.hub-up { color: var(--good); font-weight: 600; }
+.hub-down { color: var(--bad); font-weight: 600; }
+.hub-set .hub-lost { opacity: 0.6; }
+.hub-score { font: 400 var(--fs-4)/1 var(--font-display); text-align: center; white-space: nowrap; }
+.hub-when { grid-column: 2 / -1; overflow: hidden; color: var(--text-3); font-size: var(--fs-1); line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+
+.hub-char {
+  display: grid;
+  grid-template-columns: 32px 128px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 4px 16px;
+}
+.hub-char-name { overflow: hidden; font-weight: 600; font-size: var(--fs-2); line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+.hub-char-name span { display: block; color: var(--text-3); font-weight: 500; font-size: var(--fs-1); }
+.hub-track { position: relative; height: 10px; border-radius: 2px; background: rgba(233, 238, 237, 0.08); }
+.hub-track i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: rgba(233, 238, 237, 0.55); }
+.hub-half::after { content: ""; position: absolute; top: -4px; bottom: -4px; left: 50%; width: 2px; background: var(--text-3); }
+.hub-pct { font: 400 var(--fs-3)/1 var(--font-display); text-align: right; }
+.hub-foot { margin: 0; padding: 10px 16px 14px; border-top: 1px solid var(--hairline); color: var(--text-3); font-size: var(--fs-1); }
+
+/* ---- What is Project Backdash, and the three steps ------------------------------------------------------- */
+.hub-about-in { padding: 22px 24px 24px; }
+.hub-about-lead { max-width: 52em; margin: 0; color: var(--text-2); font-size: var(--fs-3); }
+.hub-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 22px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--hairline); }
+/* Each step's big value scales with its column (NPUB30009 is 8.1 em wide in the display face), so it never runs
+   into the next step. */
+.hub-steps li { padding: 20px 24px 4px; container-type: inline-size; }
+.hub-steps li:first-child { padding-left: 0; }
+.hub-steps li + li { border-left: 1px solid var(--hairline); }
+.hub-step-n { color: var(--text-3); }
+.hub-step-big { display: block; margin: 10px 0 8px; font: 400 min(2.5rem, 12cqi)/1 var(--font-display); letter-spacing: 0.02em; white-space: nowrap; }
+.hub-step-big small { margin-left: 10px; color: var(--text-3); font-family: var(--hub-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+.hub-steps p { margin: 0; color: var(--text-2); font-size: var(--fs-2); }
+.hub-about-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
+
+.hub-off { margin: 16px 0 0; color: var(--text-2); font-size: var(--fs-2); }
+p.hub-off.hub-panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
+.hub-off a { color: var(--link); }
+
+/* ---- Narrower screens ---------------------------------------------------------------------------------- */
+/* A set's row needs about 480 px for both names, characters and rating changes, so under 1100 px the top ten and the
+   latest sets each take the full width, one above the other. */
+@media (max-width: 1099.98px) {
+  .hub-cols:not(.hub-cols-even) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 959.98px) {
+  .hub-hero { grid-template-columns: minmax(0, 1fr); padding-top: 32px; }
+  .hub-cols-even { grid-template-columns: minmax(0, 1fr); }
+  .hub-steps { grid-template-columns: minmax(0, 1fr); }
+  .hub-steps li, .hub-steps li:first-child { padding: 16px 0; }
+  .hub-steps li + li { border-left: 0; border-top: 1px solid var(--hairline); }
+}
+@media (max-width: 759.98px) {
+  .hub-row { grid-template-columns: 34px 40px minmax(0, 1fr) 110px 76px 56px; }
+  .hub-row .hub-c-rate { display: none; }
+  .hub-badge img { display: none; }
+}
+@media (max-width: 599.98px) {
+  .hub-in { padding: 0 16px; }
+  .hub-hero { gap: 24px; padding-top: 20px; padding-bottom: 28px; }
+  .hub-eyebrow { font-size: 12px; letter-spacing: 0.1em; }
+  .hub-title { margin-top: 10px; }
+  .hub-lead { margin-top: 12px; font-size: var(--fs-3); }
+  .hub-actions { margin-top: 20px; gap: 10px; }
+  .hub-actions .dl-button { width: 100%; justify-content: center; }
+  .hub-how { width: 100%; min-height: 48px; }
+  .hub-facts { margin-top: 12px; }
+  .hub-live { padding: 16px 16px 0; }
+  .hub-num { font-size: 3.5rem; }
+  .hub-grid { height: 92px; }
+  .hub-big-label, .hub-readout { font-size: 11px; letter-spacing: 0.08em; }
+  .hub-readout:not(.is-set) { white-space: normal; }
+  .hub-readout:not(.is-set) > span:first-child { overflow: visible; }
+  /* Two a row; searching / playing now, with the longest label, takes the last row. */
+  .hub-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 14px -16px 0; }
+  .hub-tiles > div, .hub-tiles > div:nth-child(n + 4) { grid-column: auto; padding: 12px 16px; border-left: 0; }
+  .hub-tiles > div:nth-child(even) { border-left: 1px solid var(--hairline); }
+  .hub-tiles > div:nth-child(n + 3) { border-top: 1px solid var(--hairline); }
+  .hub-tiles > div:nth-child(5) { grid-column: 1 / -1; }
+  .hub-tiles dd { font-size: 1.5rem; }
+  .hub-body { gap: 28px; padding-bottom: 40px; }
+  .hub-tab { letter-spacing: 0.1em; }
+
+  /* The badge is its picture alone, under the MMR, so the name has the row's width between the portrait and the
+     MMR; the board's own page says the badge's name. */
+  .hub-board { min-height: 648px; }
+  .hub-row { grid-template-columns: 28px 36px minmax(0, 1fr) 60px; gap: 2px 10px; min-height: 60px; padding: 6px 12px; }
+  .hub-row:not(.hub-cap) > :nth-child(-n + 3) { grid-row: 1 / span 2; }
+  .hub-row > .hub-mmr { grid-area: 1 / 4; align-self: end; }
+  .hub-row > .hub-badge { grid-area: 2 / 4; align-self: start; justify-content: flex-end; }
+  .hub-cap { min-height: 34px; }
+  .hub-row .rk-face { width: 36px; height: 36px; }
+  .hub-row .hub-c-rec, .hub-row .hub-c-rate, .hub-cap .hub-c-badge { display: none; }
+  .hub-badge img { display: block; width: 48px; height: 24px; }
+  .hub-badge span { display: none; }
+  .hub-place, .hub-mmr { font-size: var(--fs-3); }
+  .hub-who b { font-size: var(--fs-2); }
+
+  /* A side's rating change follows its character without the dot, so it can take the next line on its own. */
+  .hub-feed { min-height: 366px; }
+  .hub-set { grid-template-columns: 28px minmax(0, 1fr) 40px 28px minmax(0, 1fr); gap: 1px 8px; padding: 8px 12px; }
+  .hub-dot { display: none; }
+  .hub .hub-set .hub-f32 { width: 28px; height: 28px; }
+  .hub-feed li:nth-child(n + 6) { display: none; }
+  .hub-score { font-size: var(--fs-3); }
+
+  .hub-char { grid-template-columns: 28px clamp(104px, 34vw, 136px) minmax(0, 1fr) 58px; gap: 10px; padding: 4px 12px; }
+  .hub .hub-char .hub-f32 { width: 28px; height: 28px; }
+  .hub-about-in { padding: 18px 16px 20px; }
+  .hub-step-big { font-size: min(2rem, 12cqi); }
 }
 
+/* The narrowest phones: the title's longest word fits the column, and the big number's label keeps room for the two
+   lines "Games in the last 24 hours, every mode" takes, so nothing under it moves when it comes. */
+@media (max-width: 359.98px) {
+  .hub-title { font-size: 1.5rem; }
+  .hub-big-label { min-height: 2.6em; }
+}
+
+/* Without JavaScript the live parts have nothing to show: they leave, and a line says so. */
+@media (scripting: none) {
+  [data-needs-js] { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-grid .g-live { animation: none; }
+  .bar-download { transition: none; }
+}
 @media (forced-colors: active) {
-  .stick {
-    forced-color-adjust: none;
-    --stick-line: GrayText;
-    --stick-lit: CanvasText;
-    --stick-ground: Canvas;
-  }
-
-  .home-mark .mark-arrow,
-  .home-mark .mark-lit {
-    fill: CanvasText;
-  }
-
-  .feature-icon {
-    stroke: CanvasText;
-  }
-
-  .chip-soon {
-    border-color: CanvasText;
-    color: CanvasText;
-  }
-}
-
-@media print {
-  .home-hero {
-    display: none !important;
-  }
+  .hub-grid i { background: CanvasText; forced-color-adjust: none; }
+  .hub-grid .g-q { background: Canvas; box-shadow: inset 0 0 0 1px CanvasText; }
+  .hub-grid .g-live { background: Highlight; }
+  .hub-track i { background: CanvasText; }
+  .bar-download { border-color: ButtonText; }
+  .hub-tab { clip-path: none; border: 1px solid CanvasText; }
 }

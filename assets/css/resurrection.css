@@ -119,8 +119,7 @@ html, body { background: #140608; }
   white-space: nowrap;
 }
 
-/* ---- Footer: centred, no band of its own. Home shows the accounts under its download block
-   instead (.home-social), drawn the same way. ------------------------------------------------ */
+/* ---- Footer: centred, no band of its own, with the accounts as round icon links. ---------- */
 .site-footer {
   flex: none;
   background: transparent;
@@ -136,7 +135,7 @@ html, body { background: #140608; }
   border-top: 1px solid rgba(233,238,237,.07);
 }
 .site-footer .social-links { justify-content: center; gap: var(--s-3); margin: 0 0 var(--s-5); }
-:is(.site-footer, .home-social) .social-links a {
+.site-footer .social-links a {
   min-width: 48px;
   min-height: 48px;
   border: 1px solid rgba(233,238,237,.16);
@@ -145,8 +144,8 @@ html, body { background: #140608; }
   color: var(--text-1);
   transition: color var(--t-fast) linear, border-color var(--t-fast) linear;
 }
-:is(.site-footer, .home-social) .social-links a:hover { color: #F4B63F; border-color: rgba(244,182,63,.6); }
-:is(.site-footer, .home-social) .social-links .social-icon svg { width: 20px; height: 20px; }
+.site-footer .social-links a:hover { color: #F4B63F; border-color: rgba(244,182,63,.6); }
+.site-footer .social-links .social-icon svg { width: 20px; height: 20px; }
 .footer-nav ul { justify-content: center; gap: 0 var(--s-5); margin: 0 0 var(--s-2); }
 @media (max-width: 399.98px) {
   .footer-nav ul { gap: 0 var(--s-3); }

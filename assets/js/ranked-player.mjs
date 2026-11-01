@@ -4,6 +4,7 @@
 // Overview, Sets, Matchups and Head to head, each with its own address, and set pages at /player/Name-1234/set/<id>.
 // Parts the stats service does not send yet stay hidden until it does.
 import {
+  CHARACTERS,
   characterName,
   playerPath,
   setPath,
@@ -48,7 +49,7 @@ import {
   playerSearch,
   searchForm,
   boardRow,
-} from '/assets/js/ranked-kit.mjs?v=a623c764b6';
+} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
 
 const CHEVRON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
@@ -283,6 +284,7 @@ function hero(ctx) {
   const box = el('section', 'rk-hero rk-panel');
   box.setAttribute('aria-label', 'Player');
   box.append(face(player.avatarCharacter, 120, { label: characterName(player.avatarCharacter) }));
+  heroArt(ctx.root, box, rating?.character, player.avatarCharacter);
 
   const main = el('div', 'rk-hero-main');
   const top = el('div', 'rk-hero-top');
@@ -330,7 +332,7 @@ function hero(ctx) {
     share.append(shareText);
     share.setAttribute('aria-haspopup', 'dialog');
     share.addEventListener('click', () =>
-      import('/assets/js/ranked-share.mjs?v=8acaa5a78f').then(
+      import('/assets/js/ranked-share.mjs?v=93599d348b').then(
         ({ openShare }) => openShare(ctx, { ratingRows, matchupRows }, share),
         () => {
           shareText.textContent = 'Share failed';
@@ -349,8 +351,10 @@ function hero(ctx) {
     const image = plate(rating.rankId, { label: rating.rank });
     if (image) side.append(image);
     const mmr = el('div', 'rk-hero-mmr', fmt(rating.mmr));
-    if (int(rating.rd) != null) mmr.append(el('span', 'rk-rd', `± ${fmt(rating.rd)}`));
-    if (settling(rating.rd, table)) mmr.append(unsure());
+    // The ± and the still-settling mark stay together, so on a narrow phone they move under the number as one.
+    const rd = int(rating.rd) != null ? el('span', 'rk-rd', `± ${fmt(rating.rd)}`) : null;
+    if (rd) mmr.append(rd);
+    if (settling(rating.rd, table)) (rd ?? mmr).append(unsure());
     side.append(mmr, el('div', 'rk-hero-sub', `${rating.rank} · MMR with ${characterName(rating.character)}`));
     const next = nextBadge(table, rating.rankId, rating.mmr);
     if (next) {
@@ -405,6 +409,38 @@ function hero(ctx) {
     box.append(stats);
   }
   return box;
+}
+
+// The select-screen render of the character the header's MMR is for (else the avatar's), facing the name from the
+// header's left edge. The stylesheet shows it from 900 px of column and under 600 px, and keeps the portrait between;
+// the picture is made only once the column is at a width that shows it, so it loads at once and a hidden one is
+// never fetched. One that fails to load leaves the portrait.
+function heroArt(root, box, ...characters) {
+  const character = characters.find((id) => CHARACTERS.includes(id));
+  if (!character) return;
+  const shows = () => {
+    const width = root.getBoundingClientRect().width;
+    return width >= 900 || width < 600;
+  };
+  const add = () => {
+    const image = el('img', 'rk-hero-art');
+    image.alt = characterName(character);
+    image.width = 672;
+    image.height = 720;
+    image.setAttribute('fetchpriority', 'high');
+    image.addEventListener('error', () => image.remove());
+    image.src = `/assets/renders/${character}.webp`;
+    box.append(image);
+  };
+  if (shows()) return add();
+  const watch = new ResizeObserver(() => {
+    if (!box.isConnected) watch.disconnect();
+    else if (shows()) {
+      watch.disconnect();
+      add();
+    }
+  });
+  watch.observe(root);
 }
 
 // A long name steps down in size until it fits on one line with its tag, so it never breaks inside a word. The

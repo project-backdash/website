@@ -47,15 +47,11 @@
 .rk-foot { margin: 40px 0 0; padding-top: 14px; border-top: 1px solid var(--hairline); color: var(--text-3); font-size: var(--fs-2); }
 .rk-foot .rk-link { font-size: inherit; }
 
-/* Portraits at three sizes: 24 (inline), 40 (rows and cards), 120 (the player header). The panda portrait is a
-   full-body picture, so it is cropped to the head inside a frame cut from another portrait's border. */
+/* Portraits at three sizes: 24 (inline), 40 (rows and cards), 120 (the player header). */
 .rk-face { flex: none; display: block; border: 1px solid rgba(233, 238, 237, 0.18); background: #1D0609; }
 .rk-f24 { width: 24px; height: 24px; }
 .rk-f40 { width: 40px; height: 40px; }
 .rk-f120 { width: 120px; height: 120px; }
-.rk-panda { position: relative; overflow: hidden; background: #28232A; }
-.rk-panda::after { position: absolute; inset: 0; content: ""; pointer-events: none; border: 3px solid transparent; border-image: url("/assets/portraits/kuma.png?v=cd4737ba4b") 15 / 3px stretch; }
-.rk-panda img { position: absolute; top: -8%; left: -95%; width: 200%; height: 200%; max-width: none; object-fit: contain; }
 
 /* "?" after an MMR that is still settling. */
 .rk-unsure { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid rgba(233, 238, 237, 0.45); border-radius: 50%; color: var(--text-2); font: 700 var(--fs-1)/1 var(--font-ui); vertical-align: 2px; cursor: help; }
@@ -272,6 +268,18 @@ a.rk-feed-row:hover, a.rk-feed-row:focus-visible { background: var(--gold-wash);
 .rk-hero-prog { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 10px; color: var(--text-2); font-size: var(--fs-1); white-space: nowrap; }
 .rk-hero-prog .rk-bar { flex: 1 1 auto; }
 .rk-hero-placing { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-weight: 600; font-size: var(--fs-2); }
+/* The main character's render stands at the header's left edge in a column 272 px wide and as tall as the header,
+   its cut side, top and bottom on the header's edges and its corners rounded with the panel's. A short header crops
+   it from the bottom and a tall one from its far side, so it never reaches the text. Where the badge block moves
+   under the name, the header is too tall for it and the portrait stays; on a phone the render's upper half heads
+   the header instead, cut by a hairline above the name. */
+.rk-hero { position: relative; }
+.rk-hero > .rk-hero-art { display: none; }
+@container rk (min-width: 900px) {
+  .rk-hero:has(> .rk-hero-art) { grid-template-columns: minmax(0, 1fr) auto; padding-left: 300px; }
+  .rk-hero:has(> .rk-hero-art) > .rk-face { display: none; }
+  .rk-hero > .rk-hero-art { display: block; position: absolute; top: 0; left: 0; width: 272px; height: 100%; border-radius: 3px 0 0 3px; object-fit: cover; object-position: right top; }
+}
 .rk-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0; padding-top: 18px; border-top: 1px solid var(--hairline); }
 .rk-stats dd { margin: 4px 0 0; font-weight: 600; font-size: var(--fs-4); line-height: 1.1; }
 .rk-stats dd small { margin-left: 6px; color: var(--text-3); font-weight: 400; font-size: var(--fs-2); }
@@ -492,7 +500,14 @@ a.rk-mini:hover { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--
   .rk-hero-actions .rk-btn { flex: 1 1 auto; justify-content: center; padding: 0 8px; }
   .rk-hero-rank { column-gap: 14px; padding-top: 14px; }
   .rk-hero-rank > img { width: 96px; height: 48px; }
+  /* The MMR row fits a 390 px phone on one line; narrower, the ± and its mark move under the number. */
+  .rk-hero-mmr { display: flex; flex-wrap: wrap; align-items: baseline; font-size: 36px; }
+  .rk-hero-mmr .rk-rd { white-space: nowrap; }
   .rk-hero-prog { grid-column: 1 / -1; max-width: none; }
+  .rk-hero:has(> .rk-hero-art) { grid-template-columns: minmax(0, 1fr); padding-top: 0; }
+  .rk-hero:has(> .rk-hero-art) > .rk-face { display: none; }
+  .rk-hero:has(> .rk-hero-art) .rk-hero-top { grid-column: 1 / -1; }
+  .rk-hero > .rk-hero-art { display: block; grid-row: 1; grid-column: 1 / -1; width: calc(100% + 32px); max-width: none; height: 176px; margin: 0 -16px 2px; border-bottom: 1px solid var(--hairline); border-radius: 3px 3px 0 0; object-fit: cover; object-position: 50% 0; }
   .rk-tabs { margin: 20px -16px 16px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
   .rk-graph { padding: 14px 14px 12px; }
   .rk-graph-head .rk-chip .rk-cn { display: none; }
@@ -558,6 +573,7 @@ html:has(.rk-share[open]) { overflow: hidden; }
 .rk-share-check { display: flex; align-items: center; gap: 12px; min-height: 38px; color: var(--text-1); font-size: var(--fs-2); font-weight: 500; }
 .rk-share-check input { flex: none; width: 18px; height: 18px; margin: 0; accent-color: var(--gold); cursor: inherit; }
 .rk-share-scopes { padding: 0 0 8px 30px; }
+.rk-share-row + .rk-share-check { margin-top: 6px; }
 .rk-share-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--hairline); }
 /* The main button is set as the site's .btn-primary: crimson with dark text reads at 4.05:1, enough only for large
    bold type, so its label is 20 px. */

@@ -5,7 +5,7 @@
 // a 16:9 wide picture). cardModel() reads the stats into what the card says and cardLayout() places its parts; both
 // are plain functions. drawCard() paints them with the Canvas 2D API. Every picture it draws is served by
 // backdash.gg itself, so the canvas can always be saved as a PNG, and a picture that did not load is left out: a
-// portrait leaves its empty frame, a plate nothing.
+// render leaves the portrait in its place, a portrait its empty frame, a plate nothing.
 import { CHARACTERS, characterName } from '/assets/js/ranked-data.mjs?v=dde3981e98';
 import {
   fmt,
@@ -21,7 +21,7 @@ import {
   shortDate,
   seasonLabel,
   setScore,
-} from '/assets/js/ranked-kit.mjs?v=a623c764b6';
+} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
 
 export const FORMATS = [
   { id: 'post', name: 'Post', ratio: '4:5', width: 1080, height: 1350 },
@@ -88,6 +88,12 @@ export const DETAILS = [
   { id: 'record', name: 'Set record' },
   { id: 'today', name: "Today's change" },
 ];
+// The character's art: the select screen's full-body render standing large at one side of the card, or the small
+// portrait beside the name.
+export const ARTS = [
+  { id: 'render', name: 'Full body' },
+  { id: 'portrait', name: 'Portrait' },
+];
 export const MAX_WIDGETS = 2;
 // The most sets the Recent sets widget lists; the dialog reads no more than this.
 export const SET_ROWS = 5;
@@ -97,6 +103,10 @@ const STORE_KEY = 'pbd-share-card';
 
 const ids = (list) => list.map((item) => item.id);
 const faceUrl = (id) => (CHARACTERS.includes(id) ? `/assets/portraits/${id}.png` : null);
+// A render stands at the right of the card facing left, into it, or flipped at the left facing right. Each side has
+// the picture the select screen draws there, so writing on clothes reads either way.
+const renderUrl = (id, side) =>
+  CHARACTERS.includes(id) ? `/assets/renders/${id}${side === 'left' ? '' : '-left'}.webp` : null;
 const plateUrl = (id) => (isRankId(id) ? `/assets/rank-plates/${id}.png` : null);
 
 // ---- Choices ---------------------------------------------------------------------------------------------------
@@ -105,6 +115,8 @@ export function defaultChoices() {
   return {
     format: 'post',
     accent: 'crimson',
+    art: 'render',
+    flip: false,
     rank: 'current',
     scope: 'all',
     widgets: ['graph', 'sets'],
@@ -128,6 +140,8 @@ export function cleanChoices(value) {
     character: typeof given.character === 'string' ? given.character : null,
     format: one(FORMATS, given.format, base.format),
     accent: one(ACCENTS, given.accent, base.accent),
+    art: one(ARTS, given.art, base.art),
+    flip: typeof given.flip === 'boolean' ? given.flip : base.flip,
     rank: ['current', 'peak'].includes(given.rank) ? given.rank : base.rank,
     scope: ['all', 'region'].includes(given.scope) ? given.scope : base.scope,
     widgets,
@@ -164,8 +178,8 @@ export function readChoices(store = storage()) {
 }
 export function keepChoices(choices, store = storage()) {
   try {
-    const { format, accent, rank, scope, widgets, details } = cleanChoices(choices);
-    store?.setItem(STORE_KEY, JSON.stringify({ format, accent, rank, scope, widgets, details }));
+    const { format, accent, art, flip, rank, scope, widgets, details } = cleanChoices(choices);
+    store?.setItem(STORE_KEY, JSON.stringify({ format, accent, art, flip, rank, scope, widgets, details }));
   } catch {
     /* storage is off or full: the choices last while the page is open */
   }
@@ -386,6 +400,7 @@ function optionsOf(r) {
   return {
     characters: r.rows.map((row) => row.character),
     character: r.row.character,
+    arts: renderUrl(r.row.character) ? ['render', 'portrait'] : ['portrait'],
     ranks: r.peak ? ['current', 'peak'] : ['current'],
     scopes: ['all', 'region'].filter((id) => r.places[id]),
     scopeNames: { all: 'All regions', region: r.region },
@@ -401,6 +416,7 @@ export function settle(wish, options) {
   return {
     ...clean,
     character: options.character,
+    art: options.arts.includes(clean.art) ? clean.art : 'portrait',
     rank: options.ranks.includes(clean.rank) ? clean.rank : 'current',
     scope: options.scopes.includes(clean.scope) ? clean.scope : (options.scopes[0] ?? 'all'),
     widgets: clean.widgets.filter((id) => options.widgets.includes(id)).slice(-MAX_WIDGETS),
@@ -462,6 +478,7 @@ export function cardModel(source, wish) {
     meta: [show.tag ? `#${player.tag}` : '', show.region ? r.region : ''].filter(Boolean).join(' · '),
     character: r.row.character,
     characterName: characterName(r.row.character),
+    art: null,
     rank,
     facts,
     widgets: choices.widgets.map((id) => r.widgets[id]),
@@ -469,6 +486,10 @@ export function cardModel(source, wish) {
     url: `backdash.gg/player/${player.name}-${player.tag}`,
     date: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(r.now),
   };
+  if (choices.art === 'render') {
+    const side = choices.flip ? 'left' : 'right';
+    card.art = { side, url: renderUrl(r.row.character, side), head: artHead(r.row.character, side) };
+  }
   card.images = imagesOf(card);
   card.summary = [
     `Player card for ${player.name}`,
@@ -481,14 +502,12 @@ export function cardModel(source, wish) {
   return { options, choices, card };
 }
 
-// Every picture the card draws, so they can all be read before it is drawn. The panda portrait is a full-body
-// picture cropped into another portrait's frame, so it brings that frame along.
+// Every picture the card draws, so they can all be read before it is drawn. A render brings the portrait too, which
+// takes its place when it does not load.
 export function imagesOf(card) {
   const urls = new Set();
-  const addFace = (id) => {
-    if (faceUrl(id)) urls.add(faceUrl(id));
-    if (id === 'panda') urls.add(faceUrl('kuma'));
-  };
+  if (card.art) urls.add(card.art.url);
+  const addFace = (id) => faceUrl(id) && urls.add(faceUrl(id));
   const addPlate = (id) => plateUrl(id) && urls.add(plateUrl(id));
   addFace(card.character);
   addPlate(card.rank.id);
@@ -533,6 +552,76 @@ const FRAME = TAB + 52;
 const SET_ROW = 92;
 const CHARACTER_ROW = 116;
 const WIDGET_GAP = 24;
+// A render: the select screen's 672 x 720 picture, cut at its top, its bottom and the side away from the way it
+// faces. Those edges sit on the card's edges or on a panel's: the top on the card's top, the cut side on the card's
+// side and the bottom on the rank panel's bottom, the panel running out to the card's edge under it (on the wide
+// card, the footer's rule, run out the same way). However far the render moves off the card, its head keeps HEAD_IN
+// from the card's edge and no more than OFF_CARD of its width leaves the card. Within that its solid parts keep
+// NAME_GAP clear of the season line (HEADING wide) and of the name block, as if the name took NAME_SHARE of the width
+// or, when longer, the width it needs on one line at NAME_FLOOR. On the wide card, which gives the widgets a column
+// WIDE_LIST wide (narrower, to WIDE_LIST_LEAST, where the render cannot move far enough), its head keeps clear of the
+// widgets and the panels may cover its shoulders. A post or a story moves
+// the player down to ART_FLOOR at least, so the render is never small.
+export const ART_W = 672;
+export const ART_H = 720;
+const NAME_SHARE = 0.62;
+const NAME_FLOOR = 48;
+const HEADING = 400;
+const WIDE_LIST = 660;
+// As wide as a post's widgets, side by side.
+const WIDE_LIST_LEAST = 472;
+const NAME_GAP = 32;
+const HEAD_IN = 56;
+const OFF_CARD = 0.5;
+const ART_FLOOR = { post: 720, story: 900 };
+// Each render's head in its left-facing picture: the face's left and right edges and the row of its chin. The
+// right-facing picture is its mirror to within 16 pixels (the game redraws some for the writing on their clothes), so
+// the head is taken HAIR wider on each side, which also covers loose hair and ears.
+const HAIR = 20;
+const HEADS = {
+  anna_williams: [150, 290, 130],
+  armor_king: [175, 335, 160],
+  asuka_kazama: [230, 360, 130],
+  baek_doo_san: [205, 330, 165],
+  bruce_irvin: [290, 430, 120],
+  bryan_fury: [400, 540, 150],
+  christie_monteiro: [280, 440, 185],
+  craig_marduk: [325, 465, 195],
+  devil_jin: [240, 385, 165],
+  eddy_gordo: [235, 385, 130],
+  feng_wei: [355, 460, 135],
+  ganryu: [145, 275, 160],
+  heihachi_mishima: [200, 355, 130],
+  hwoarang: [230, 345, 110],
+  jack_5: [245, 380, 135],
+  jin_kazama: [330, 440, 130],
+  julia_chang: [290, 385, 160],
+  kazuya_mishima: [245, 355, 145],
+  king: [150, 280, 145],
+  kuma: [195, 375, 190],
+  lee_chaolan: [180, 350, 155],
+  lei_wulong: [295, 425, 135],
+  lili: [215, 345, 120],
+  ling_xiaoyu: [185, 365, 155],
+  marshall_law: [240, 350, 150],
+  mokujin: [290, 450, 175],
+  nina_williams: [245, 370, 145],
+  panda: [0, 290, 300],
+  paul_phoenix: [225, 385, 190],
+  raven: [310, 425, 150],
+  roger_jr: [230, 440, 135],
+  sergei_dragunov: [290, 450, 135],
+  steve_fox: [285, 460, 135],
+  wang_jinrei: [345, 485, 180],
+  yoshimitsu: [240, 385, 175],
+};
+// The head of the render drawn on `side` of the card, in its picture's pixels, or null.
+export function artHead(id, side) {
+  if (!Object.hasOwn(HEADS, id)) return null;
+  const [x0, x1, y1] = HEADS[id];
+  const head = { x0: x0 - HAIR, x1: x1 + HAIR, y1 };
+  return side === 'left' ? { x0: ART_W - head.x1, x1: ART_W - head.x0, y1 } : head;
+}
 
 // The most height each widget can fill with what it shows; the graph grows with the room, up to a point, and lists
 // grow by their rows. `widget` is a widget of the card, or only its kind.
@@ -549,11 +638,17 @@ function tallest(widget) {
 // Where each part goes, in card pixels. The top bar and footer hold the edges; the player, their rank and the
 // widgets (`widgets` lists the card's widgets, or only their kinds, in order) sit between them, centred when there
 // is room to spare. A post puts two widgets side by side, a story stacks them, and the wide card gives them a column
-// beside the player, both columns starting on the same line.
-export function cardLayout(formatId, { widgets = [], facts = 0 } = {}) {
+// beside the player, both columns starting on the same line. `art` is the side a render stands on ('right' or
+// 'left'), or null for the portrait beside the name. With a render, `edge` is its silhouette (see artEdge()), `head`
+// its head (see artHead()) and `name` the name's width at 1 px type (see nameWidth()), each when known.
+export function cardLayout(
+  formatId,
+  { widgets = [], facts = 0, art = null, edge = null, head = null, name = null } = {},
+) {
   const format = FORMATS.find((item) => item.id === formatId) ?? FORMATS[0];
   const W = format.width,
     H = format.height;
+  const side = art === 'left' || art === 'right' ? art : null;
   const top = { x: PAD, y: PAD, w: W - 2 * PAD, h: 40 };
   const footer = { x: PAD, y: H - PAD - FOOT, w: W - 2 * PAD, h: FOOT };
   const bodyTop = top.y + top.h + 40,
@@ -562,36 +657,68 @@ export function cardLayout(formatId, { widgets = [], facts = 0 } = {}) {
   const rankH = RANK_TOP + (facts > 1 ? TILES : facts ? LINE : 0);
   const headH = FACE + GAP + rankH;
   const gaps = WIDGET_GAP * Math.max(0, widgets.length - 1);
-  const frame = { W, H, top, footer };
+  const frame = { W, H, top, footer, art: null };
+  // The width the name needs on one line at its smallest size.
+  const need = name > 0 ? Math.ceil(name * NAME_FLOOR) + 2 : 0;
   if (format.id === 'wide') {
     const colW = 820;
-    const x = widgets.length ? PAD : (W - colW) / 2;
-    const right = PAD + colW + 56;
+    const listW = side ? WIDE_LIST : W - 2 * PAD - colW - 56;
+    // Without widgets the player sits in the middle, or beside a render. Flipped, the card is a mirror: the render at
+    // the left, then the widgets, and the player at the right margin.
+    const block = colW + (widgets.length ? 56 + listW : 0);
+    const x = side === 'left' ? W - PAD - colW : side || widgets.length ? PAD : (W - colW) / 2;
+    const right = side === 'left' ? x - 56 - listW : x + colW + 56;
     const sizes = shares(widgets, bodyH - gaps);
     const column = widgets.length ? sizes.reduce((sum, size) => sum + size, gaps) : 0;
     const y = bodyTop + Math.max(0, (bodyH - Math.max(headH, column)) / 2);
     let at = y;
-    return {
+    const layout = {
       ...frame,
       id: { x, y, w: colW, h: FACE },
       rank: { x, y: y + FACE + GAP, w: colW, h: rankH },
       widgets: sizes.map((size) => {
-        const rect = { x: right, y: at, w: W - PAD - right, h: size };
+        const rect = { x: right, y: at, w: listW, h: size };
         at += size + WIDGET_GAP;
         return rect;
       }),
     };
+    if (!side) return layout;
+    const floor = footer.y - 18;
+    const free = side === 'right' ? [x + block, W] : [0, W - PAD - block];
+    const render = artBox(W, side, floor, free, edge, head);
+    for (const rect of layout.widgets) render.keepHead(rect);
+    // A head at the edge of its picture (Panda's) cannot always move far enough: then the widgets' column narrows
+    // from the render's side until the head's solid parts keep NAME_GAP from it, to WIDE_LIST_LEAST at the least.
+    const last = layout.widgets.at(-1);
+    const reach = last ? render.headReach(layout.widgets[0].y, last.y + last.h) : null;
+    if (reach != null) {
+      const room = Math.floor(side === 'right' ? reach - NAME_GAP - right : right + listW - NAME_GAP - reach);
+      const w = Math.max(WIDE_LIST_LEAST, Math.min(listW, room));
+      for (const rect of layout.widgets) Object.assign(rect, { x: side === 'right' ? right : right + listW - w, w });
+    }
+    render.clear(layout.id);
+    beside(top, render, W, top.w);
+    layout.id.align = side === 'right' ? 'left' : 'right';
+    layout.art = render.box;
+    layout.footer.rule = side === 'right' ? [PAD, W] : [0, W - PAD];
+    return layout;
   }
   const width = W - 2 * PAD;
-  const room = bodyH - headH - GAP;
+  const lift = side ? Math.max(0, ART_FLOOR[format.id] - (bodyTop + headH)) : 0;
+  const room = bodyH - lift - headH - GAP;
   const area = !widgets.length
     ? 0
     : format.id === 'post'
       ? Math.min(room, Math.max(...widgets.map(tallest)))
       : shares(widgets, room - gaps).reduce((sum, size) => sum + size, gaps);
-  const y = bodyTop + Math.max(0, (bodyH - headH - (area && GAP + area)) / 2);
-  const below = y + headH + GAP;
-  return {
+  const content = headH + (area && GAP + area);
+  // With a render the player and the widgets sit on the footer and the render grows down to the rank panel, but no
+  // wider than the card; what is left over then goes between the rank and the widgets. Without one they are centred.
+  const y = side
+    ? Math.max(bodyTop, Math.min(bodyBottom - content, (W * ART_H) / ART_W - headH))
+    : bodyTop + Math.max(0, (bodyH - content) / 2);
+  const below = side ? bodyBottom - area : y + headH + GAP;
+  const layout = {
     ...frame,
     id: { x: PAD, y, w: width, h: FACE },
     rank: { x: PAD, y: y + FACE + GAP, w: width, h: rankH },
@@ -603,6 +730,112 @@ export function cardLayout(formatId, { widgets = [], facts = 0 } = {}) {
           })
         : stack(PAD, below, width, area, widgets),
   };
+  if (!side) return layout;
+  const { id, rank } = layout;
+  const shareW = Math.round(width * NAME_SHARE);
+  // A part `w` wide at the margin on the name's side.
+  const margin = (part, w) => ({ ...part, x: side === 'right' ? PAD : W - PAD - w, w });
+  const render = artBox(
+    W,
+    side,
+    rank.y + rank.h,
+    side === 'right' ? [PAD + shareW, W] : [0, W - PAD - shareW],
+    edge,
+    head,
+  );
+  render.clear(margin(top, HEADING));
+  render.clear(margin(id, Math.max(shareW, need)));
+  beside(top, render, W, width);
+  beside(id, render, W, edge ? width : shareW);
+  id.align = side === 'right' ? 'left' : 'right';
+  const box = render.box;
+  // The rank panel runs out to each card edge the render's bottom passes.
+  rank.fill = [box.x < rank.x ? 0 : rank.x, box.x + box.w > rank.x + rank.w ? W : rank.x + rank.w];
+  layout.art = box;
+  return layout;
+}
+// What the render leaves `part` in its rows: the width up to NAME_GAP from its solid parts, from the card's margin on
+// the side away from it, or `unknown` wide when its silhouette is unknown.
+function beside(part, render, W, unknown) {
+  const right = render.box.side === 'right';
+  const reach = render.reach(part.y, part.y + part.h);
+  const room = reach == null ? unknown : right ? reach - NAME_GAP - PAD : W - PAD - NAME_GAP - reach;
+  const w = Math.max(0, Math.min(W - 2 * PAD, room));
+  Object.assign(part, { x: right ? PAD : W - PAD - w, w });
+}
+// The render's box, from the card's top down to `floor`: centred on the free room from `from` to `to` where its
+// bounds let it, its cut side never leaving a gap at the card's edge. clear() moves it off the card until its solid
+// parts keep NAME_GAP from a part of the card in that part's rows, and keepHead() until its head keeps NAME_GAP from
+// a part its rows meet, each as far as the bounds allow; reach() is how far toward the card's middle its solid parts
+// come in the card's rows y0 to y1, or null when none do or its silhouette is unknown.
+function artBox(W, side, floor, [from, to], edge, head) {
+  const right = side === 'right';
+  const h = floor,
+    w = (h * ART_W) / ART_H,
+    scale = h / ART_H;
+  const flush = right ? W - w : 0;
+  let far = right ? W - (1 - OFF_CARD) * w : -OFF_CARD * w;
+  if (head) far = right ? Math.min(far, W - HEAD_IN - scale * head.x1) : Math.max(far, HEAD_IN - scale * head.x0);
+  const bound = (x) => (right ? Math.max(flush, Math.min(x, far)) : Math.min(flush, Math.max(x, far)));
+  const box = { x: bound((from + to) / 2 - w / 2), y: 0, w, h, side };
+  // Moves the box off the card by `by` where that is the way off it.
+  const off = (by) => (box.x = bound(box.x + (right ? Math.max(0, by) : Math.min(0, by))));
+  const reach = (y0, y1) => {
+    const at = reachOf(edge, y0 / scale, y1 / scale, side);
+    return at == null ? null : box.x + scale * at;
+  };
+  return {
+    box,
+    reach,
+    clear(part) {
+      const at = reach(part.y, part.y + part.h);
+      if (at != null) off(right ? part.x + part.w + NAME_GAP - at : part.x - NAME_GAP - at);
+    },
+    keepHead(part) {
+      if (!head || part.y > scale * head.y1) return;
+      off(
+        right ? part.x + part.w + NAME_GAP - (box.x + scale * head.x0) : part.x - NAME_GAP - (box.x + scale * head.x1),
+      );
+    },
+    // How far toward the card's middle the head's solid parts come in the card's rows y0 to y1 (the silhouette within
+    // the head's columns), or null when the head is not in those rows or the silhouette is unknown.
+    headReach(y0, y1) {
+      if (!head || !Array.isArray(edge)) return null;
+      const end = Math.min(edge.length, head.y1, Math.ceil(y1 / scale));
+      const rows = [];
+      for (let row = Math.max(0, Math.floor(y0 / scale)); row < end; row++)
+        if (Number.isFinite(edge[row])) rows.push(right ? Math.max(edge[row], head.x0) : Math.min(edge[row], head.x1));
+      if (!rows.length) return null;
+      return box.x + scale * (right ? Math.min(...rows) : Math.max(...rows));
+    },
+  };
+}
+// How far toward the name a render reaches in its rows from y0 to y1 (picture pixels): the leftmost solid column of a
+// render at the right, the rightmost of one at the left. Null when those rows are empty or the silhouette is unknown.
+function reachOf(edge, y0, y1, side) {
+  if (!Array.isArray(edge)) return null;
+  const rows = edge.slice(Math.max(0, Math.floor(y0)), Math.max(0, Math.ceil(y1))).filter(Number.isFinite);
+  if (!rows.length) return null;
+  return side === 'right' ? Math.min(...rows) : Math.max(...rows);
+}
+
+// A render's silhouette for cardLayout(): for each row of the picture (RGBA `data`, `width` x `height`), the first
+// solid column seen from the side the render faces (from the left for one at the card's right), or null for a row
+// with nothing solid. Faint edges such as wisps of hair may sit behind text; solid parts never do.
+export function artEdge(data, width, height, side) {
+  const edge = [];
+  for (let y = 0; y < height; y++) {
+    let found = null;
+    for (let i = 0; i < width; i++) {
+      const x = side === 'left' ? width - 1 - i : i;
+      if (data[(y * width + x) * 4 + 3] >= 96) {
+        found = side === 'left' ? x + 1 : x;
+        break;
+      }
+    }
+    edge.push(found);
+  }
+  return edge;
 }
 // Stacked widgets share the height (see shares()). When every one is full the stack is centred in the height.
 function stack(x, y, w, h, widgets) {
@@ -701,30 +934,15 @@ function rounded(g, x, y, w, h, r) {
 const picture = (assets, url) => (url ? (assets.images?.get(url) ?? null) : null);
 const toneOf = (value) => (value > 0 ? INK.good : value < 0 ? INK.bad : INK.text1);
 
-// A portrait in its own frame. The panda's is cut from the kuma portrait, as on the player page; a portrait that
-// did not load leaves the empty frame.
+// A portrait in its own frame; one that did not load leaves the empty frame.
 function face(g, assets, id, x, y, size) {
   const image = picture(assets, faceUrl(id));
-  if (image && id !== 'panda') return g.drawImage(image, x, y, size, size);
-  const frame = image && picture(assets, faceUrl('kuma'));
-  const inset = frame ? Math.round(size * 0.07) : 1;
-  if (frame) g.drawImage(frame, x, y, size, size);
-  g.save();
-  rounded(g, x + inset, y + inset, size - 2 * inset, size - 2 * inset, frame ? size * 0.03 : 0);
-  g.fillStyle = image ? '#28232A' : INK.blank;
-  g.fill();
-  if (image) {
-    g.clip();
-    // The head of the full-body picture, placed as the player page's .rk-panda crop places it.
-    const box = size - 2 * inset;
-    g.drawImage(image, x + inset - 0.8833 * box, y + inset - 0.08 * box, 1.8667 * box, 2 * box);
-  }
-  g.restore();
-  if (!frame) {
-    g.strokeStyle = 'rgba(233, 238, 237, 0.18)';
-    g.lineWidth = 2;
-    g.strokeRect(x + 1, y + 1, size - 2, size - 2);
-  }
+  if (image) return g.drawImage(image, x, y, size, size);
+  g.fillStyle = INK.blank;
+  g.fillRect(x + 1, y + 1, size - 2, size - 2);
+  g.strokeStyle = 'rgba(233, 238, 237, 0.18)';
+  g.lineWidth = 2;
+  g.strokeRect(x + 1, y + 1, size - 2, size - 2);
 }
 // A badge plate, 192 x 96 at its own size.
 function plate(g, assets, id, x, y, w = 192) {
@@ -797,31 +1015,76 @@ function field(g, layout, accent) {
   g.fillRect(0, 0, W, 6);
 }
 
-function topBar(g, card, r, assets) {
-  let x = r.x;
-  if (assets.mark) x += brand(g, assets.mark, r.x, r.y + 3, 34) + 26;
+// The mark and the season. A render at the left takes the corner, so they move to the right. Where a render leaves
+// too little room for both, the season goes on without the mark, which the footer's wordmark carries anyway.
+function topBar(g, card, r, assets, end = false) {
   type(g, 700, SMALL, 'ui', 0.18);
-  write(g, clip(g, card.heading.toUpperCase(), r.x + r.w - x), x, r.y + 31, INK.text2);
+  const text = card.heading.toUpperCase();
+  const fullW = assets.mark ? (34 * assets.mark.box[0]) / assets.mark.box[1] + 26 : 0;
+  const mark = fullW && fullW + width(g, text) <= r.w ? assets.mark : null;
+  const markW = mark ? fullW : 0;
+  const heading = clip(g, text, r.w - markW);
+  let x = end ? r.x + r.w - markW - width(g, heading) : r.x;
+  if (mark) x += brand(g, mark, x, r.y + 3, 34) + 26;
+  write(g, heading, x, r.y + 31, INK.text2);
 }
 
-function identity(g, card, r, assets) {
-  face(g, assets, card.character, r.x, r.y, r.h);
-  const x = r.x + r.h + 36,
+// The name's width on one line at 1 px type, for cardLayout(); `g` is any 2D context once the fonts are in.
+export function nameWidth(g, name) {
+  type(g, 400, 100, 'display', 0.04);
+  return width(g, String(name ?? '').toUpperCase()) / 100;
+}
+// The name is the card's biggest line and never smaller than NAME_FLOOR, above any rank title. A name too long for
+// one line at that size takes two, broken after a space, dot, underscore or hyphen or where a capital follows a
+// small letter, else wherever the lines come out most even; one too long even for that is cut.
+const NAME_SIZES = [96, 84, 72, 64, 56, NAME_FLOOR];
+function nameLines(g, name, room) {
+  const set = (size) => type(g, 400, size, 'display', 0.04);
+  const text = name.toUpperCase();
+  for (const size of NAME_SIZES) {
+    set(size);
+    if (width(g, text) <= room) return { size, lines: [text] };
+  }
+  const chars = [...name];
+  const all = chars.map((_, i) => i).slice(1);
+  const soft = all.filter((i) => /[ ._-]/.test(chars[i - 1]) || /[a-z][A-Z]/.test(chars[i - 1] + chars[i]));
+  for (const breaks of [soft, all])
+    for (const size of [56, NAME_FLOOR]) {
+      set(size);
+      let best = null;
+      for (const i of breaks) {
+        const lines = [chars.slice(0, i), chars.slice(i)].map((part) => part.join('').trim().toUpperCase());
+        const most = Math.max(...lines.map((line) => width(g, line)));
+        if (lines.every(Boolean) && most <= room && (!best || most < best.most)) best = { most, lines };
+      }
+      if (best) return { size, lines: best.lines };
+    }
+  set(NAME_FLOOR);
+  return { size: NAME_FLOOR, lines: [text] };
+}
+
+// The name block: the character, the name and the meta line, beside the portrait or, with a render, on their own,
+// from the block's left edge or, when the layout aligns it right, to its right edge.
+function identity(g, card, r, assets, rendered = false) {
+  if (!rendered) face(g, assets, card.character, r.x, r.y, r.h);
+  const x = rendered ? r.x : r.x + r.h + 36,
     room = r.x + r.w - x;
-  const name = card.name.toUpperCase();
-  const size = fit(g, name, room, [96, 84, 72, 64, 56, 48, 44, 40, 36, 32], (s) => type(g, 400, s, 'display', 0.04));
+  const align = rendered && r.align === 'right' ? 'right' : 'left';
+  const at = align === 'right' ? x + room : x;
+  const { size, lines } = nameLines(g, card.name, room);
   const nameCap = size * 0.72;
-  const block = 20 + 24 + nameCap + (card.meta ? 26 + 23 : 0);
+  const block = 20 + 24 + nameCap + size * (lines.length - 1) + (card.meta ? 26 + 23 : 0);
   let y = r.y + (r.h - block) / 2 + 20;
   type(g, 700, SMALL, 'ui', 0.16);
-  write(g, clip(g, card.characterName.toUpperCase(), room), x, y, INK.text3);
+  write(g, clip(g, card.characterName.toUpperCase(), room), at, y, INK.text3, align);
   y += 24 + nameCap;
   type(g, 400, size, 'display', 0.04);
-  write(g, clip(g, name, room), x, y, INK.text1);
+  lines.forEach((line, i) => write(g, clip(g, line, room), at, y + i * size, INK.text1, align));
+  y += size * (lines.length - 1);
   if (card.meta) {
     y += 26 + 23;
     type(g, 600, 32);
-    write(g, clip(g, card.meta, room), x, y, INK.text2);
+    write(g, clip(g, card.meta, room), at, y, INK.text2, align);
   }
 }
 
@@ -845,8 +1108,14 @@ function lamps(g, { done, total }, x, mid) {
   return count * size + (count - 1) * gap;
 }
 
-function rankPanel(g, card, r, assets) {
-  panel(g, r, card.accent);
+// With `fill` (from, to) the panel runs out to the card's edge under a render, past it so no border shows there.
+function rankPanel(g, card, r, assets, fill = null) {
+  const [from, to] = fill ?? [r.x, r.x + r.w];
+  const open = [from < r.x, to > r.x + r.w];
+  const x0 = open[0] ? from - 2 : r.x,
+    x1 = open[1] ? to + 2 : r.x + r.w;
+  const [left, right] = open.map((edge) => (edge ? 0 : 6));
+  panel(g, { x: x0, y: r.y, w: x1 - x0, h: r.h }, card.accent, [left, right, right, left]);
   const { rank } = card;
   let x = r.x + 32;
   if (rank.placing) x += lamps(g, rank.placing, x, r.y + RANK_TOP / 2) + 36;
@@ -879,7 +1148,7 @@ function rankPanel(g, card, r, assets) {
     let y = r.y + (RANK_TOP - 20 - 18 - 40) / 2 + 20;
     caption(g, rank.caption, x, y, INK.text3, 'left', room);
     y += 18 + 40;
-    fit(g, name, room, [56, 48, 40, 32], (s) => type(g, 400, s, 'display', 0.06));
+    fit(g, name, room, [NAME_FLOOR, 40, 32], (s) => type(g, 400, s, 'display', 0.06));
     write(g, clip(g, name, room), x, y, INK.text1);
   }
   if (card.facts.length) facts(g, card.facts, r, r.y + RANK_TOP);
@@ -931,9 +1200,11 @@ function facts(g, list, r, top) {
   });
 }
 
-function footer(g, card, r, assets) {
+// With `rule` (from, to) the rule runs out to the card's edge under a render.
+function footer(g, card, r, assets, rule = null) {
+  const [from, to] = rule ?? [r.x, r.x + r.w];
   g.fillStyle = INK.hair;
-  g.fillRect(r.x, r.y - 18, r.w, 1.5);
+  g.fillRect(from, r.y - 18, to - from, 1.5);
   if (assets.wordmark) brand(g, assets.wordmark, r.x, r.y + 2, SMALL);
   const baseline = r.y + r.h - 6;
   type(g, 500, SMALL);
@@ -1240,17 +1511,25 @@ const DRAW_WIDGET = {
 
 // Paints `card` (cardModel's) at `layout` (cardLayout's) on a 2D context of the layout's size. `assets.images`
 // maps each of card.images to a loaded picture or null; `assets.mark` and `assets.wordmark` are the brand
-// drawings as { box: [width, height], paths: [{ path: Path2D, fill }] }, or null to leave them out.
+// drawings as { box: [width, height], paths: [{ path: Path2D, fill }] }, or null to leave them out. A render is
+// drawn when the layout has its place and its picture loaded; otherwise the portrait sits beside the name.
 export function drawCard(g, card, layout, assets = {}) {
   g.save();
   g.textBaseline = 'alphabetic';
   g.imageSmoothingEnabled = true;
   g.imageSmoothingQuality = 'high';
   field(g, layout, card.accent);
-  topBar(g, card, layout.top, assets);
-  identity(g, card, layout.id, assets);
-  rankPanel(g, card, layout.rank, assets);
+  // The render goes first, so everything else sits over it, and the accent rule is drawn again on top.
+  const art = layout.art && card.art ? picture(assets, card.art.url) : null;
+  if (art) {
+    g.drawImage(art, layout.art.x, layout.art.y, layout.art.w, layout.art.h);
+    g.fillStyle = card.accent.line;
+    g.fillRect(0, 0, layout.W, 6);
+  }
+  topBar(g, card, layout.top, assets, Boolean(art) && layout.art.side === 'left');
+  identity(g, card, layout.id, assets, Boolean(art));
+  rankPanel(g, card, layout.rank, assets, art && layout.rank.fill);
   card.widgets.forEach((widget, i) => DRAW_WIDGET[widget.kind](g, widget, layout.widgets[i], card, assets));
-  footer(g, card, layout.footer, assets);
+  footer(g, card, layout.footer, assets, art && layout.footer.rule);
   g.restore();
 }

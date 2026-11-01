@@ -306,11 +306,6 @@
   align-items: center;
   min-height: 160px;
 }
-.stats-loading:has(.stats-loading-indicator) {
-  width: 100%;
-  text-align: center;
-  padding-block: var(--s-6);
-}
 .ranked-search-form {
   position: relative;
 }

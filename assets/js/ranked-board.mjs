@@ -29,7 +29,7 @@ import {
   playerSearch,
   isRankId,
   bar,
-} from '/assets/js/ranked-kit.mjs?v=a623c764b6';
+} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
 
 const root = document.querySelector('[data-board]');
 const base = root.dataset.rankedApi;
@@ -43,7 +43,7 @@ function setParam(key, value) {
   history.replaceState(null, '', location.pathname + (params.size ? '?' + params.toString() : ''));
 }
 
-// Today's live API sends /v2/online without CORS for the website; the line simply leaves those numbers out.
+// When /v2/online cannot be read (an outage, a refusal or a missing CORS answer) the line leaves those numbers out.
 async function online() {
   try {
     const response = await fetch(new URL('/v2/online', base), {

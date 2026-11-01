@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Stats | Project Backdash</title>
-<meta name="description" content="Project Backdash in numbers: accounts, players, games and hours played, games per day, the most played characters and the top players by MMR.">
+<meta name="description" content="Project Backdash in numbers: players, who is online, open lobbies, Ranked games, games in the last 24 hours, the most played characters and the top players by MMR.">
 <link rel="canonical" href="https://backdash.gg/stats/">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#140608">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Backdash">
 <meta property="og:title" content="Stats | Project Backdash">
-<meta property="og:description" content="Project Backdash in numbers: accounts, players, games and hours played, games per day, the most played characters and the top players by MMR.">
+<meta property="og:description" content="Project Backdash in numbers: players, who is online, open lobbies, Ranked games, games in the last 24 hours, the most played characters and the top players by MMR.">
 <meta property="og:url" content="https://backdash.gg/stats/">
 <meta property="og:image" content="https://backdash.gg/og.png">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Project Backdash">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stats | Project Backdash">
-<meta name="twitter:description" content="Project Backdash in numbers: accounts, players, games and hours played, games per day, the most played characters and the top players by MMR.">
+<meta name="twitter:description" content="Project Backdash in numbers: players, who is online, open lobbies, Ranked games, games in the last 24 hours, the most played characters and the top players by MMR.">
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
@@ -32,11 +32,11 @@
 <link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
 <link rel="stylesheet" href="/assets/css/site.css?v=3f088890f3">
-<link rel="stylesheet" href="/assets/css/resurrection.css?v=7a94d21223">
-<link rel="stylesheet" href="/assets/css/pages/stats.css?v=d107b33c1d">
+<link rel="stylesheet" href="/assets/css/resurrection.css?v=66886cf18e">
+<link rel="stylesheet" href="/assets/css/pages/stats.css?v=697c6a7ca7">
 <script src="/assets/js/site.js?v=8e39d6083c" defer></script>
-    <script type="module" src="/assets/js/stats.js?v=a29a8528ed"></script>
-    <link rel="stylesheet" href="/assets/css/pages/ranked-stats.css?v=8b886667a5" />
+    <script type="module" src="/assets/js/stats.js?v=0dcb076f0b"></script>
+    <link rel="stylesheet" href="/assets/css/pages/ranked-stats.css?v=1d4553da2a" />
   </head>
   <body class="field page-body">
     <a class="skip-link" href="#main">Skip to content</a>
@@ -69,7 +69,9 @@
       <svg class="wordmark" viewBox="0 0 13399 700" overflow="visible" role="img" aria-label="Project Backdash" focusable="false" fill="currentColor"><path class="wordmark-project" d="M0 700L128 700L128 438L519 438L687 354L687 42L603 0L0 0ZM128 364L128 92L559 92L559 364ZM819 700L947 700L947 438L1193 438L1391 700L1541 700L1343 438L1431 438L1514 396L1514 42L1431 0L819 0ZM947 364L947 92L1387 92L1387 364ZM1689 700L2282 700L2450 616L2450 42L2367 0L1774 0L1606 84L1606 658ZM1733 608L1733 92L2323 92L2323 608ZM2611 700L3010 700L3178 616L3178 0L3051 0L3051 608L2655 608L2655 410L2527 410L2527 658ZM3321 700L3937 700L3937 608L3449 608L3449 379L3884 379L3884 305L3449 305L3449 92L3937 92L3937 0L3321 0ZM4111 700L4599 700L4767 616L4767 608L4155 608L4155 92L4767 92L4767 42L4683 0L4196 0L4028 84L4028 658ZM4816 92L5096 92L5096 700L5223 700L5223 92L5503 92L5503 0L4816 0Z"/><path class="wordmark-main" d="M5939 700L6591 700L6759 616L6759 310L6711 286L6711 42L6627 0L5939 0ZM6135 560L6135 398L6563 398L6563 560ZM6135 286L6135 140L6515 140L6515 286ZM6847 700L7053 700L7117 560L7517 560L7581 700L7787 700L7467 0L7167 0ZM7168 448L7317 122L7466 448ZM7929 700L8517 700L8685 616L8685 560L8041 560L8041 140L8685 140L8685 42L8601 0L8013 0L7845 84L7845 658ZM8775 700L8971 700L8971 510L9093 510L9192 413L9389 700L9615 700L9328 281L9615 0L9381 0L8971 401L8971 0L8775 0ZM9715 700L10325 700L10565 580L10565 120L10325 0L9715 0ZM9911 560L9911 140L10369 140L10369 560ZM10623 700L10829 700L10893 560L11293 560L11357 700L11563 700L11243 0L10943 0ZM10944 448L11093 122L11242 448ZM11735 398L12255 398L12255 560L11651 560L11651 658L11735 700L12283 700L12451 616L12451 328L12367 286L11847 286L11847 140L12451 140L12451 42L12367 0L11819 0L11651 84L11651 356ZM12599 700L12795 700L12795 398L13203 398L13203 700L13399 700L13399 0L13203 0L13203 286L12795 286L12795 0L12599 0Z"/></svg>
       <span class="lockup-for">for Tekken 5 DR</span>
     </a>
+    
     <a class="btn btn-sm app-bar-action" href="/how-it-works/">How it works</a>
+    
     
   </div>
 </header>
@@ -89,7 +91,7 @@
   </div>
 </nav>
       <main id="main" tabindex="-1" class="page-main">
-        <div class="page-col stats" data-stats-src="https://lobby.backdash.gg/v1/public/stats" data-state="down">
+        <div class="page-col stats" data-stats-src="https://lobby.backdash.gg/v1/public/stats" data-state="loading">
           <header class="page-head">
             <h1>Stats</h1>
           </header>
@@ -115,39 +117,34 @@
             <span class="stats-updated" data-stats-updated></span>
           </p>
 
-          <section class="section stats-live" aria-labelledby="totals-title">
-            <h2 class="label-tab" id="totals-title">Totals</h2>
+          <section class="section stats-glance" aria-labelledby="glance-title">
+            <h2 class="label-tab" id="glance-title">At a glance</h2>
             <dl class="stat-grid">
               <div>
-                <dt>Accounts</dt>
-                <dd data-stat="accounts"></dd>
+                <dt>Players</dt>
+                <dd data-stat="accounts">–</dd>
               </div>
               <div>
-                <dt>Players who played</dt>
-                <dd data-stat="playersWhoPlayed"></dd>
+                <dt>Online now</dt>
+                <dd data-online="players">–</dd>
               </div>
               <div>
-                <dt>Games played</dt>
-                <dd data-stat="gamesPlayed"></dd>
+                <dt>Lobbies open</dt>
+                <dd data-online="lobbies">–</dd>
               </div>
               <div>
                 <dt>Ranked games</dt>
-                <dd data-stat="rankedGames"></dd>
+                <dd data-stat="rankedGames">–</dd>
               </div>
               <div>
-                <dt>Ranked players</dt>
-                <dd data-stat="rankedPlayers"></dd>
+                <dt>Games – last 24 h</dt>
+                <dd data-stat="gamesLast24h">–</dd>
               </div>
               <div>
-                <dt>Hours played</dt>
-                <dd data-stat="hoursPlayed"></dd>
+                <dt>Searching / playing now</dt>
+                <dd data-online="queue">–</dd>
               </div>
             </dl>
-          </section>
-
-          <section class="section stats-live" aria-labelledby="days-title">
-            <h2 class="label-tab" id="days-title">Games per day (UTC)</h2>
-            <ol class="bars" data-stats-days aria-labelledby="days-title"></ol>
           </section>
 
           <section class="section stats-live" aria-labelledby="chars-title">
@@ -164,13 +161,40 @@
                     <th scope="col" class="num">#</th>
                     <th scope="col">Player</th>
                     <th scope="col" class="col-char">Character</th>
-                    <th scope="col">Rank</th>
+                    <th scope="col" class="col-rank">Rank</th>
                     <th scope="col" class="num">MMR</th>
                   </tr>
                 </thead>
                 <tbody data-stats-top></tbody>
               </table>
             </div>
+          </section>
+
+          <section class="section stats-live" aria-labelledby="totals-title">
+            <h2 class="label-tab" id="totals-title">Totals</h2>
+            <dl class="stat-rows">
+              <div>
+                <dt>Players who played</dt>
+                <dd data-stat="playersWhoPlayed"></dd>
+              </div>
+              <div>
+                <dt>Games played, every mode</dt>
+                <dd data-stat="gamesPlayed"></dd>
+              </div>
+              <div>
+                <dt>Ranked players</dt>
+                <dd data-stat="rankedPlayers"></dd>
+              </div>
+              <div>
+                <dt>Hours played</dt>
+                <dd data-stat="hoursPlayed"></dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="section stats-live" aria-labelledby="days-title">
+            <h2 class="label-tab" id="days-title">Games per day (UTC)</h2>
+            <ol class="bars" data-stats-days aria-labelledby="days-title"></ol>
           </section>
         </div>
       </main>

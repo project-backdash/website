@@ -5,10 +5,11 @@
 // inside and Esc closes it. Options with nothing to show for the chosen character are hidden, and the choices are
 // remembered in this browser for the next card.
 import { characterName, profileEndpoint, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { el, face, loading } from '/assets/js/ranked-kit.mjs?v=a623c764b6';
+import { el, face, loading } from '/assets/js/ranked-kit.mjs?v=00fa912a59';
 import {
   FORMATS,
   ACCENTS,
+  ARTS,
   WIDGETS,
   DETAILS,
   MAX_WIDGETS,
@@ -18,11 +19,13 @@ import {
   cardOptions,
   cardModel,
   cardLayout,
+  artEdge,
+  nameWidth,
   drawCard,
   fileName,
   readChoices,
   keepChoices,
-} from '/assets/js/ranked-card.mjs?v=f1136a59c1';
+} from '/assets/js/ranked-card.mjs?v=3eb3c7cfa1';
 
 const CLOSE_ICON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
@@ -49,6 +52,27 @@ function loadPicture(url) {
       }),
     );
   return pictures.get(url);
+}
+
+// A render's silhouette, read once from its pixels (the picture is the site's own, so the canvas may read it).
+const edges = new Map();
+function edgeOf(url, image, side) {
+  if (!edges.has(url)) {
+    let edge = null;
+    try {
+      const { naturalWidth: width, naturalHeight: height } = image;
+      const scratch = el('canvas');
+      scratch.width = width;
+      scratch.height = height;
+      const g = scratch.getContext('2d', { willReadFrequently: true });
+      g.drawImage(image, 0, 0);
+      edge = artEdge(g.getImageData(0, 0, width, height).data, width, height, side);
+    } catch {
+      /* without it the render keeps to its own side of the card */
+    }
+    edges.set(url, edge);
+  }
+  return edges.get(url);
 }
 
 // The mark and the wordmark as drawings, read from the site's own SVG files so the card's logo is the site's.
@@ -156,6 +180,10 @@ function shareDialog(ctx, loaders) {
     box.style.setProperty('--swatch', accent.line);
     accents.row.append(box);
   }
+  const arts = group('Artwork');
+  for (const art of ARTS) arts.row.append(option('radio', 'art', art.id, art.name));
+  const flip = option('checkbox', 'flip', 'flip', 'Flip sides');
+  arts.set.append(flip);
   const ranks = group('Rank');
   ranks.row.append(option('radio', 'rank', 'current', 'Current'), option('radio', 'rank', 'peak', 'Peak'));
   const widgets = group(['Widgets ', el('small', '', `up to ${MAX_WIDGETS}`)], 'rk-share-list');
@@ -170,7 +198,7 @@ function shareDialog(ctx, loaders) {
       details.row.append(scopes);
     }
   }
-  form.append(chars.set, formats.set, accents.set, ranks.set, widgets.set, details.set);
+  form.append(chars.set, formats.set, arts.set, accents.set, ranks.set, widgets.set, details.set);
   body.append(stage, form);
 
   const actions = el('div', 'rk-share-actions');
@@ -202,6 +230,10 @@ function shareDialog(ctx, loaders) {
     for (const input of inputs('character')) input.checked = input.value === choices.character;
     for (const input of inputs('format')) input.checked = input.value === choices.format;
     for (const input of inputs('accent')) input.checked = input.value === choices.accent;
+    arts.set.hidden = options.arts.length < 2;
+    for (const input of inputs('art')) input.checked = input.value === choices.art;
+    flip.hidden = choices.art !== 'render';
+    inputs('flip')[0].checked = choices.flip;
     ranks.set.hidden = options.ranks.length < 2;
     for (const input of inputs('rank')) input.checked = input.value === choices.rank;
     widgets.set.hidden = !options.widgets.length;
@@ -223,6 +255,7 @@ function shareDialog(ctx, loaders) {
     if (input.name === 'widget')
       wish.widgets = pickWidget(wish.widgets, input.value, input.checked, model?.options.widgets ?? []);
     else if (input.name === 'detail') wish.details = { ...wish.details, [input.value]: input.checked };
+    else if (input.name === 'flip') wish.flip = input.checked;
     else wish[input.name] = input.value;
     keepChoices(wish);
     render();
@@ -262,17 +295,28 @@ function shareDialog(ctx, loaders) {
       if (current !== revision) return;
       const next = cardModel(source(data), wish);
       showChoices(next.options, next.choices);
-      const layout = cardLayout(next.card.format.id, { widgets: next.card.widgets, facts: next.card.facts.length });
       const [images, [mark, wordmark]] = await Promise.all([
         Promise.all(next.card.images.map(async (url) => [url, await loadPicture(url)])),
         loadBrand(),
         loadFonts(),
       ]);
       if (current !== revision) return;
+      const loaded = new Map(images);
+      // A render that did not load leaves the card as the portrait draws it.
+      const art = next.card.art;
+      const render = art && loaded.get(art.url);
+      const layout = cardLayout(next.card.format.id, {
+        widgets: next.card.widgets,
+        facts: next.card.facts.length,
+        art: render ? art.side : null,
+        edge: render ? edgeOf(art.url, render, art.side) : null,
+        head: render ? art.head : null,
+        name: nameWidth(canvas.getContext('2d'), next.card.name),
+      });
       model = { ...next, layout };
       if (canvas.width !== layout.W) canvas.width = layout.W;
       if (canvas.height !== layout.H) canvas.height = layout.H;
-      drawCard(canvas.getContext('2d'), next.card, layout, { images: new Map(images), mark, wordmark });
+      drawCard(canvas.getContext('2d'), next.card, layout, { images: loaded, mark, wordmark });
       canvas.setAttribute('aria-label', next.card.summary);
       size.textContent = `${layout.W} x ${layout.H} PNG`;
       wait.hidden = true;

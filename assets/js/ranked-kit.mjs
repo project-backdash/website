@@ -74,26 +74,14 @@ export function face(character, size = 40, { label = '', className = '' } = {}) 
   image.decoding = 'async';
   // Rows and grids hold many portraits; only the player header's is wanted at once.
   if (size < 120) image.loading = 'lazy';
-  if (id !== 'panda') {
-    image.className = cls;
-    // A portrait that fails to load leaves the empty frame, never a broken image.
-    image.addEventListener('error', () => {
-      const blank = el('span', cls);
-      blank.setAttribute('aria-hidden', 'true');
-      image.replaceWith(blank);
-    });
-    return image;
-  }
-  image.addEventListener('error', () => image.remove());
-  const frame = el('span', cls + ' rk-panda');
-  if (label) {
-    frame.setAttribute('role', 'img');
-    frame.setAttribute('aria-label', label);
-    frame.title = label;
-    image.alt = '';
-  }
-  frame.append(image);
-  return frame;
+  image.className = cls;
+  // A portrait that fails to load leaves the empty frame, never a broken image.
+  image.addEventListener('error', () => {
+    const blank = el('span', cls);
+    blank.setAttribute('aria-hidden', 'true');
+    image.replaceWith(blank);
+  });
+  return image;
 }
 
 export const isRankId = (id) => typeof id === 'string' && /^rank_(0\d|[12]\d|3[0-4])$/.test(id);
@@ -190,9 +178,8 @@ const KEYS = [
   'M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z',
   'M2 22L2 3L2.7917 2.2083L9.125 8.5417L17.6667 0L24 6.3333L15.4583 14.875L21.7917 21.2083L21 22Z',
 ];
-export function loading(text) {
-  const box = el('div', 'rk-loading');
-  box.setAttribute('role', 'status');
+// The loader's four keys alone, for a place that holds one value (Home's big number).
+export function keys() {
   const input = el('span', 'rk-input');
   input.setAttribute('aria-hidden', 'true');
   for (const d of KEYS) {
@@ -203,7 +190,12 @@ export function loading(text) {
     svg.append(path);
     input.append(svg);
   }
-  box.append(input, el('span', '', text));
+  return input;
+}
+export function loading(text) {
+  const box = el('div', 'rk-loading');
+  box.setAttribute('role', 'status');
+  box.append(keys(), el('span', '', text));
   return box;
 }
 export function empty(title, text, action) {
