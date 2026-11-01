@@ -1,29 +1,12 @@
-/* Page not found: one short column between the bar and the footer. */
+/* <!-- check-allow: ranked --> */
+/* Page not found: the page header with a way back, and the places most people were looking for, as rows in a
+   panel. A player page (404.html serves /player/...) hides all of it and draws the player instead (ranked.css). */
 
-.nf {
-  display: flex;
-  flex-direction: column;
+.nf-links {
+  margin: 0;
+  border-top: 1px solid var(--panel-edge);
 }
 
-.nf-inner {
-  width: 100%;
-  max-width: calc(var(--read) + 2 * var(--s-4));
-  margin: 0 auto;
-  padding: var(--s-16) var(--s-4);
-}
-
-.nf-tab {
-  margin-bottom: var(--s-5);
-}
-
-.nf-lead {
-  max-width: 46ch;
-  margin: var(--s-3) 0 0;
-  color: var(--text-2);
-  font-size: var(--fs-lead);
-  line-height: 1.5;
-}
-
-.nf .actions {
-  margin: var(--s-8) 0 var(--s-4);
+.nf-links > li:last-child a {
+  border-bottom: 0;
 }

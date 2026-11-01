@@ -1,7 +1,7 @@
 /* The launcher's palette and touches, over site.css's shared components and frame.
    Tokens: the red field, black bands, gold links and selection, the same text greys as the launcher.
-   Frame: site.css draws the bar, the status strip, the sidebar and the drawer on the band (black here);
-   this file marks the current page in gold and gives a short centred footer. The radial field and the
+   Frame: site.css draws the bar and the drawer on the band (black here); this file marks the section you are
+   in, in the menu, in gold and gives a short centred footer. The radial field and the
    gold wash are the only gradients, as in the launcher. */
 :root,
 :root[data-theme],
@@ -59,23 +59,17 @@ html, body { background: #140608; }
   pointer-events: none;
   background: radial-gradient(ellipse 80% 90% at 64% 47%, #5A0E18 0%, #470B15 24%, #2F0810 50%, #1D0609 76%, #140608 100%);
 }
-.field.page-body::before {
-  background-size: 140% 120%;
-  background-position: 30% 100%;
-  opacity: .55;
-}
 
-/* ---- The frame: black bar, status strip, sidebar and drawer (site.css); the page you are on is a
-   gold edge and wash, as a selected row in the launcher, and the row under the pointer a faint gold. -- */
+/* ---- The frame: black bar and drawer (site.css); in the menu the section you are in is a gold edge and
+   wash, as a selected row in the launcher, and the row under the pointer a faint gold. -- */
 .app-bar { border-bottom-color: rgba(233,238,237,.12); }
 .nav-list a:hover { background: rgba(244,182,63,.08); }
-.nav-list a[aria-current="page"] {
+.nav-list a[aria-current] {
   color: #F4B63F;
   background: linear-gradient(90deg, rgba(244,182,63,.14), rgba(244,182,63,.05) 38%, transparent 72%);
   border-radius: 0;
   box-shadow: inset 2px 0 0 0 #F4B63F;
 }
-.sidebar .nav-list a[aria-current="page"] { padding-left: 20px; }
 
 /* The launcher's label tab: black, slanted right edge, the name in PBD Display at 18 px. On phones the
    letter spacing tightens so a long name ("What is Project Backdash?") stays on one line at 360 px. */
@@ -155,22 +149,6 @@ html, body { background: #140608; }
 .site-footer .contact { margin: 0 0 var(--s-2); }
 .footer-free { margin: 0; color: var(--text-2); font-weight: 400; }
 .site-footer .footer-fine { max-width: 60ch; margin: var(--s-5) auto 0; color: var(--text-3); font-size: var(--fs-small); }
-/* With a sidebar (from 1024 px) the footer centres under the page beside it, and the sidebar's black
-   column carries on down to the bottom of the window, so the list stands in one unbroken column. */
-@media (min-width: 1024px) {
-  body:has(.sidebar) .site-footer { position: relative; padding-left: var(--side); }
-  body:has(.sidebar) .site-footer::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: var(--side);
-    background: var(--band);
-    border-right: 1px solid var(--line);
-  }
-}
-
 /* ---- Shared parts in the launcher's colours ----------------------------------------------- */
 .hl {
   color: #E9EEED;
@@ -222,7 +200,7 @@ html, body { background: #140608; }
 
 @media (forced-colors: active) {
   .field::before { display: none; }
-  .nav-list a[aria-current="page"] { background: Canvas; color: CanvasText; box-shadow: none; border: 2px solid Highlight; }
+  .nav-list a[aria-current] { background: Canvas; color: CanvasText; box-shadow: none; border: 2px solid Highlight; }
   .band-hero,
   .label-box,
   .label-tab { background: Canvas; color: CanvasText; }

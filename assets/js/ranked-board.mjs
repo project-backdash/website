@@ -29,7 +29,7 @@ import {
   playerSearch,
   isRankId,
   bar,
-} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
+} from '/assets/js/ranked-kit.mjs?v=f30d870cde';
 
 const root = document.querySelector('[data-board]');
 const base = root.dataset.rankedApi;
@@ -387,7 +387,7 @@ function landing() {
     const placed = [...counts.values()].reduce((sum, row) => sum + row.players, 0);
     distHead.hidden = dist.hidden = placed === 0;
     if (!placed) return;
-    distHead.querySelector('.rk-window').textContent = `Placed players by badge, ${label}`;
+    distHead.querySelector('.sec-note').textContent = `Placed players by badge, ${label}`;
     const lines = ranks?.ranks;
     const step = lines && lines[11].from - lines[10].from;
     const even =

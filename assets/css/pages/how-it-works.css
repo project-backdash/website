@@ -1,108 +1,114 @@
-/* How it works: the three parts, rollback and the connection, the PC checklist and every link.
-   Builds on site.css and resurrection.css (.label-tab, .link-rows). */
+/* How it works: the three parts side by side, rollback beside the PC table (site.css, the same table as Download and
+   Requirements), then every link in three columns, each a section of the site's tab and panel (site.css). The parts
+   are numbered as Home's steps: "01" in small monospaced capitals. Under 900 px each runs down one column. */
 
-.hiw > .section {
-  margin-top: var(--s-12);
-}
-
-.hiw > .section > .label-tab {
-  margin-bottom: var(--s-5);
-}
-
-.hiw > .section > p {
-  max-width: 64ch;
-  margin-bottom: var(--s-3);
-}
-
-/* The three parts: numbered rows, the number in PBD Display beside the name. */
+/* The three parts: one column each, the number over the name, hairlines between them. */
 .parts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: part;
-  border-top: 1px solid rgba(233, 238, 237, 0.08);
 }
 
 .parts > li {
-  counter-increment: part;
-  position: relative;
   margin: 0;
-  padding: var(--s-5) 0 var(--s-5) 52px;
-  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
+  padding: 18px 24px 20px;
 }
 
-.parts > li::before {
-  content: counter(part);
-  position: absolute;
-  left: 4px;
-  top: var(--s-5);
-  color: #C96678;
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  line-height: 1.1;
+.parts > li + li {
+  border-left: 1px solid var(--hairline);
+}
+
+.part-n {
+  color: var(--text-3);
 }
 
 .part-name {
-  margin: 0 0 var(--s-1);
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 1.25rem;
-  letter-spacing: 0.08em;
-  line-height: 1.25;
+  margin: 8px 0 6px;
+  font: 400 1.25rem/1.2 var(--font-display);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .parts p {
   margin: 0;
   color: var(--text-2);
+  font-size: var(--fs-3);
 }
 
-/* The PC checklist: label left, value right, ruled like the launcher's settings rows. */
-.needs {
-  margin: 0;
-  border-top: 1px solid rgba(233, 238, 237, 0.08);
+.parts p + p {
+  margin-top: 8px;
 }
 
-.needs > div {
+/* Link groups: a small capitals heading over each run of link rows, three groups side by side. */
+.links-panel {
   display: grid;
-  grid-template-columns: 8.5rem minmax(0, 1fr);
-  gap: 0 var(--s-4);
-  padding: var(--s-3) var(--s-1);
-  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 4px 0 8px;
 }
 
-.needs dt {
+.links-col + .links-col {
+  border-left: 1px solid var(--hairline);
+}
+
+.links-group {
+  margin: 18px 24px 8px;
   color: var(--text-3);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  line-height: 1.9;
-  text-transform: uppercase;
+  font-size: 11px;
 }
 
-.needs dd {
-  margin: 0;
-  color: var(--text-1);
+.links-panel .link-rows {
+  border-top: 1px solid var(--hairline);
 }
 
-@media (max-width: 419.98px) {
-  .needs > div {
+.links-panel .link-rows a {
+  padding-inline: 24px;
+  border-bottom-color: var(--hairline);
+}
+
+.links-panel .link-note {
+  overflow-wrap: anywhere;
+}
+
+.links-panel .link-rows li:last-child a {
+  border-bottom: 0;
+}
+
+@media (max-width: 899.98px) {
+  .parts,
+  .links-panel {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .parts > li + li {
+    border-top: 1px solid var(--hairline);
+    border-left: 0;
+  }
+
+  .links-col + .links-col {
+    border-left: 0;
+  }
+
+  .links-panel .link-rows li:last-child a {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .links-col:last-child .link-rows li:last-child a {
+    border-bottom: 0;
   }
 }
 
-/* Link groups: a small capitals heading over each run of link rows. */
-.links-group {
-  margin: var(--s-8) 0 var(--s-2);
-  color: var(--text-3);
-  font-family: var(--font-ui);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
+@media (max-width: 599.98px) {
+  .parts > li {
+    padding-inline: 16px;
+  }
 
-.hiw .label-tab + .links-group {
-  margin-top: 0;
+  .links-group {
+    margin-inline: 16px;
+  }
+
+  .links-panel .link-rows a {
+    padding-inline: 16px;
+  }
 }

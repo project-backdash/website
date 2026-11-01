@@ -9,7 +9,7 @@
      1. Tokens (palette, dark default, light theme, surfaces that stay dark)
      2. Base and type
      3. App bar, drawer, page list, status strip, skip link, lockup
-     4. Layouts: bands; pages with a sidebar and a reading column
+     4. Layouts: bands; the page container, header, tabs, sections and panels
      5. Shared pieces: headline and highlight box, label box, download block, links
      6. Buttons: the crimson primary, outline secondary
      7. Content: notices, tables, figures, details, lists, code, input strip
@@ -87,13 +87,27 @@
   /* Layout */
   --bar-h: 56px;
   --col: 704px;           /* home column */
-  --read: 760px;          /* inner-page reading column */
-  --side: 240px;          /* inner-page sidebar */
+  --read: 720px;          /* reading column */
   --pad-l: 44px;          /* home band padding; the spine lives in the left one */
   --pad-r: 20px;
   --spine-x: -26px;       /* spine line, from the column's left edge (phones: 18 px from the screen edge) */
   --band-pt: 48px;
   --band-pb: 48px;
+
+  /* Data pages and the frame's parts (Home, the board, Stats, the bar's search): one type scale (13, 15, 17, 24 and
+     44 px), the panels, their rows and lines, and the gold that marks selection, #1 and the current tab. */
+  --fs-1: 13px;
+  --fs-2: 15px;
+  --fs-3: 17px;
+  --fs-4: 24px;
+  --fs-5: 44px;
+  --panel: rgba(9, 2, 3, 0.86);
+  --panel-edge: rgba(233, 238, 237, 0.1);
+  --row-alt: rgba(233, 238, 237, 0.035);
+  --hairline: rgba(233, 238, 237, 0.07);
+  --rail: rgba(233, 238, 237, 0.16);
+  --gold: #F4B63F;
+  --gold-wash: rgba(244, 182, 63, 0.09);   /* the row under the pointer, with a gold edge */
 
   color-scheme: dark;
 }
@@ -103,7 +117,7 @@
 :root[data-theme="dark"] {
   /* @dark */
   --bg: #1A2023;            /* graphite-850: page under the bands, inner pages */
-  --band: #14191B;          /* graphite-900: neutral bands, the app bar, status strip, sidebar and drawer */
+  --band: #14191B;          /* graphite-900: neutral bands, the app bar, status strip and drawer */
   --surface: #222A2D;       /* graphite-800: figure frames, boxes on the page */
   --text-1: #E9EEED;
   --text-2: #AEBDBD;
@@ -457,9 +471,12 @@ a:hover {
   outline-offset: 2px;
 }
 
-/* The bar on every page, on the band colour (the launcher's black): the menu
-   button at the left, the lockup in the middle, How it works at the right.
-   Sticky, so the page list is always one tap away. */
+/* The bar on every page, on the band colour (the launcher's black), in the page's 1240 px container: the lockup,
+   the three sections (the one you are in in gold, underlined on the bar's edge), the player search and DOWNLOAD at
+   the far right. Sticky, so the sections and the download are always one click away.
+   Narrower screens, in steps: under 1180 px DOWNLOAD is its arrow alone; under 1024 px the sections move into the
+   menu (the drawer, at the left); under 900 px the search is an icon that opens its box under the bar; on phones
+   the menu button moves to the right, after the search and DOWNLOAD. */
 .app-bar {
   position: sticky;
   top: 0;
@@ -469,11 +486,13 @@ a:hover {
 }
 
 .app-bar-inner {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  gap: 16px;
+  max-width: 1240px;
   height: var(--bar-h);
-  padding: 0 var(--s-3) 0 var(--s-2);
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
 /* The bar is sticky at the top, so what sits in it never needs scrolling into
@@ -482,45 +501,432 @@ a:hover {
    page (600 px down jumped to 142); a negative margin of the same size cancels
    it for them. */
 .app-bar-inner > :not(.drawer),
+.bar-links > a,
 .drawer > summary {
   scroll-margin-top: calc(-1 * (var(--bar-h) + 16px));
 }
 
-.app-bar-inner > .drawer {
-  grid-column: 1;
-  justify-self: start;
-}
-
 .app-bar-inner > .lockup {
-  grid-column: 2;
+  flex: none;
 }
 
-.app-bar-inner > .app-bar-action {
-  grid-column: 3;
-  justify-self: end;
-}
-
-.app-bar .app-bar-action {
+.app-bar .drawer {
   display: none;
 }
 
-@media (min-width: 600px) {
-  .app-bar .app-bar-action {
-    display: inline-flex;
-  }
+/* The sections stand on the bar's bottom edge, as the tabs on a page stand on theirs: the one you are in is gold,
+   with a 2 px gold line where the bar meets the page. */
+.bar-links {
+  display: flex;
+  flex: none;
+  align-self: stretch;
+  gap: 2px;
 }
 
-/* The button never links to the page you are on, and on pages with a sidebar
-   (from 1024 px) the sidebar already has the row. `visibility` keeps the
-   1fr/auto/1fr grid, so the lockup stays centred. */
-.app-bar .app-bar-action[aria-current="page"] {
+.bar-links a {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.bar-links a:hover {
+  color: var(--text-1);
+  background: var(--hover);
+}
+
+.bar-links a[aria-current] {
+  color: var(--gold);
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+
+.bar-links a:focus-visible {
+  outline-offset: -4px;
+}
+
+/* The search follows the sections and DOWNLOAD sits at the far right. The search is never wider than the room
+   DOWNLOAD's full label leaves it (the lockup and the sections take about 600 px, the label about 245), so when
+   DOWNLOAD grows from its arrow to its label only the free space between them shrinks: nothing else in the bar moves. */
+.app-bar-inner > .bar-search {
+  flex: 0 1 300px;
+  min-width: 0;
+}
+
+.bar-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bar-search .rk-search {
+  width: 100%;
+}
+
+.bar-search .rk-search-box {
+  width: 100%;
+  height: 38px;
+  gap: 10px;
+  padding: 0 8px 0 12px;
+  border: 1px solid rgba(233, 238, 237, 0.24);
+  background: rgba(233, 238, 237, 0.04);
+}
+
+.bar-search .rk-search-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+}
+
+.bar-search .rk-search-box input {
+  font-size: 15px;
+}
+
+/* The bar's suggestions are as wide as its box: the badge and MMR go under the name. */
+.bar-search .rk-search-list a {
+  grid-template-columns: 24px minmax(0, 1fr);
+  row-gap: 0;
+  height: auto;
+  min-height: 52px;
+  padding: 6px 12px;
+}
+
+.bar-search .rk-search-list a > .rk-face {
+  grid-row: 1 / span 2;
+}
+
+.bar-search .rk-search-list a > .rk-faint {
+  grid-column: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-search-open {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.bar-search-open:hover {
+  color: var(--text-1);
+  background: var(--hover);
+}
+
+.bar-search-open svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* A page with its own, bigger box (the board, Players: data-own-search) hides this one, so it never shows two. */
+body:has([data-own-search]) .bar-search {
   visibility: hidden;
 }
 
-@media (min-width: 1024px) {
-  body:has(.sidebar) .app-bar .app-bar-action {
-    visibility: hidden;
+/* DOWNLOAD: crimson with the ink label at 20 px display caps, as every primary (4.05:1 counts as large text). On a
+   page with its own big download button (data-download, site.js) it is a quiet outlined arrow while that one is on
+   screen (its name stays "Download"), so a screen never shows two DOWNLOADs. */
+.bar-download {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 44px;
+  margin-left: auto;
+  padding: 0 18px;
+  border: 1.5px solid var(--verm-500);
+  border-radius: var(--r-control);
+  background: var(--verm-500);
+  color: var(--on-verm);
+  font: 800 1.25rem/1 var(--font-display);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color var(--t-fast) linear, color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+
+.bar-download svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.bar-download:hover {
+  background: var(--verm-400);
+  border-color: var(--verm-400);
+  color: var(--on-verm);
+}
+
+.bar-download.is-quiet {
+  width: 44px;
+  padding: 0;
+  background: transparent;
+  border-color: var(--control-edge);
+  color: var(--text-1);
+}
+
+.bar-download.is-quiet:hover {
+  border-color: var(--text-1);
+  background: var(--hover);
+  color: var(--text-1);
+}
+
+.bar-download.is-quiet .bar-download-label {
+  display: none;
+}
+
+@media (max-width: 1239.98px) {
+  .app-bar-inner > .bar-search {
+    flex-basis: 240px;
   }
+}
+
+/* DOWNLOAD as its arrow alone: outlined while a big one is on screen, crimson otherwise. */
+@media (max-width: 1179.98px) {
+  .bar-download {
+    width: 44px;
+    padding: 0;
+  }
+
+  .bar-download-label {
+    display: none;
+  }
+}
+
+/* The sections move into the menu, and the search box takes their room. */
+@media (max-width: 1023.98px) {
+  .bar-links {
+    display: none;
+  }
+
+  .app-bar .drawer {
+    display: block;
+  }
+
+  .app-bar-inner {
+    gap: 12px;
+    padding: 0 16px 0 8px;
+  }
+
+  .app-bar-inner > .bar-search {
+    flex-basis: 380px;
+  }
+}
+
+/* Under 900 px the box would be too short to type in: the bar shows its icon beside DOWNLOAD, which opens the box in
+   a row under the bar. */
+@media (max-width: 899.98px) {
+  .app-bar-inner > .bar-search {
+    flex: none;
+    margin-left: auto;
+  }
+
+  .app-bar-inner > .bar-search + .bar-download {
+    margin-left: 0;
+  }
+
+  .bar-search-open {
+    display: inline-flex;
+  }
+
+  .bar-search .rk-search {
+    display: none;
+    position: fixed;
+    top: var(--bar-h);
+    right: 0;
+    left: 0;
+    width: auto;
+    padding: 8px 12px;
+    background: var(--band);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bar-search.is-open .rk-search {
+    display: block;
+  }
+
+  .bar-search .rk-search-box {
+    height: 44px;
+  }
+
+  .bar-search .rk-search-list {
+    position: static;
+    width: auto;
+    margin-top: 4px;
+  }
+}
+
+/* Player search: the bar's box, the board's big one and the Players page's share the box and the list of
+   players under it. */
+.rk-search {
+  position: relative;
+}
+
+.rk-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 10px 0 16px;
+  border: 1.5px solid rgba(233, 238, 237, 0.4);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text-3);
+  cursor: text;
+}
+
+.rk-search-box:focus-within {
+  border-color: rgba(233, 238, 237, 0.7);
+}
+
+/* The box draws its field's focus ring, round the whole box. */
+.rk-search-box:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.rk-search-box svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--text-2);
+}
+
+.rk-search-box input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-1);
+  font: 400 var(--fs-3)/1 var(--font-ui);
+}
+
+.rk-search-box input::placeholder {
+  color: var(--text-3);
+  opacity: 1;
+}
+
+.rk-search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.rk-kbd {
+  flex: none;
+  padding: 2px 7px;
+  border: 1px solid rgba(233, 238, 237, 0.24);
+  border-radius: 3px;
+  color: var(--text-2);
+  font: 600 var(--fs-1)/1.2 var(--font-ui);
+}
+
+.rk-search-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  left: 0;
+  z-index: 40;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  background: #0B0304;
+  box-shadow: 0 8px 0 -4px rgba(0, 0, 0, 0.4);
+}
+
+.rk-search-list a {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  color: var(--text-1);
+  font-size: var(--fs-2);
+  text-decoration: none;
+}
+
+/* The name and its tag keep to one line; a name too long for it ends in "…" before its tag. */
+.rk-search-list a > :nth-child(2) {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rk-search-list a b {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rk-search-list a b + .rk-faint {
+  flex: none;
+}
+
+.rk-search-list .rk-faint {
+  color: var(--text-3);
+  font-size: var(--fs-1);
+  white-space: nowrap;
+}
+
+.rk-search-list a[aria-selected="true"],
+.rk-search-list a:hover {
+  background: var(--gold-wash);
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+
+.rk-search-list p {
+  margin: 0;
+  padding: 12px 14px;
+  color: var(--text-2);
+  font-size: var(--fs-2);
+}
+
+/* A character's portrait, framed, on the select screen's dark backdrop while it loads: 24 px
+   inline, 40 in rows and cards, 120 in the player header. */
+.rk-face {
+  flex: none;
+  display: block;
+  border: 1px solid rgba(233, 238, 237, 0.18);
+  background: #1D0609;
+}
+
+.rk-f24 {
+  width: 24px;
+  height: 24px;
+}
+
+.rk-f40 {
+  width: 40px;
+  height: 40px;
+}
+
+.rk-f120 {
+  width: 120px;
+  height: 120px;
+}
+
+/* The portraits the search list shows beside each name. */
+.rk-search-list .rk-face {
+  width: 24px;
+  height: 24px;
 }
 
 /* The lockup: the mark, a gap of one cap height, the one-line wordmark. The
@@ -564,34 +970,66 @@ a:hover {
   }
 }
 
-/* Phones: the lockup sits at the left and the menu button at the right. The
-   lockup (26.29 caps and 8 px wide: the 6.15-cap mark, a one-cap gap and the
-   19.14-cap wordmark) no longer fits centred between the button and an equal
-   right column, and a back arrow right after the burger reads as Back.
-   The "How it works" button is hidden here anyway. Below 360 px the cap
-   shrinks so at least 12 px stay between the wordmark and the button. The
-   drawer then opens from the right, and its close button lands where the
+/* Phones: the lockup at the left, then the search icon, DOWNLOAD as its arrow and the menu button at the right (a
+   back arrow right after a burger would read as Back). The wordmark shrinks to leave the three buttons their room
+   (12 + 8 px of bar padding, 40 + 40 + 4 + 44 px of buttons, the lockup's 8 px); under 360 px it would be too small
+   to read, so the mark stands alone. The drawer then opens from the right, and its close button lands where the
    menu button was. */
 @media (max-width: 599.98px) {
   .app-bar-inner {
-    grid-template-columns: minmax(0, 1fr) auto;
-    padding: 0 var(--s-2) 0 var(--s-3);
+    gap: 0;
+    padding: 0 8px 0 12px;
   }
 
-  .app-bar-inner > .lockup {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
+  .app-bar .app-bar-inner > .lockup {
+    --cap: min(11px, calc((100vw - 156px) / 26.3));
+    margin-right: auto;
   }
 
-  .app-bar-inner > .drawer {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
+  .app-bar-inner > .bar-search {
+    order: 1;
+    margin-left: 0;
   }
 
-  .app-bar .lockup {
-    --cap: min(11px, calc((100vw - 84px) / 26.30));
+  .bar-search-open {
+    width: 40px;
+  }
+
+  /* 40 px to look at, 44 to hit. */
+  .bar-download {
+    position: relative;
+    order: 2;
+    width: 40px;
+    height: 40px;
+  }
+
+  .bar-download::before {
+    content: "";
+    position: absolute;
+    top: -3.5px;
+    right: 0;
+    bottom: -3.5px;
+    left: 0;
+  }
+
+  .bar-download svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .app-bar .drawer {
+    order: 3;
+    margin-left: 4px;
+  }
+}
+
+@media (max-width: 359.98px) {
+  .app-bar .app-bar-inner > .lockup {
+    --cap: 11px;
+  }
+
+  .app-bar-inner > .lockup .wordmark {
+    display: none;
   }
 }
 
@@ -910,19 +1348,18 @@ a:hover {
    under the scrim), stop covering it (WCAG 2.4.11): the panel and scrim go
    and the button, still an X, goes back into the bar. With site.js the Tab
    trap keeps focus in the drawer, so this never matches. */
-body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] > .drawer-panel,
-body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] > summary::before {
+body:has(.drawer[open]):has(:is(main, .site-footer, .app-bar-inner > :not(.drawer)) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] > .drawer-panel,
+body:has(.drawer[open]):has(:is(main, .site-footer, .app-bar-inner > :not(.drawer)) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] > summary::before {
   display: none;
 }
 
-body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] .drawer-button {
+body:has(.drawer[open]):has(:is(main, .site-footer, .app-bar-inner > :not(.drawer)) :focus-visible, .app-bar-inner > :not(.drawer):focus-visible) .drawer[open] .drawer-button {
   position: static;
   transform: none;
 }
 
-/* The page list (the `nav` partial), in the drawer and the sidebar: one row
-   per page, 48 px tall. The current page is marked in resurrection.css (the
-   launcher's gold edge and wash); here it is a slab with the selected edge. */
+/* The menu's list (the `nav` partial): one row per section, 48 px tall. The section you are in is marked in
+   resurrection.css (the launcher's gold edge and wash); here it is a slab with the selected edge. */
 .nav-list {
   margin: 0;
   padding: 0;
@@ -954,70 +1391,14 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   color: var(--text-1);
 }
 
-.nav-list a[aria-current="page"] {
+.nav-list a[aria-current] {
   background: var(--petrol-700);
   box-shadow: inset 0 0 0 1.5px var(--selected-edge);
   color: var(--dk-text-1);
   font-weight: 600;
 }
 
-/* A state on a row (the Coming soon pill) sits at its right end. */
-.nav-list .pill {
-  margin-left: auto;
-}
-
-/* What a page is about, small at the row's right end: one page is about the players, the next about the game. */
-.nav-list .nav-sub {
-  margin-left: auto;
-  color: var(--text-3);
-  font-weight: 400;
-  font-size: 0.8125rem;
-}
-
-/* Download, while there is no public release: not a link, so nothing to
-   focus or press. The launcher's disabled look, as on Home's download block:
-   a faint light fill and edge, the arrow and label in text-3 (never crimson),
-   and the reason under the label in gold capitals. */
-.nav-download {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  min-height: 56px;
-  margin: var(--s-4) var(--s-3) 0;
-  padding: var(--s-2) var(--s-4);
-  border-radius: var(--r-control);
-  background: rgba(233, 238, 237, 0.06);
-  box-shadow: inset 0 0 0 1px rgba(233, 238, 237, 0.08);
-  color: #8A9C9C;
-  font-weight: 600;
-  font-size: 1.0625rem;
-  line-height: 1.3;
-}
-
-.nav-download-arrow {
-  flex: none;
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
-
-.nav-download-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.nav-download .nav-state {
-  color: var(--link);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
-/* Source and Privacy close the list in small type, over a hairline. */
+/* About, Source code and Privacy close the list in small type, over a hairline. */
 .nav-fine {
   display: flex;
   flex-wrap: wrap;
@@ -1068,56 +1449,750 @@ body:has(.drawer[open]):has(:is(main, .sidebar, .site-footer) :focus-visible, .a
   --band-bg: var(--petrol-900);
 }
 
-/* Pages with a sidebar: from 1024 px the page list stands on the band at the
-   left, beside the page (one reading column on inner pages, Home's own column
-   on Home); narrower, the drawer holds the list. resurrection.css sets the
-   reading column's width. */
+/* Every page: one 1240 px container under the bar, the same as the bar's own, so a page's left edge lines up with
+   the lockup. Data pages use its full width; reading pages keep their text to a 720 px column (.read) on its left. */
+.wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
 .page {
+  padding: 44px 0 56px;
+}
+
+.read {
+  max-width: 720px;
+}
+
+@media (max-width: 599.98px) {
+  .wrap {
+    padding: 0 16px;
+  }
+
+  .page {
+    padding: 20px 0 40px;
+  }
+}
+
+/* Small labels: monospaced capitals. */
+.mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* A page's header, as Home's first screen: a line of monospaced capitals (what and where), the title in PBD Display,
+   one line of lead and, on some pages, its buttons. */
+.page-hero {
+  margin: 0 0 32px;
+}
+
+/* Its parts are spans with a dot between them. The dot stands in the gap before each part, so a part that starts a
+   wrapped line has its dot past the line's left edge, where the line clips it: a line never starts with a dot. */
+.eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 20px;
+  margin: 0;
+  overflow-x: clip;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow > span + span {
+  position: relative;
+}
+
+.eyebrow > span + span::before {
+  content: "·";
+  position: absolute;
+  right: 100%;
+  width: 20px;
+  text-align: center;
+}
+
+.eyebrow > .rk-pill + span::before {
+  content: none;
+}
+
+/* The season, as on Home's live panel: gold capitals in a gold edge, wherever a page names it. */
+.rk-pill {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 4px 8px;
+  border: 1px solid rgba(244, 182, 63, 0.55);
+  border-radius: 3px;
+  color: var(--gold);
+  font: 700 var(--fs-1)/1.1 var(--font-ui);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hero-title {
+  margin: 14px 0 0;
+  font: 400 clamp(1.75rem, 0.95rem + 2vw, 2.625rem)/1.1 var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.hero-lead {
+  max-width: 40em;
+  margin: 14px 0 0;
+  color: var(--text-2);
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 0;
+}
+
+@media (max-width: 599.98px) {
+  .page-hero {
+    margin-bottom: 24px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-title {
+    margin-top: 10px;
+  }
+
+  .hero-lead {
+    margin-top: 10px;
+    font-size: var(--fs-3);
+  }
+}
+
+@media (max-width: 359.98px) {
+  .hero-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* A section's own pages, as tabs right under the page's header: capitals, the current one with a gold line. Where
+   they do not fit one row (Stats' five on a narrow phone), they take a second, so every tab is always in view. */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 2px;
+  margin: 0 0 28px;
+  border-bottom: 1px solid rgba(233, 238, 237, 0.08);
+}
+
+.tabs a {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  color: var(--text-3);
+  font-weight: 700;
+  font-size: var(--fs-1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tabs a:hover {
+  color: var(--text-1);
+}
+
+.tabs a[aria-current] {
+  color: var(--text-1);
+  box-shadow: inset 0 -2px 0 var(--gold);
+}
+
+.tabs a:focus-visible {
+  outline-offset: -2px;
+}
+
+@media (max-width: 599.98px) {
+  .tabs {
+    margin: 0 -16px 20px;
+    padding: 0 8px;
+  }
+}
+
+/* A section: the launcher's label tab with a crimson edge, a "more" link at its right where there is one, and the
+   panel it heads attached under it. */
+.sec {
+  margin-top: 36px;
+}
+
+.page-hero + .sec,
+.tabs + .sec {
+  margin-top: 0;
+}
+
+/* A head with a "more" link or a note: the tab, the note after it, the link at the far right. `sec sec-head` is a
+   head that starts a section by itself, its panel the next element. Where the link does not fit beside the tab, it
+   goes above it at the right, so the tab stays on its panel. */
+.sec-head {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: flex-start; /* the bottom: wrap-reverse turns the cross axis over */
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: -1px;
+}
+
+.sec-head > .more-link {
+  margin-left: auto;
+}
+
+.sec-head > .sec-tab {
+  flex: none;
+  max-width: 100%;
+}
+
+/* A head over cards rather than one panel: the cards stand a little below it. */
+.sec-head + :not(.panel, .rk-panel),
+:not(.sec-head) > .sec-tab + :not(.panel, .rk-panel) {
+  margin-top: 13px;
+}
+
+/* (.label-tab.sec-tab: resurrection.css, which draws the tab, is linked after this file.) */
+.label-tab.sec-tab {
+  position: relative;
+  padding: 9px 30px 8px 14px;
+  border-left: 3px solid var(--verm-500);
+  font-size: var(--fs-3);
+  letter-spacing: 0.16em;
+}
+
+h2.sec-tab {
+  margin: 0;
+}
+
+.sec-tab + .panel,
+.sec-tab + .rk-panel {
+  margin-top: -1px;
+}
+
+.sec-note {
+  flex: 1 1 auto;
+  padding-bottom: 9px;
+  color: var(--text-3);
+  font-size: var(--fs-1);
+}
+
+.more-link {
+  color: var(--text-1);
+  font-weight: 600;
+  font-size: var(--fs-2);
+  text-decoration: underline;
+  text-decoration-color: rgba(233, 238, 237, 0.35);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.more-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.sec-head .more-link {
+  padding-bottom: 8px;
+}
+
+.panel {
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  background: var(--panel);
+  box-shadow: inset 0 1px 0 rgba(233, 238, 237, 0.06);
+}
+
+.sec-head + .panel,
+.sec-head + .rk-panel,
+.sec-tab + .panel,
+.sec-tab + .rk-panel {
+  border-top-left-radius: 0;
+}
+
+/* Counts as tiles, as Home's live panel: a small capitals label over each number in PBD Display, three a row (two on
+   a phone), with hairlines between them. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  overflow: hidden;
+}
+
+.tiles > div {
+  min-width: 0;
+  padding: 14px 20px 16px;
+  box-shadow: -1px -1px 0 var(--hairline);
+}
+
+.tiles dt {
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tiles dd {
+  margin: 8px 0 0;
+  font: 400 1.75rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 599.98px) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tiles > div {
+    padding: 12px 14px 14px;
+  }
+
+  .tiles dd {
+    font-size: 1.5rem;
+  }
+}
+
+/* Top players (top-players.mjs), as on Home, the Stats overview and a character's page: one row per player, each a
+   link to the player's page, every other row a shade lighter and #1's place in gold. The rows lay out from the
+   list's own width: under 700 px the record and the win rate go; under 568 px the badge is its plate alone, under
+   the MMR, so the name has the row's width between the portrait and the MMR. */
+.top-players {
+  container: top-players / inline-size;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  font-size: var(--fs-3);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.top-players li + li {
+  margin-top: 0;
+}
+
+.top-players img {
   display: block;
 }
 
-.sidebar {
-  display: none;
+.top-row {
+  display: grid;
+  grid-template-columns: 34px 40px minmax(0, 1fr) 140px 76px 56px 48px;
+  align-items: center;
+  gap: 12px;
+  min-height: 63px;
+  padding: 6px 16px;
+  color: var(--text-1);
+  text-decoration: none;
 }
 
-.page-main {
-  padding: var(--s-10) var(--s-4) var(--s-16);
+.top-players li:nth-child(odd) .top-row {
+  background: var(--row-alt);
 }
 
-.page-col {
-  max-width: var(--read);
-  margin: 0 auto;
+.top-players li:first-child .top-row {
+  background: none;
 }
 
-@media (min-width: 720px) {
-  .page-main {
-    padding: var(--s-12) var(--s-10) var(--s-20);
-  }
+a.top-row:hover,
+a.top-row:focus-visible {
+  background: var(--gold-wash);
+  box-shadow: inset 2px 0 0 var(--gold);
+  outline-offset: -2px;
 }
 
-@media (min-width: 1024px) {
-  .page {
-    display: grid;
-    grid-template-columns: var(--side) minmax(0, 1fr);
+.top-cap {
+  min-height: 34px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.top-r {
+  text-align: right;
+}
+
+.top-place,
+.top-mmr {
+  font: 400 var(--fs-4)/1 var(--font-display);
+  text-align: right;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+.top-place {
+  color: var(--text-2);
+}
+
+.top-players li:nth-child(2) .top-place {
+  color: var(--gold);
+}
+
+.top-who {
+  min-width: 0;
+}
+
+.top-who b {
+  display: block;
+  font-weight: 600;
+  font-size: var(--fs-3);
+  line-height: 1.2;
+}
+
+.top-who .pbd-name.is-small {
+  font-size: var(--fs-1);
+}
+
+.top-who .pbd-name.is-tight {
+  overflow-wrap: anywhere;
+}
+
+.top-who span {
+  display: block;
+  color: var(--text-3);
+  font-size: var(--fs-1);
+  line-height: 1.3;
+}
+
+.top-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: var(--fs-2);
+}
+
+.top-badge img {
+  flex: none;
+  width: 56px;
+  height: 28px;
+}
+
+.top-badge span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-row .top-sub {
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: var(--fs-2);
+  text-align: right;
+}
+
+.top-msg {
+  padding: 20px 16px;
+  color: var(--text-2);
+  font-size: var(--fs-2);
+}
+
+@container top-players (max-width: 699.98px) {
+  .top-row {
+    grid-template-columns: 34px 40px minmax(0, 1fr) 140px 76px;
   }
 
-  .sidebar {
-    display: block;
-    background: var(--band);
-    border-right: 1px solid var(--line);
-  }
-
-  .sidebar-inner {
-    position: sticky;
-    top: var(--bar-h);
-    max-height: calc(100vh - var(--bar-h));
-    overflow-y: auto;
-    padding: var(--s-6) 0;
-  }
-
-  /* Pages with a sidebar do not need the drawer on wide screens. */
-  body:has(.sidebar) .drawer {
+  .top-row .top-c-rec,
+  .top-row .top-c-rate {
     display: none;
+  }
+}
+
+@container top-players (max-width: 567.98px) {
+  .top-row {
+    grid-template-columns: 28px 36px minmax(0, 1fr) 60px;
+    gap: 2px 10px;
+    min-height: 60px;
+    padding: 6px 12px;
+  }
+
+  .top-cap {
+    min-height: 34px;
+  }
+
+  .top-row:not(.top-cap) > :nth-child(-n + 3) {
+    grid-row: 1 / span 2;
+  }
+
+  .top-row > .top-mmr {
+    grid-area: 1 / 4;
+    align-self: end;
+  }
+
+  .top-row > .top-badge {
+    grid-area: 2 / 4;
+    align-self: start;
+    justify-content: flex-end;
+  }
+
+  .top-row .rk-face {
+    width: 36px;
+    height: 36px;
+  }
+
+  .top-row .top-c-rec,
+  .top-row .top-c-rate,
+  .top-cap .top-c-badge,
+  .top-badge span {
+    display: none;
+  }
+
+  .top-badge img {
+    display: block;
+    width: 48px;
+    height: 24px;
+  }
+
+  .top-place,
+  .top-mmr {
+    font-size: var(--fs-3);
+  }
+
+  .top-who b {
+    font-size: var(--fs-2);
+  }
+}
+
+/* The loader on every page that reads the stats service: the logo's input, step by step; inline it is a small strip
+   beside its words. */
+.stats-loading-indicator {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  padding-block: var(--s-3);
+  color: var(--text-2);
+}
+
+.stats-loading-inline {
+  flex-direction: row;
+  padding: 0;
+}
+
+.pbd-loader {
+  width: 126px;
+  height: 42px;
+  fill: var(--surface);
+  stroke: var(--text-1);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.stats-loading-inline .pbd-loader {
+  width: 56px;
+  height: 16px;
+}
+
+.pbd-loader-step {
+  animation: pbd-first 0.6s steps(1, end) infinite;
+}
+
+.pbd-loader .step-2 {
+  animation-name: pbd-second;
+  stroke: var(--mark-lit);
+}
+
+.pbd-loader .step-3 {
+  animation-name: pbd-third;
+}
+
+@keyframes pbd-first {
+  0%,
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pbd-second {
+  0%,
+  32% {
+    opacity: 0;
+  }
+  33%,
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pbd-third {
+  0%,
+  65% {
+    opacity: 0;
+  }
+  66%,
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pbd-loader-step {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Two sections side by side from 900 px, their panels ending on the same line (What you need beside the PC,
+   Rollback beside the PC); one above the other on narrower screens. */
+.sec-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 36px 28px;
+  align-items: stretch;
+}
+
+.sec-pair > * {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sec-pair > * > :last-child {
+  flex: 1 0 auto;
+}
+
+@media (max-width: 899.98px) {
+  .sec-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 599.98px) {
+  .sec-pair {
+    row-gap: 28px;
+  }
+}
+
+/* A long reading page (Privacy): its sections on the left, and from 1100 px a list of them at the right that stays
+   in view while the page scrolls. */
+.with-aside {
+  display: grid;
+  grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+  gap: 0 48px;
+  align-items: start;
+}
+
+.with-aside > :first-child > .sec:first-child {
+  margin-top: 0;
+}
+
+.page-aside {
+  position: sticky;
+  top: calc(var(--bar-h) + 24px);
+}
+
+.link-rows.toc a {
+  min-height: 44px;
+  padding: 8px 16px;
+}
+
+.link-rows.toc li:last-child a {
+  border-bottom: 0;
+}
+
+@media (max-width: 1099.98px) {
+  .with-aside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-aside {
+    display: none;
+  }
+}
+
+/* A table as (part of) a section's panel: the panel's own edge, no second box. */
+.panel > .table-wrap {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.panel > .table-wrap + .prose {
+  border-top: 1px solid var(--hairline);
+}
+
+/* A key-value table straight under its tab: no line over its first row. */
+.panel > .table-wrap:first-child .data-kv tbody > tr:first-child > * {
+  border-top: 0;
+}
+
+/* Text in a panel: 17 px, the panel's padding round it. */
+.prose {
+  padding: 20px 24px 22px;
+  font-size: var(--fs-3);
+  line-height: 1.6;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose > p {
+  margin-bottom: var(--s-3);
+}
+
+@media (max-width: 599.98px) {
+  .sec {
+    margin-top: 28px;
+  }
+
+  .label-tab.sec-tab {
+    letter-spacing: 0.1em;
+  }
+
+  .sec-note {
+    display: none;
+  }
+
+  .prose {
+    padding: 16px 16px 18px;
+  }
+}
+
+@media (forced-colors: active) {
+  .sec-tab {
+    clip-path: none;
+    border: 1px solid CanvasText;
+  }
+
+  .panel {
+    border-color: CanvasText;
   }
 }
 
@@ -1507,8 +2582,14 @@ span.btn-primary.is-disabled {
 .table-wrap {
   margin: var(--s-6) 0;
   overflow-x: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--r-box);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  background: var(--panel);
+}
+
+/* A table that is a section's panel sits right under its tab. */
+.panel.table-wrap {
+  margin: 0;
 }
 
 .data {
@@ -1533,16 +2614,27 @@ span.btn-primary.is-disabled {
 .data th,
 .data td {
   padding: 10px var(--s-4);
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--hairline);
   text-align: left;
   vertical-align: top;
 }
 
+/* Column heads in the board's small monospaced capitals. */
 .data thead th {
-  color: var(--text-2);
-  font-weight: 600;
-  font-size: 0.9375rem;
+  padding-block: 12px 8px;
+  border-top: 0;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   white-space: nowrap;
+}
+
+.data caption + thead th,
+.data thead + tbody > tr:first-child > * {
+  border-top-color: rgba(233, 238, 237, 0.1);
 }
 
 .data tbody th {
@@ -1795,7 +2887,9 @@ span.btn-primary.is-disabled {
   background: var(--hover);
 }
 
-.disclosure > summary::after {
+/* The same "+" ("−" while open) after a summary of words alone (.plus-toggle: More filters). */
+.disclosure > summary::after,
+.plus-toggle::after {
   content: "";
   flex: none;
   width: 16px;
@@ -1805,7 +2899,8 @@ span.btn-primary.is-disabled {
   mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11M8%202.5v11%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
 }
 
-.disclosure[open] > summary::after {
+.disclosure[open] > summary::after,
+[open] > .plus-toggle::after {
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11%22%2F%3E%3C%2Fsvg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.75%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M2.5%208h11%22%2F%3E%3C%2Fsvg%3E");
 }
@@ -2172,12 +3267,23 @@ pre code {
   margin-top: 0;
 }
 
+/* 44 px to hit, in both directions: a short word ("Stats") reaches its 44 px width past its ends, centred, so the gaps
+   between the links stay even. */
 .footer-nav a {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  min-width: 44px;
   min-height: 44px;
   color: var(--text-1);
+}
+
+.footer-nav a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: min(0px, (100% - 44px) / 2);
+  bottom: 0;
+  left: min(0px, (100% - 44px) / 2);
 }
 
 .footer-nav a[aria-current="page"] {
@@ -2358,7 +3464,6 @@ pre code {
 
 @media print {
   .app-bar,
-  .sidebar,
   .skip-link {
     display: none !important;
   }

@@ -1,6 +1,6 @@
 // <!-- check-allow: ranked -->
 import { fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { el, select } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
+import { el, select } from '/assets/js/ranked-ui.mjs?v=8b024de9ed';
 
 export const REGIONS = [
   ['', 'All regions'],
@@ -19,7 +19,7 @@ export const gameQuery = (params) =>
 
 export function gameFilters(app, onApply, { match = false, opponent = false, regionContainer = null, onRegionChange = null } = {}) {
   const details = el('details', 'ranked-filter-panel');
-  details.append(el('summary', '', 'More filters'));
+  details.append(el('summary', 'plus-toggle', 'More filters'));
   const form = el('form', 'ranked-filters');
   const query = gameQuery(app.params);
   const region = select('Game region', REGIONS, query.region || '', (value) => {

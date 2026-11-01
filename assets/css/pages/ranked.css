@@ -1,41 +1,20 @@
 /* <!-- check-allow: ranked --> */
 /* Ranked: the landing (/ranked/), its latest sets (/ranked/sets/) and player pages (/player/Name-1234, drawn
-   from 404.html). One type scale for all of them (13, 15, 17, 24 and 44 px) and one heading style (PBD Display
-   at 17 px). Bars, lamps, chips, the pill and links stay neutral; gold marks only selection, #1, the current tab
+   from 404.html), and Home's rows. The site's type scale (13, 15, 17, 24 and 44 px), sections and panels
+   (site.css). Bars, lamps, chips, the pill and links stay neutral; gold marks only selection, #1, the current tab
    and your own row. Results never rely on colour alone: W and L letters, filled dots for wins, hollow for losses. */
-:root {
-  --fs-1: 13px;
-  --fs-2: 15px;
-  --fs-3: 17px;
-  --fs-4: 24px;
-  --fs-5: 44px;
-  --panel: rgba(9, 2, 3, 0.86);
-  --panel-edge: rgba(233, 238, 237, 0.1);
-  --row-alt: rgba(233, 238, 237, 0.035);
-  --hairline: rgba(233, 238, 237, 0.07);
-  --rail: rgba(233, 238, 237, 0.16);
-  --gold: #F4B63F;
-  --gold-wash: rgba(244, 182, 63, 0.09);   /* the row under the pointer, with a gold edge */
-}
 .rk {
   container: rk / inline-size;
-  max-width: 1060px;
-  margin: 0 auto;
   color: var(--text-1);
   font-size: var(--fs-3);
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
 }
-.page-main:has(> .rk) { padding: 40px 40px 80px; }
 .rk a { color: inherit; }
 .rk img { display: block; }
 .rk [hidden] { display: none !important; }
 
 .rk-h { margin: 0; color: var(--text-1); font: 400 var(--fs-3)/1.2 var(--font-display); letter-spacing: 0.16em; text-transform: uppercase; }
-.rk-sec { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; margin: 40px 0 12px; }
-.rk-sec .rk-window { color: var(--text-3); font-size: var(--fs-1); }
-.rk-sec .rk-link { margin-left: auto; }
-.rk .rk-pill { display: inline-flex; align-items: center; flex: none; padding: 5px 8px; border: 1px solid rgba(233, 238, 237, 0.32); border-radius: 3px; color: var(--text-1); font: 700 var(--fs-1)/1 var(--font-ui); letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
 .rk-panel { border: 1px solid var(--panel-edge); border-radius: 4px; background: var(--panel); box-shadow: inset 0 1px 0 rgba(233, 238, 237, 0.06); }
 .rk-cap { color: var(--text-3); font-weight: 700; font-size: var(--fs-1); line-height: 1.2; letter-spacing: 0.14em; text-transform: uppercase; }
 .rk .rk-link { color: var(--text-1); font-weight: 600; font-size: var(--fs-2); text-decoration: underline; text-decoration-color: rgba(233, 238, 237, 0.35); text-underline-offset: 3px; }
@@ -46,12 +25,6 @@
 .rk-note { margin: 10px 0 0; color: var(--text-3); font-size: var(--fs-1); }
 .rk-foot { margin: 40px 0 0; padding-top: 14px; border-top: 1px solid var(--hairline); color: var(--text-3); font-size: var(--fs-2); }
 .rk-foot .rk-link { font-size: inherit; }
-
-/* Portraits at three sizes: 24 (inline), 40 (rows and cards), 120 (the player header). */
-.rk-face { flex: none; display: block; border: 1px solid rgba(233, 238, 237, 0.18); background: #1D0609; }
-.rk-f24 { width: 24px; height: 24px; }
-.rk-f40 { width: 40px; height: 40px; }
-.rk-f120 { width: 120px; height: 120px; }
 
 /* "?" after an MMR that is still settling. */
 .rk-unsure { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; border: 1px solid rgba(233, 238, 237, 0.45); border-radius: 50%; color: var(--text-2); font: 700 var(--fs-1)/1 var(--font-ui); vertical-align: 2px; cursor: help; }
@@ -81,11 +54,6 @@
 .rk-chip:hover { border-color: rgba(233, 238, 237, 0.4); color: var(--text-1); }
 .rk-chip[aria-pressed="true"] { border-color: rgba(233, 238, 237, 0.55); background: rgba(233, 238, 237, 0.06); color: var(--text-1); }
 
-.rk-tabs { display: flex; gap: 2px; margin: 28px 0 20px; border-bottom: 1px solid rgba(233, 238, 237, 0.08); }
-.rk-tabs a { display: inline-flex; align-items: center; flex: none; min-height: 44px; padding: 0 16px; color: var(--text-3); font-weight: 700; font-size: var(--fs-1); letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
-.rk-tabs a:hover { color: var(--text-1); }
-.rk-tabs a[aria-current="page"] { color: var(--text-1); box-shadow: inset 0 -2px 0 var(--gold); }
-
 /* The loader is the logo's input, key by key: back, neutral, back, down-back (lit). */
 .rk-loading { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 120px; color: var(--text-3); font-size: var(--fs-2); }
 .rk-input { display: inline-flex; gap: 8px; color: #5A4549; }
@@ -102,6 +70,10 @@
 
 .nf-player { display: none; }
 .is-player .nf-player { display: block; }
+/* The board, the sets and a player's page fill at least the first screen, so the footer waits under it while they
+   load instead of showing and then being pushed away. */
+.rk[data-board], .is-player .rk-player { min-height: 100vh; }
+@media (scripting: none) { .rk[data-board] { min-height: 0; } }
 .is-player .nf-inner { display: none; }
 
 .rk-empty { display: grid; justify-items: center; gap: 6px; padding: 40px 20px; color: var(--text-2); font-size: var(--fs-2); text-align: center; }
@@ -111,60 +83,20 @@
 .rk-missing-note { margin: 6px 0 0; color: var(--text-2); font-size: var(--fs-2); }
 .rk-missing-note .rk-link { font-size: inherit; }
 
-/* Player search: the landing's big box and the bar's box share the list under them. */
-.rk-search { position: relative; }
-.rk-search-box { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 10px 0 16px; border: 1.5px solid rgba(233, 238, 237, 0.4); border-radius: 4px; background: var(--panel); color: var(--text-3); }
-.rk-search-box:focus-within { border-color: rgba(233, 238, 237, 0.7); }
-.rk-search-box svg { width: 18px; height: 18px; flex: none; color: var(--text-2); }
-.rk-search-box input { flex: 1 1 auto; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--text-1); font: 400 var(--fs-3)/1 var(--font-ui); }
-.rk-search-box input::placeholder { color: var(--text-3); opacity: 1; }
-.rk-search-box input::-webkit-search-cancel-button { display: none; }
-.rk-kbd { flex: none; padding: 2px 7px; border: 1px solid rgba(233, 238, 237, 0.24); border-radius: 3px; color: var(--text-2); font: 600 var(--fs-1)/1.2 var(--font-ui); }
-.rk-search-list { position: absolute; top: calc(100% + 4px); right: 0; left: 0; z-index: 40; margin: 0; padding: 6px 0; list-style: none; border: 1px solid var(--panel-edge); border-radius: 4px; background: #0B0304; box-shadow: 0 8px 0 -4px rgba(0, 0, 0, 0.4); }
-.rk-search-list a { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 10px; height: 44px; padding: 0 12px; color: var(--text-1); font-size: var(--fs-2); text-decoration: none; }
-.rk-search-list a b { overflow: hidden; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
-.rk-search-list a .rk-faint { font-size: var(--fs-1); white-space: nowrap; }
-.rk-search-list a[aria-selected="true"], .rk-search-list a:hover { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--gold); }
-.rk-search-list p { margin: 0; padding: 12px 14px; color: var(--text-2); font-size: var(--fs-2); }
-
-/* ---- The bar's search (pages that carry it): a box at the bar's right from 768 px; narrower, an icon that opens
-   the box in a row under the bar. On the landing it stays hidden, so a page never has two searches. ---- */
-.app-bar-inner > .bar-search { grid-column: 3; justify-self: stretch; min-width: 0; padding-left: 16px; }
-.bar-search .rk-search { width: min(300px, 100%); }
-.bar-search { position: relative; display: flex; align-items: center; justify-content: flex-end; }
-.bar-search .rk-search-box { width: 100%; height: 38px; gap: 10px; padding: 0 8px 0 12px; border: 1px solid rgba(233, 238, 237, 0.24); background: rgba(233, 238, 237, 0.04); }
-.bar-search .rk-search-box svg { width: 16px; height: 16px; color: var(--text-3); }
-.bar-search .rk-search-box input { font-size: 15px; }
-.bar-search .rk-search-list { left: auto; width: max(100%, 340px); }
-.bar-search-open { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--text-2); cursor: pointer; }
-.bar-search-open svg { width: 20px; height: 20px; }
-body:has(.rk-landing) .bar-search { visibility: hidden; }
-@media (max-width: 767.98px) {
-  .bar-search-open { display: inline-flex; }
-  .bar-search .rk-search { display: none; position: fixed; top: var(--bar-h); right: 0; left: 0; width: auto; padding: 8px 12px; background: var(--band); border-bottom: 1px solid var(--line); }
-  .bar-search.is-open .rk-search { display: block; }
-  .bar-search .rk-search-box { width: 100%; height: 44px; }
-  .bar-search .rk-search-list { position: static; width: auto; margin-top: 4px; }
-}
-/* Phones: the lockup at the left, then the search icon and the menu button. */
-@media (max-width: 599.98px) {
-  .app-bar-inner:has(> .bar-search) { grid-template-columns: minmax(0, 1fr) auto auto; }
-  .app-bar-inner > .bar-search { grid-column: 2; grid-row: 1; justify-self: end; padding-left: 0; }
-  .app-bar-inner:has(> .bar-search) > .drawer { grid-column: 3; }
-  .app-bar:has(.bar-search) .lockup { --cap: min(11px, calc((100vw - 128px) / 26.30)); }
-  body:has(.rk-landing) .bar-search { display: none; }
-}
-
 /* ---- Landing ---------------------------------------------------------------------------------------------- */
 .rk-head { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 24px; align-items: end; }
-.rk-head h1 { font-size: var(--fs-3); }
-.rk-head-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 14px 0 0; color: var(--text-2); font-size: var(--fs-2); }
-.rk-live { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; min-height: 22px; margin: 20px 0 0; color: var(--text-2); font-size: var(--fs-2); }
+/* A player page is in Ranked: the bar marks it from the first paint (404.html marks the address as it loads). */
+.is-player .bar-links a[href="/ranked/"] { color: var(--gold); box-shadow: inset 0 -2px 0 var(--gold); }
+.rk-live { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; min-height: 22px; margin: 0; color: var(--text-2); font-size: var(--fs-2); }
 .rk-live b { color: var(--text-1); font-weight: 600; }
 .rk-live .rk-updated { margin-left: auto; color: var(--text-3); font-size: var(--fs-1); }
 .rk-dot { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 50%; background: var(--good); vertical-align: 1px; }
 
 .rk-board { position: relative; margin-top: 16px; }
+/* Until its rows are in, the board is as tall as the first screen, so the sections under it wait below it instead of
+   showing and then being pushed away. */
+.rk-landing .rk-board:is(:not(:has(.rk-rows)), :has(.rk-rows > .rk-loading)) { min-height: 100vh; }
+@media (scripting: none) { .rk-landing .rk-board:is(:not(:has(.rk-rows)), :has(.rk-rows > .rk-loading)) { min-height: 0; } }
 .rk-board-top { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid rgba(233, 238, 237, 0.08); }
 .rk-char-btn { display: inline-flex; align-items: center; gap: 8px; flex: none; margin-left: auto; height: 34px; padding: 0 10px 0 12px; border: 1px solid rgba(233, 238, 237, 0.3); border-radius: 3px; background: transparent; color: var(--text-2); font: 600 var(--fs-1)/1 var(--font-ui); white-space: nowrap; cursor: pointer; }
 .rk-char-btn b { color: var(--text-1); font-weight: 600; }
@@ -197,7 +129,7 @@ body:has(.rk-landing) .bar-search { visibility: hidden; }
 .rk-board-foot { margin: 0; padding: 12px 18px; color: var(--text-3); font-size: var(--fs-1); }
 .rk-more { display: flex; justify-content: center; padding: 12px 16px; border-top: 1px solid var(--hairline); }
 .rk-more-bare { margin: 0; border: 0; }
-.rk-sets-list { margin-top: 20px; }
+
 
 /* The Character button opens the select screen's grid: All first; fighters nobody has placed with are dimmed. */
 .rk-pop { position: absolute; top: 100%; right: 12px; z-index: 30; width: min(620px, calc(100% - 24px)); padding: 14px 16px; background: #0B0304; }
@@ -256,7 +188,11 @@ a.rk-feed-row:hover, a.rk-feed-row:focus-visible { background: var(--gold-wash);
 .rk-hero-top .rk-place { font-weight: 600; font-size: var(--fs-2); }
 .rk-hero-name { display: flex; align-items: baseline; gap: 14px; min-width: 0; margin: 10px 0 6px; font: 400 var(--fs-5)/1 var(--font-display); font-stretch: normal; letter-spacing: 0.06em; text-transform: uppercase; }
 .rk-hero-name.is-wrapped { flex-wrap: wrap; row-gap: 6px; }
-.rk-hero-text { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+.rk-hero-text { min-width: 0; overflow: hidden; white-space: nowrap; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+/* Too long for a line of its own even at the smallest size: the name wraps at its natural breaks, and a part still
+   too wide breaks anywhere (player-name.mjs). */
+.rk-hero-name.is-broken .rk-hero-text { flex: 1 1 100%; overflow: visible; white-space: normal; line-height: 1.1; }
+.rk-hero-name.is-broken .rk-hero-text.is-tight { overflow-wrap: anywhere; }
 .rk-hero-tag { flex: none; color: var(--text-3); font: 600 var(--fs-4)/1 var(--font-ui); letter-spacing: 0; }
 .rk-hero-meta { margin: 0; color: var(--text-2); font-size: var(--fs-2); }
 .rk-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
@@ -405,27 +341,23 @@ a.rk-mini:hover { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--
 .rk-h2h-facts b { color: var(--text-1); font-weight: 600; }
 
 /* A set page: both players, the score, what the set did to each rating, and every game. */
-.rk-setpage { margin-top: 20px; padding: 24px 28px; }
+.rk-setpage { padding: 24px 28px; }
 .rk-setpage-side a { font-weight: 600; }
 .rk-setpage-vs { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 24px; }
-.rk-setpage-side { display: grid; justify-items: start; gap: 6px; min-width: 0; }
+.rk-setpage-side { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 6px; min-width: 0; }
 .rk-setpage-side.rk-r { justify-items: end; text-align: right; }
 .rk-setpage-side .rk-face { width: 80px; height: 80px; }
 .rk-setpage-side b { font-weight: 600; font-size: var(--fs-3); }
+.rk-setpage-side .pbd-name { max-width: 100%; font-weight: 600; font-size: var(--fs-3); line-height: 1.25; }
+.rk-setpage-side .pbd-name.is-small { font-size: var(--fs-2); }
+.rk-setpage-side .pbd-name.is-tight { overflow-wrap: anywhere; }
 .rk-setpage-side .rk-sub { color: var(--text-2); font-size: var(--fs-2); }
 .rk-setpage-side img.rk-plate { width: 80px; height: 40px; }
 .rk-setpage-games { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--hairline); }
-.rk-game { display: grid; grid-template-columns: 80px 22px minmax(0, 1fr); align-items: center; gap: 12px; height: 40px; border-bottom: 1px solid var(--hairline); color: var(--text-2); font-size: var(--fs-2); }
+.rk-game { display: grid; grid-template-columns: 80px 22px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 40px; padding-block: 4px; border-bottom: 1px solid var(--hairline); color: var(--text-2); font-size: var(--fs-2); }
 .rk-game b { color: var(--text-1); font-weight: 600; }
 
-@media (max-width: 1023.98px) {
-  .page-main:has(> .rk) { padding: 32px 24px 64px; }
-}
-@media (max-width: 599.98px) {
-  .page-main:has(> .rk) { padding: 20px 16px 48px; }
-}
-
-/* The page lays out from its own column's width (the sidebar takes 240 px from 1024 px), in three steps: under
+/* The page lays out from its own column's width (the container's, 1192 px at most), in three steps: under
    900 px the board shows plates without their names and no region, and the player's badge block moves under the
    name; under 760 px rows take the phone layout and cards go two to a row; under 600 px the header stacks, the
    four numbers go 2 by 2, cards go to one column, and tabs and region chips scroll in one row. */
@@ -485,7 +417,6 @@ a.rk-mini:hover { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--
 }
 
 @container rk (max-width: 599.98px) {
-  .rk-sec { margin-top: 32px; }
   .rk-pop { right: 8px; left: 8px; width: auto; }
   .rk-dr, .rk-dl.no-lines .rk-dr { grid-template-columns: 64px minmax(0, 1fr) auto 24px; }
   .rk-dr .rk-bar { display: none; }
@@ -508,7 +439,6 @@ a.rk-mini:hover { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--
   .rk-hero:has(> .rk-hero-art) > .rk-face { display: none; }
   .rk-hero:has(> .rk-hero-art) .rk-hero-top { grid-column: 1 / -1; }
   .rk-hero > .rk-hero-art { display: block; grid-row: 1; grid-column: 1 / -1; width: calc(100% + 32px); max-width: none; height: 176px; margin: 0 -16px 2px; border-bottom: 1px solid var(--hairline); border-radius: 3px 3px 0 0; object-fit: cover; object-position: 50% 0; }
-  .rk-tabs { margin: 20px -16px 16px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; }
   .rk-graph { padding: 14px 14px 12px; }
   .rk-graph-head .rk-chip .rk-cn { display: none; }
   .rk-seg { margin-left: 0; }
@@ -528,6 +458,11 @@ a.rk-mini:hover { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--
   .rk-setpage { padding: 16px; }
   .rk-setpage-vs { gap: 10px; }
   .rk-setpage-side .rk-face { width: 56px; height: 56px; }
+}
+/* A phone: the score heads the set, and the two players share the row under it, so each name has half the width. */
+@container rk (max-width: 449.98px) {
+  .rk-setpage-vs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; row-gap: 14px; }
+  .rk-setpage-vs > .rk-big { grid-area: 1 / 1 / 2 / -1; }
 }
 
 /* Share: the player card's dialog. The card's preview sits beside its options with the buttons along the bottom;
@@ -596,4 +531,10 @@ html:has(.rk-share[open]) { overflow: hidden; }
   .rk-row.is-you::after, .rk-dr.is-you::after { border-color: Highlight; }
   .rk-bar i, .rk-dv i, .rk-bars i { background: CanvasText; }
   .rk-share-opt:has(input:checked), .rk-share-swatch:has(input:checked) { border-color: Highlight; }
+}
+
+/* The player's tabs sit under the header's panel. */
+.rk-hero + .tabs { margin-top: 28px; }
+@container rk (max-width: 599.98px) {
+  .rk-hero + .tabs { margin-top: 20px; }
 }

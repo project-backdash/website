@@ -4,21 +4,10 @@
 // the latest sets and the characters, all from the public stats service. A count the service does not send (yet)
 // reads "–", never 0. A part whose answer does not come keeps its place, says so and tries again. The bar's DOWNLOAD
 // stays a quiet arrow while the big one is on screen, so a screen never shows two DOWNLOADs.
-import { characterName, playerPath, setPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import {
-  el,
-  fmt,
-  pct,
-  signed,
-  ago,
-  face,
-  keys,
-  plate,
-  record,
-  regionCode,
-  seasonLabel,
-} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
+import { characterName, setPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { el, fmt, signed, ago, face, keys, regionCode, seasonLabel } from '/assets/js/ranked-kit.mjs?v=f30d870cde';
 import { nameInto, fitNames } from '/assets/js/player-name.mjs?v=f4f589f1dc';
+import { drawTopPlayers } from '/assets/js/top-players.mjs?v=3bdf392edc';
 
 const root = document.querySelector('[data-hub]');
 const base = root.dataset.rankedApi;
@@ -33,24 +22,6 @@ const PAGE = 50;
 // Latest sets lists ten, as tall as the top ten beside it (phones show five).
 const FEED = 10;
 const q = (selector) => root.querySelector(selector);
-
-// ---- The bar's DOWNLOAD: the same link as the big one, crimson once the big one has scrolled away under the bar.
-const big = q('.hub-pitch .dl-button');
-// A phone or tablet cannot run the Windows installer, so there both buttons open the download page (what a PC needs)
-// rather than starting a download of the whole installer over mobile data. iPadOS says it is a Mac; a Mac with a
-// touch screen is an iPad.
-const browser = navigator.userAgent;
-const handheld =
-  /Android|iPhone|iPad|iPod/i.test(browser) || (/Macintosh/.test(browser) && navigator.maxTouchPoints > 1);
-if (big && handheld) big.href = '/download/';
-const barButton = document.querySelector('[data-bar-download]');
-if (big && barButton) barButton.href = big.href;
-if (big && barButton && 'IntersectionObserver' in window) {
-  const bar = document.querySelector('.app-bar');
-  new IntersectionObserver(([entry]) => barButton.classList.toggle('is-quiet', entry.isIntersecting), {
-    rootMargin: `-${bar ? bar.offsetHeight : 56}px 0px 0px 0px`,
-  }).observe(big);
-} else barButton?.classList.remove('is-quiet');
 
 // ---- Small parts ----
 function message(list, text) {
@@ -336,72 +307,20 @@ function drawStep() {
 // ---- The top ten ----
 async function drawTop() {
   try {
-    drawBoard((await fetchRanked(base, 'leaderboard', 'leaderboard', { limit: 10 })).rows);
+    drawTopPlayers(q('[data-board]'), (await fetchRanked(base, 'leaderboard', 'leaderboard', { limit: 10 })).rows);
   } catch (error) {
-    if (!q('[data-board] .hub-row')) message(q('[data-board]'), 'The board is not available right now.');
+    if (!q('[data-board] .top-row')) message(q('[data-board]'), 'The board is not available right now.');
     throw error;
   }
 }
 
 // A player's name wraps at its natural breaks and steps down a size when a part is too wide for its column (see
-// player-name.mjs); the lists fit their names again whenever they change width.
+// player-name.mjs); Latest sets fits its names again whenever it changes width (Top players does so itself).
 const nameOf = (name) => nameInto(el('b'), name);
 const refit = new ResizeObserver((entries) => {
   for (const entry of entries) fitNames(entry.target.querySelectorAll('.pbd-name'));
 });
-refit.observe(q('[data-board]'));
 refit.observe(q('[data-feed]'));
-
-// ---- Top players: one row per player, each a link to the player's page; #1's place is gold ----
-function drawBoard(rows) {
-  const list = q('[data-board]');
-  if (!rows.length) return message(list, 'Nobody has placed yet.');
-  const cap = el('li', 'hub-row hub-cap');
-  cap.setAttribute('aria-hidden', 'true');
-  for (const [text, cls] of [
-    ['#', 'hub-r'],
-    ['', ''],
-    ['Player', ''],
-    ['Badge', 'hub-c-badge'],
-    ['MMR', 'hub-r'],
-    ['Sets', 'hub-r hub-c-rec'],
-    ['Won', 'hub-r hub-c-rate'],
-  ])
-    cap.append(el('span', cls, text));
-  const items = rows.map((row) => {
-    const href = playerPath(row.player);
-    const line = el(href ? 'a' : 'div', 'hub-row');
-    if (href) line.href = href;
-    const who = el('span', 'hub-who');
-    const region = regionCode(row.region ?? row.player.region);
-    who.append(
-      nameOf(row.player.name),
-      el('span', '', [row.player.tag && `#${row.player.tag}`, region].filter(Boolean).join(' · ')),
-    );
-    const badge = el('span', 'hub-badge hub-c-badge');
-    const image = plate(row.rankId);
-    if (image) badge.append(image);
-    badge.append(el('span', '', row.rank ?? ''));
-    line.append(
-      el('span', 'hub-place', fmt(row.position)),
-      face(row.character, 40, { label: characterName(row.character) }),
-      who,
-      badge,
-      el('span', 'hub-mmr', fmt(row.mmr)),
-      el('span', 'hub-sub hub-c-rec', record(row.wins, row.losses)),
-      el('span', 'hub-sub hub-c-rate', pct(row.wins, row.losses)),
-    );
-    line.setAttribute(
-      'aria-label',
-      `${row.position}. ${row.player.name}, ${row.rank ?? 'unranked'}, ${fmt(row.mmr)} MMR, ${record(row.wins, row.losses)} in sets`,
-    );
-    const item = el('li');
-    item.append(line);
-    return item;
-  });
-  list.replaceChildren(cap, ...items);
-  fitNames(list.querySelectorAll('.pbd-name'));
-}
 
 // ---- Latest sets: winner, score, loser, both rating changes and when; each row opens its set ----
 function drawFeed(rows) {

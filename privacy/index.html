@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://lobby.backdash.gg; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Privacy | Project Backdash</title>
@@ -25,18 +25,19 @@
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
-<link rel="icon" href="/favicon.svg?v=0ef5d2c4bc" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg?v=b8173292d8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4e8aadd988">
-<link rel="manifest" href="/site.webmanifest?v=6c2b5d36f0">
+<link rel="manifest" href="/site.webmanifest?v=674404c996">
 <link rel="preload" href="/assets/fonts/barlow-400.woff2?v=dabe85d6ba" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
-<link rel="stylesheet" href="/assets/css/site.css?v=3f088890f3">
-<link rel="stylesheet" href="/assets/css/resurrection.css?v=66886cf18e">
-<link rel="stylesheet" href="/assets/css/pages/info.css?v=002740dc4d">
-<script src="/assets/js/site.js?v=8e39d6083c" defer></script>
+<link rel="stylesheet" href="/assets/css/site.css?v=d044478ff2">
+<link rel="stylesheet" href="/assets/css/resurrection.css?v=71ef6e297e">
+<link rel="stylesheet" href="/assets/css/pages/info.css?v=a1f2e0936d">
+<script type="module" src="/assets/js/bar-search.mjs?v=529d4e5ea3"></script>
+<script src="/assets/js/site.js?v=2090aa3788" defer></script>
 </head>
-<body class="field page-body">
+<body class="field">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="app-bar">
   <div class="app-bar-inner">
@@ -51,12 +52,14 @@
         </div>
         <nav class="drawer-nav" aria-label="Main">
 <ul class="nav-list">
-  <li><a href="/">Home</a></li>
+  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/stats/">Stats</a></li>
   <li><a href="/how-it-works/">How it works</a></li>
   <li><a href="/download/">Download</a></li>
-  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
-  <li><a href="/stats/">Stats<small class="nav-sub">The game</small></a></li>
+</ul>
+<ul class="nav-fine">
   <li><a href="/about/">About</a></li>
+  <li><a href="/source/">Source code</a></li>
   <li><a href="/privacy/" aria-current="page">Privacy</a></li>
 </ul>
         </nav>
@@ -67,143 +70,174 @@
       <svg class="wordmark" viewBox="0 0 13399 700" overflow="visible" role="img" aria-label="Project Backdash" focusable="false" fill="currentColor"><path class="wordmark-project" d="M0 700L128 700L128 438L519 438L687 354L687 42L603 0L0 0ZM128 364L128 92L559 92L559 364ZM819 700L947 700L947 438L1193 438L1391 700L1541 700L1343 438L1431 438L1514 396L1514 42L1431 0L819 0ZM947 364L947 92L1387 92L1387 364ZM1689 700L2282 700L2450 616L2450 42L2367 0L1774 0L1606 84L1606 658ZM1733 608L1733 92L2323 92L2323 608ZM2611 700L3010 700L3178 616L3178 0L3051 0L3051 608L2655 608L2655 410L2527 410L2527 658ZM3321 700L3937 700L3937 608L3449 608L3449 379L3884 379L3884 305L3449 305L3449 92L3937 92L3937 0L3321 0ZM4111 700L4599 700L4767 616L4767 608L4155 608L4155 92L4767 92L4767 42L4683 0L4196 0L4028 84L4028 658ZM4816 92L5096 92L5096 700L5223 700L5223 92L5503 92L5503 0L4816 0Z"/><path class="wordmark-main" d="M5939 700L6591 700L6759 616L6759 310L6711 286L6711 42L6627 0L5939 0ZM6135 560L6135 398L6563 398L6563 560ZM6135 286L6135 140L6515 140L6515 286ZM6847 700L7053 700L7117 560L7517 560L7581 700L7787 700L7467 0L7167 0ZM7168 448L7317 122L7466 448ZM7929 700L8517 700L8685 616L8685 560L8041 560L8041 140L8685 140L8685 42L8601 0L8013 0L7845 84L7845 658ZM8775 700L8971 700L8971 510L9093 510L9192 413L9389 700L9615 700L9328 281L9615 0L9381 0L8971 401L8971 0L8775 0ZM9715 700L10325 700L10565 580L10565 120L10325 0L9715 0ZM9911 560L9911 140L10369 140L10369 560ZM10623 700L10829 700L10893 560L11293 560L11357 700L11563 700L11243 0L10943 0ZM10944 448L11093 122L11242 448ZM11735 398L12255 398L12255 560L11651 560L11651 658L11735 700L12283 700L12451 616L12451 328L12367 286L11847 286L11847 140L12451 140L12451 42L12367 0L11819 0L11651 84L11651 356ZM12599 700L12795 700L12795 398L13203 398L13203 700L13399 700L13399 0L13203 0L13203 286L12795 286L12795 0L12599 0Z"/></svg>
       <span class="lockup-for">for Tekken 5 DR</span>
     </a>
-    
-    <a class="btn btn-sm app-bar-action" href="/how-it-works/">How it works</a>
-    
+    <nav class="bar-links" aria-label="Sections">
+      <a href="/ranked/">Ranked</a>
+      <a href="/stats/">Stats</a>
+      <a href="/how-it-works/">How it works</a>
+    </nav>
+    <form class="bar-search" action="/stats/players/" method="get" role="search" data-bar-search="https://lobby.backdash.gg/v1/stats">
+      <button class="bar-search-open" type="button" aria-label="Find a player" aria-expanded="false"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="rk-search"><label class="rk-search-box"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg><input type="search" name="q" maxlength="45" autocomplete="off" spellcheck="false" required placeholder="Find a player" aria-label="Find a player"><span class="rk-kbd" aria-hidden="true">/</span></label></div>
+    </form>
+    <a class="bar-download" href="https://dl.backdash.gg/releases/0.61.1/Project%20Backdash%20Setup%200.61.1.exe" data-bar-download><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="bar-download-label" aria-hidden="true">Download</span><span class="visually-hidden">Download</span></a>
     
   </div>
 </header>
 <!-- check-allow: ranked -->
 <!-- check-allow: profiles -->
 <!-- check-allow: sign in -->
-<div class="page">
-<nav class="sidebar" aria-label="Main">
-  <div class="sidebar-inner">
-<ul class="nav-list">
-  <li><a href="/">Home</a></li>
-  <li><a href="/how-it-works/">How it works</a></li>
-  <li><a href="/download/">Download</a></li>
-  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
-  <li><a href="/stats/">Stats<small class="nav-sub">The game</small></a></li>
-  <li><a href="/about/">About</a></li>
-  <li><a href="/privacy/" aria-current="page">Privacy</a></li>
-</ul>
+<main id="main" tabindex="-1" class="page">
+<div class="wrap">
+  <header class="page-hero">
+    <p class="eyebrow"><span>Updated <time datetime="2026-10-19">19 October 2026</time></span></p>
+    <h1 class="hero-title">Privacy</h1>
+    <p class="hero-lead">What Project Backdash keeps, what is public, and how to remove it.</p>
+  </header>
+
+  <div class="with-aside">
+    <div>
+      <section class="sec" id="accounts" aria-labelledby="accounts-title">
+        <h2 class="label-tab sec-tab" id="accounts-title">Your account</h2>
+        <div class="panel prose">
+        <ul>
+          <li>Playing online gives you a random player ID. No sign-in is needed: you start as a guest.</li>
+          <li>Log in with Discord to keep one account across PCs; Ranked needs it. We keep only your Discord ID and display name. Discord does not give us your email or friends, and we do not keep its access token.</li>
+          <li>Your player name is public. If you have not set one, your Discord display name becomes it.</li>
+        </ul>
+        </div>
+      </section>
+
+      <section class="sec" id="public" aria-labelledby="public-title">
+        <h2 class="label-tab sec-tab" id="public-title">What is public</h2>
+        <div class="panel prose">
+        <p>Anyone can see these, on this site, in the launcher and through the public data at <span class="addr">lobby.backdash.gg</span>:</p>
+        <ul>
+          <li><strong>Lobbies:</strong> each open room's host name, region and last character.</li>
+          <li><strong>Ranked:</strong> the leaderboard, and each Ranked player's profile: name, character, region, rank, MMR, wins and losses, and their rated sets and games with their opponents' names.</li>
+          <li><strong>Stats:</strong> totals, and the top players by MMR with their name, character and rank.</li>
+          <li><strong>Shared replays:</strong> when you press <span class="ui">Upload</span>, anyone can find, watch and download that replay, with both players' names, characters and inputs.</li>
+        </ul>
+        <p>Matches that are not Ranked stay private to the two players. To stay off the public lists, do not play Ranked or upload replays, or use <a href="#removing-data">Remove my data</a>.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="stored" aria-labelledby="stored-title">
+        <h2 class="label-tab sec-tab" id="stored-title">What the online service keeps</h2>
+        <div class="panel prose">
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="stored-title">
+          <table class="data">
+            <thead>
+              <tr><th scope="col">What</th><th scope="col">Who sees it</th><th scope="col">Kept</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Account: player ID, a hash of its key, your Discord ID and name if you log in</th><td>You</td><td>Until you remove it</td></tr>
+              <tr><th scope="row">Match records: both players' IDs and names, characters, stage, score, results, region, version and times</th><td>The two players; everyone for Ranked</td><td>Until you remove it</td></tr>
+              <tr><th scope="row">Ranked rating, rank, and leaves or dodges</th><td>Everyone (rating and rank)</td><td>Until you remove it</td></tr>
+              <tr><th scope="row">Friends, friend name and blocks</th><td>You; friends see your status</td><td>Until you remove it</td></tr>
+              <tr><th scope="row">Online status and invites</th><td>Friends</td><td>2 and 10 minutes</td></tr>
+              <tr><th scope="row">Direct messages</th><td>You and the other person</td><td>30 days</td></tr>
+              <tr><th scope="row">Lobby chat</th><td>The room</td><td>Not stored</td></tr>
+              <tr><th scope="row">Watching a set (the game inputs)</th><td>The room</td><td>Until the room closes</td></tr>
+              <tr><th scope="row">Shared replays</th><td>Everyone</td><td>Until you delete them</td></tr>
+              <tr><th scope="row">Reports of a player or message, with a copy of what was reported</th><td>Us</td><td>365 days</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>It runs on Cloudflare, with the database at DigitalOcean and encrypted backups at Backblaze. Backups are erased within 30 days.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="diagnostics" aria-labelledby="diagnostics-title">
+        <h2 class="label-tab sec-tab" id="diagnostics-title">Problem reports</h2>
+        <div class="panel prose">
+        <p>A report is sent only when you press <span class="ui">Feedback</span>, <span class="ui">Report a problem</span> or <span class="ui">Send report</span>, or when you turn on <span class="ui">Send problem reports automatically</span> (after a freeze or a bad end) or <span class="ui">Send diagnostics</span> (a short summary after each session). Both settings are off until you choose.</p>
+        <ul>
+          <li><strong>A report holds</strong> your note, your player name, a random install ID, logs from setup and your last three sessions, some settings, and your PC's processor, memory, Windows version, graphics card and controller model.</li>
+          <li><strong>A summary holds</strong> connection and rollback numbers, the version, your PC's processor, memory, Windows version and graphics card, and the install ID.</li>
+          <li><strong>Before sending,</strong> the launcher removes your Windows user name, file paths, IP addresses, email addresses and keys.</li>
+        </ul>
+        <p>They go to <span class="addr">diag-staging.backdash.gg</span> on Cloudflare, only we can read them, and they are deleted after 90 days. A notice of each report, with your name and the first line of your note, goes to our private Discord channel.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="connections" aria-labelledby="connections-title">
+        <h2 class="label-tab sec-tab" id="connections-title">Connections</h2>
+        <div class="panel prose">
+        <ul>
+          <li>A match runs directly between the two PCs when it can, so your opponent sees your public IP address and your local network address. The online service passes them only to your opponent and does not keep them.</li>
+          <li>When a direct connection fails, the match goes through Cloudflare's relay, and your opponent sees Cloudflare's address instead.</li>
+          <li>Game traffic is not encrypted.</li>
+          <li>To find a route, the launcher asks Google and Cloudflare for your public address, opens a game port on your router with UPnP while you play, and measures the delay to Amazon Web Services to pick your region. Nothing else is sent to them.</li>
+          <li>The online service keeps no request logs. For abuse limits and room bans it keeps only hashes of your IP address, deleted within a day or when the room closes.</li>
+        </ul>
+        </div>
+      </section>
+
+      <section class="sec" id="other-services" aria-labelledby="other-title">
+        <h2 class="label-tab sec-tab" id="other-title">Other services</h2>
+        <div class="panel prose">
+        <ul>
+          <li><strong>Updates:</strong> at start, the launcher reads the signed release file at <span class="addr">dl.backdash.gg</span>. Nothing about you is sent. An update downloads only when you choose it.</li>
+          <li><strong>System software:</strong> setup downloads <span class="addr">PS3UPDAT.PUP</span> from its publisher's update server.</li>
+          <li><strong>Discord:</strong> while Discord runs, it shows what you are playing (mode, room, characters, score and rank) on your Discord profile. Turn off <span class="ui">Show what I'm playing on Discord</span> in Settings.</li>
+        </ul>
+        </div>
+      </section>
+
+      <section class="sec" id="on-your-pc" aria-labelledby="pc-title">
+        <h2 class="label-tab sec-tab" id="pc-title">On your PC</h2>
+        <div class="panel prose">
+        <p>Your game files are copied into <span class="addr">%APPDATA%\Project Backdash</span> and never uploaded. Your settings, account keys, replays (the newest 200 games or 512 MB; favourites stay) and logs live there too, and clips go to your Videos folder. Uninstalling keeps this folder.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="removing-data" aria-labelledby="removing-data-title">
+        <h2 class="label-tab sec-tab" id="removing-data-title">Remove my data</h2>
+        <div class="panel prose">
+        <p>In the launcher: <span class="ui">Settings → Game → Remove my data</span>.</p>
+        <ul>
+          <li><strong>Online, it erases</strong> your match records (also from your opponents' histories), ratings, Discord link, friends, blocks, messages (both sides of each conversation), shared replays and problem reports.</li>
+          <li><strong>On your PC, it then clears</strong> your game files, settings, replays and account keys.</li>
+          <li><strong>What stays:</strong> your player ID with a hash of its key, and a record that it was removed, so a backup cannot bring your data back; reports filed by or about you, until their 365 days end; and past Ranked results, with your name shown as "Removed player".</li>
+        </ul>
+        <p>Copies that others downloaded cannot be recalled.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="this-website" aria-labelledby="website-title">
+        <h2 class="label-tab sec-tab" id="website-title">This website</h2>
+        <div class="panel prose">
+        <p>Hosted on GitHub Pages, which may log visitors' IP addresses. No cookies, no analytics. The Stats page reads its numbers from <span class="addr">lobby.backdash.gg</span>. Your chosen theme stays in your browser.</p>
+        
+        </div>
+      </section>
+
+      <section class="sec" id="questions" aria-labelledby="questions-title">
+        <h2 class="label-tab sec-tab" id="questions-title">Questions</h2>
+        <div class="panel prose">
+        <p>About your data or a removal that did not finish. Never send keys or game files.</p>
+        <div class="contact-box"><p class="contact-box-label">Contact</p><p class="contact">Email: <a href="mailto:deesam@backdash.gg">deesam@backdash.gg</a></p></div>
+        </div>
+      </section>
+    </div>
+    <nav class="page-aside" aria-labelledby="toc-title">
+      <h2 class="label-tab sec-tab" id="toc-title">On this page</h2>
+      <ul class="panel link-rows toc">
+        <li><a href="#accounts"><span class="link-name">Your account</span></a></li>
+        <li><a href="#public"><span class="link-name">What is public</span></a></li>
+        <li><a href="#stored"><span class="link-name">What the online service keeps</span></a></li>
+        <li><a href="#diagnostics"><span class="link-name">Problem reports</span></a></li>
+        <li><a href="#connections"><span class="link-name">Connections</span></a></li>
+        <li><a href="#other-services"><span class="link-name">Other services</span></a></li>
+        <li><a href="#on-your-pc"><span class="link-name">On your PC</span></a></li>
+        <li><a href="#removing-data"><span class="link-name">Remove my data</span></a></li>
+        <li><a href="#this-website"><span class="link-name">This website</span></a></li>
+        <li><a href="#questions"><span class="link-name">Questions</span></a></li>
+      </ul>
+    </nav>
   </div>
-</nav>
-<main id="main" tabindex="-1" class="page-main">
-  <div class="page-col">
-    <header class="page-head">
-      <h1>Privacy</h1>
-      <p class="lead">What Project Backdash keeps, what is public, and how to remove it.</p>
-      <p class="page-meta">Updated <time datetime="2026-10-19">19 October 2026</time></p>
-    </header>
-
-    <section class="section" id="accounts" aria-labelledby="accounts-title">
-      <h2 id="accounts-title">Your account</h2>
-      <ul>
-        <li>Playing online gives you a random player ID. No sign-in is needed: you start as a guest.</li>
-        <li>Log in with Discord to keep one account across PCs; Ranked needs it. We keep only your Discord ID and display name. Discord does not give us your email or friends, and we do not keep its access token.</li>
-        <li>Your player name is public. If you have not set one, your Discord display name becomes it.</li>
-      </ul>
-    </section>
-
-    <section class="section" id="public" aria-labelledby="public-title">
-      <h2 id="public-title">What is public</h2>
-      <p>Anyone can see these, on this site, in the launcher and through the public data at <span class="addr">lobby.backdash.gg</span>:</p>
-      <ul>
-        <li><strong>Lobbies:</strong> each open room's host name, region and last character.</li>
-        <li><strong>Ranked:</strong> the leaderboard, and each Ranked player's profile: name, character, region, rank, MMR, wins and losses, and their rated sets and games with their opponents' names.</li>
-        <li><strong>Stats:</strong> totals, and the top players by MMR with their name, character and rank.</li>
-        <li><strong>Shared replays:</strong> when you press <span class="ui">Upload</span>, anyone can find, watch and download that replay, with both players' names, characters and inputs.</li>
-      </ul>
-      <p>Matches that are not Ranked stay private to the two players. To stay off the public lists, do not play Ranked or upload replays, or use <a href="#removing-data">Remove my data</a>.</p>
-    </section>
-
-    <section class="section" id="stored" aria-labelledby="stored-title">
-      <h2 id="stored-title">What the online service keeps</h2>
-      <div class="table-wrap" tabindex="0" role="region" aria-labelledby="stored-title">
-        <table class="data">
-          <thead>
-            <tr><th scope="col">What</th><th scope="col">Who sees it</th><th scope="col">Kept</th></tr>
-          </thead>
-          <tbody>
-            <tr><th scope="row">Account: player ID, a hash of its key, your Discord ID and name if you log in</th><td>You</td><td>Until you remove it</td></tr>
-            <tr><th scope="row">Match records: both players' IDs and names, characters, stage, score, results, region, version and times</th><td>The two players; everyone for Ranked</td><td>Until you remove it</td></tr>
-            <tr><th scope="row">Ranked rating, rank, and leaves or dodges</th><td>Everyone (rating and rank)</td><td>Until you remove it</td></tr>
-            <tr><th scope="row">Friends, friend name and blocks</th><td>You; friends see your status</td><td>Until you remove it</td></tr>
-            <tr><th scope="row">Online status and invites</th><td>Friends</td><td>2 and 10 minutes</td></tr>
-            <tr><th scope="row">Direct messages</th><td>You and the other person</td><td>30 days</td></tr>
-            <tr><th scope="row">Lobby chat</th><td>The room</td><td>Not stored</td></tr>
-            <tr><th scope="row">Watching a set (the game inputs)</th><td>The room</td><td>Until the room closes</td></tr>
-            <tr><th scope="row">Shared replays</th><td>Everyone</td><td>Until you delete them</td></tr>
-            <tr><th scope="row">Reports of a player or message, with a copy of what was reported</th><td>Us</td><td>365 days</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>It runs on Cloudflare, with the database at DigitalOcean and encrypted backups at Backblaze. Backups are erased within 30 days.</p>
-    </section>
-
-    <section class="section" id="diagnostics" aria-labelledby="diagnostics-title">
-      <h2 id="diagnostics-title">Problem reports</h2>
-      <p>A report is sent only when you press <span class="ui">Feedback</span>, <span class="ui">Report a problem</span> or <span class="ui">Send report</span>, or when you turn on <span class="ui">Send problem reports automatically</span> (after a freeze or a bad end) or <span class="ui">Send diagnostics</span> (a short summary after each session). Both settings are off until you choose.</p>
-      <ul>
-        <li><strong>A report holds</strong> your note, your player name, a random install ID, logs from setup and your last three sessions, some settings, and your PC's processor, memory, Windows version, graphics card and controller model.</li>
-        <li><strong>A summary holds</strong> connection and rollback numbers, the version, your PC's processor, memory, Windows version and graphics card, and the install ID.</li>
-        <li><strong>Before sending,</strong> the launcher removes your Windows user name, file paths, IP addresses, email addresses and keys.</li>
-      </ul>
-      <p>They go to <span class="addr">diag-staging.backdash.gg</span> on Cloudflare, only we can read them, and they are deleted after 90 days. A notice of each report, with your name and the first line of your note, goes to our private Discord channel.</p>
-    </section>
-
-    <section class="section" id="connections" aria-labelledby="connections-title">
-      <h2 id="connections-title">Connections</h2>
-      <ul>
-        <li>A match runs directly between the two PCs when it can, so your opponent sees your public IP address and your local network address. The online service passes them only to your opponent and does not keep them.</li>
-        <li>When a direct connection fails, the match goes through Cloudflare's relay, and your opponent sees Cloudflare's address instead.</li>
-        <li>Game traffic is not encrypted.</li>
-        <li>To find a route, the launcher asks Google and Cloudflare for your public address, opens a game port on your router with UPnP while you play, and measures the delay to Amazon Web Services to pick your region. Nothing else is sent to them.</li>
-        <li>The online service keeps no request logs. For abuse limits and room bans it keeps only hashes of your IP address, deleted within a day or when the room closes.</li>
-      </ul>
-    </section>
-
-    <section class="section" id="other-services" aria-labelledby="other-title">
-      <h2 id="other-title">Other services</h2>
-      <ul>
-        <li><strong>Updates:</strong> at start, the launcher reads the signed release file at <span class="addr">dl.backdash.gg</span>. Nothing about you is sent. An update downloads only when you choose it.</li>
-        <li><strong>System software:</strong> setup downloads <span class="addr">PS3UPDAT.PUP</span> from its publisher's update server.</li>
-        <li><strong>Discord:</strong> while Discord runs, it shows what you are playing (mode, room, characters, score and rank) on your Discord profile. Turn off <span class="ui">Show what I'm playing on Discord</span> in Settings.</li>
-      </ul>
-    </section>
-
-    <section class="section" id="on-your-pc" aria-labelledby="pc-title">
-      <h2 id="pc-title">On your PC</h2>
-      <p>Your game files are copied into <span class="addr">%APPDATA%\Project Backdash</span> and never uploaded. Your settings, account keys, replays (the newest 200 games or 512 MB; favourites stay) and logs live there too, and clips go to your Videos folder. Uninstalling keeps this folder.</p>
-    </section>
-
-    <section class="section" id="removing-data" aria-labelledby="removing-data-title">
-      <h2 id="removing-data-title">Remove my data</h2>
-      <p>In the launcher: <span class="ui">Settings → Game → Remove my data</span>.</p>
-      <ul>
-        <li><strong>Online, it erases</strong> your match records (also from your opponents' histories), ratings, Discord link, friends, blocks, messages (both sides of each conversation), shared replays and problem reports.</li>
-        <li><strong>On your PC, it then clears</strong> your game files, settings, replays and account keys.</li>
-        <li><strong>What stays:</strong> your player ID with a hash of its key, and a record that it was removed, so a backup cannot bring your data back; reports filed by or about you, until their 365 days end; and past Ranked results, with your name shown as "Removed player".</li>
-      </ul>
-      <p>Copies that others downloaded cannot be recalled.</p>
-    </section>
-
-    <section class="section" id="this-website" aria-labelledby="website-title">
-      <h2 id="website-title">This website</h2>
-      <p>Hosted on GitHub Pages, which may log visitors' IP addresses. No cookies, no analytics. The Stats page reads its numbers from <span class="addr">lobby.backdash.gg</span>. Your chosen theme stays in your browser.</p>
-      
-    </section>
-
-    <section class="section" id="questions" aria-labelledby="questions-title">
-      <h2 id="questions-title">Questions</h2>
-      <p>About your data or a removal that did not finish. Never send keys or game files.</p>
-      <div class="contact-box"><p class="contact-box-label">Contact</p><p class="contact">Email: <a href="mailto:deesam@backdash.gg">deesam@backdash.gg</a></p></div>
-    </section>
-  </div>
-</main>
 </div>
+</main>
 <footer class="site-footer">
   <div class="site-footer-inner">
 <ul class="social-links" aria-label="Project Backdash elsewhere">
@@ -215,6 +249,7 @@
     <nav class="footer-nav" aria-label="Footer">
       <ul>
         <li><a href="/how-it-works/">How it works</a></li>
+        <li><a href="/download/">Download</a></li>
         <li><a href="/ranked/">Ranked</a></li>
         <li><a href="/stats/">Stats</a></li>
         <li><a href="/about/">About</a></li>

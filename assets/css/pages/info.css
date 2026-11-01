@@ -4,32 +4,19 @@
  * Builds on site.css. Every colour here is a site.css token, so both themes work
  * and `node contrast.mjs` covers them. No new colour values.
  *
- * The shared pieces these pages started (.page-meta, .page-next, .data-kv,
- * .cell-note, .steps, .addr, the one-line note under a table, the 44 px link in
- * a cell) now live in site.css. What is left is used only by these pages:
- *   section spacing  a slightly tighter rhythm for short sections
+ * The shared pieces (.data-kv, .cell-note, .steps, .addr, the one-line note
+ * under a table, the 44 px link in a cell, sections and panels) live in
+ * site.css. What is left is used only by these pages:
+ *   tables in text   no second box inside a panel of text (Privacy)
  *   .data-machines   the three-column test-laptop table on small phones
  *   .contact-box     the contact line in a framed box (Source, Privacy)
  *   .not-yet         "(not public yet)" after an address
  */
 
-/* Sections on these pages sit a little closer than the default: they are
-   short, and the long pages (Privacy) read as one document. */
-.page-col > .section {
-  margin-top: var(--s-10);
-}
-
-.page-col > .section > h2 {
-  margin-bottom: var(--s-3);
-}
-
-/* Paragraphs in the reading column: 18/28, 12 px apart. */
-.page-col > .section > p {
-  margin-bottom: var(--s-3);
-}
-
-.page-col > .section > :last-child {
-  margin-bottom: 0;
+/* A table inside a panel of text (Privacy): the panel's own lines, no second box. */
+.prose .table-wrap {
+  margin: 16px 0;
+  background: transparent;
 }
 
 /* Machines table: three short columns; tighter cells on small phones. */
@@ -54,8 +41,8 @@
 .contact-box {
   margin: var(--s-5) 0 0;
   padding: var(--s-4) var(--s-5);
-  border-radius: var(--r-box);
-  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
 }
 
 .contact-box-label {
@@ -76,7 +63,7 @@
 }
 
 /* Mark preview-only placeholders. */
-[data-placeholder] {
+[data-placeholder]:not(:focus-visible) {
   outline: 2px dashed var(--warn);
   outline-offset: 3px;
 }
@@ -87,11 +74,4 @@
   .contact-box {
     border: 1px solid CanvasText;
   }
-}
-
-/* A one-word title longer than a phone column ("Troubleshooting") shrinks to
-   fit instead of breaking mid-word. 13.6 is the title's width per pixel of
-   font size in PBD Display; 40 px is the column's side padding. */
-.page-head .h1-fit {
-  font-size: min(var(--fs-title), calc((100vw - 40px) / 13.6));
 }

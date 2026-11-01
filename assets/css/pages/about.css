@@ -1,29 +1,10 @@
-/* About: the story (a marked placeholder in preview builds until it is written) and the name. */
-
-.about > .section {
-  margin-top: var(--s-12);
-}
-
-.about > .page-head + .section {
-  margin-top: 0;
-}
-
-.about > .section > .label-tab {
-  margin-bottom: var(--s-5);
-}
-
-.about > .section > p {
-  max-width: 64ch;
-  margin-bottom: var(--s-3);
-}
+/* About: the story (a marked placeholder in preview builds until it is written) and the name, each a section of
+   the site's tab and panel (site.css). */
 
 /* Placeholder for the story (src/_partials/preview-story.html, preview builds only): a dashed gold
    frame, so it cannot be mistaken for finished copy. */
 .story-placeholder {
-  padding: var(--s-5) var(--s-5) var(--s-6);
   border: 1px dashed rgba(244, 182, 63, 0.6);
-  border-radius: var(--r-slab);
-  background: rgba(11, 3, 4, 0.6);
 }
 
 .story-placeholder p {

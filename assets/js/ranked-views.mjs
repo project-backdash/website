@@ -1,29 +1,44 @@
 // <!-- check-allow: ranked -->
 import { characterName, RANK_BANDS, CHARACTERS } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=81c7ed6a16';
+import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=1c45537d0e';
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=78371fcc9f';
-import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=e83c5a22b2';
-import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
+import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=1a1faaeb43';
+import {
+  el,
+  table,
+  number,
+  count,
+  percent,
+  note,
+  playerLink,
+  select,
+  characterOptions,
+} from '/assets/js/ranked-ui.mjs?v=8b024de9ed';
 
 export function playersView(app) {
-  const form = el('form', 'ranked-filters ranked-search-form');
+  // The Ranked board's big search box; Enter searches (a form with one field submits on Enter).
+  const form = el('form', 'rk-search ranked-search-form');
   form.method = 'get';
   form.action = '/stats/players/';
-  const label = el('label', 'ranked-field ranked-search', 'Player name or Name#tag');
+  form.setAttribute('role', 'search');
+  const label = el('label', 'rk-search-box');
+  label.innerHTML =
+    '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg>';
   const input = el('input');
   input.name = 'q';
   input.type = 'search';
   input.maxLength = 45;
   input.required = true;
   input.autocomplete = 'off';
+  input.spellcheck = false;
+  input.placeholder = 'Name, or Name#tag';
+  input.setAttribute('aria-label', 'Player name or Name#tag');
   input.value = app.params.get('q') || '';
-  label.append(input);
-  const button = el('button', 'btn-primary', 'Search');
-  button.type = 'submit';
   const inline = el('span', 'ranked-search-inline');
   inline.setAttribute('aria-hidden', 'true');
   inline.hidden = true;
-  form.append(label, button, inline);
+  label.append(input, inline);
+  form.append(label);
   form.append(app.status);
   app.filters.append(form);
   let searchGeneration = 0;
@@ -34,7 +49,7 @@ export function playersView(app) {
     inline.hidden = false;
     await app.load('players', { q: input.value.trim(), limit: 20 }, (data) => {
       if (!data.players.length) return app.content.append(note('No players found.'));
-      const list = el('ul', 'ranked-results');
+      const list = el('ul', 'ranked-results panel');
       for (const player of data.players) {
         const row = el('li');
         row.append(playerLink(player));
@@ -54,6 +69,15 @@ export function playersView(app) {
   });
   if (input.value.trim()) search();
   else app.status.textContent = 'Find a player with a Ranked rating.';
+  // "/" goes to this box, as on the board: the bar's search is hidden here, so the page has one.
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+    const target = event.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)))
+      return;
+    event.preventDefault();
+    input.focus();
+  });
 }
 
 export function matchupsView(app) {
@@ -96,7 +120,7 @@ export function matchupsView(app) {
               url: '/stats/characters/?character=' + row.opponentCharacter,
               value: row.winRate,
               label: percent(row.winRate),
-              detail: `${number(row.wins)}W ${number(row.losses)}L${row.draws ? ` ${number(row.draws)}D` : ''} · ${number(row.games)} games`,
+              detail: `${number(row.wins)}W ${number(row.losses)}L${row.draws ? ` ${number(row.draws)}D` : ''} · ${count(row.games, 'game')}`,
             })),
         ),
       );
@@ -114,7 +138,7 @@ export function matchupsView(app) {
             const row = cells.get(id + ':' + other);
             const cell = el('span', 'ranked-matchup', row ? percent(row.winRate) : '—');
             if (row) {
-              cell.append(el('small', '', `${number(row.games)} games`));
+              cell.append(el('small', '', count(row.games, 'game')));
               cell.dataset.result = row.winRate === null ? 'unknown' : row.winRate >= 0.5 ? 'positive' : 'negative';
             }
             return cell;

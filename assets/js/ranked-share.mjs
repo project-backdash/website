@@ -5,7 +5,7 @@
 // inside and Esc closes it. Options with nothing to show for the chosen character are hidden, and the choices are
 // remembered in this browser for the next card.
 import { characterName, profileEndpoint, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { el, face, loading } from '/assets/js/ranked-kit.mjs?v=00fa912a59';
+import { el, face, loading } from '/assets/js/ranked-kit.mjs?v=f30d870cde';
 import {
   FORMATS,
   ACCENTS,
@@ -25,7 +25,7 @@ import {
   fileName,
   readChoices,
   keepChoices,
-} from '/assets/js/ranked-card.mjs?v=3eb3c7cfa1';
+} from '/assets/js/ranked-card.mjs?v=d179671b14';
 
 const CLOSE_ICON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
@@ -89,7 +89,7 @@ function loadBrand() {
         return box && paths.length ? { box: [Number(box[1]), Number(box[2])], paths } : null;
       })
       .catch(() => null);
-  brandArt ??= Promise.all([read('/assets/brand/mark.svg?v=5187f37382'), read('/assets/brand/wordmark.svg?v=9116ec80dd')]);
+  brandArt ??= Promise.all([read('/assets/brand/mark.svg?v=4e7239fdff'), read('/assets/brand/wordmark.svg?v=2798824406')]);
   return brandArt;
 }
 

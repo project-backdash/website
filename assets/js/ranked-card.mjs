@@ -21,7 +21,7 @@ import {
   shortDate,
   seasonLabel,
   setScore,
-} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
+} from '/assets/js/ranked-kit.mjs?v=f30d870cde';
 
 export const FORMATS = [
   { id: 'post', name: 'Post', ratio: '4:5', width: 1080, height: 1350 },

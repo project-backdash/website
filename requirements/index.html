@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UWvn3F//dChxdkroafa+2tmPbWHPWqYA2VX5FHogVsI='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://lobby.backdash.gg; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Requirements | Project Backdash</title>
@@ -25,18 +25,19 @@
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
-<link rel="icon" href="/favicon.svg?v=0ef5d2c4bc" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg?v=b8173292d8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4e8aadd988">
-<link rel="manifest" href="/site.webmanifest?v=6c2b5d36f0">
+<link rel="manifest" href="/site.webmanifest?v=674404c996">
 <link rel="preload" href="/assets/fonts/barlow-400.woff2?v=dabe85d6ba" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
-<link rel="stylesheet" href="/assets/css/site.css?v=3f088890f3">
-<link rel="stylesheet" href="/assets/css/resurrection.css?v=66886cf18e">
-<link rel="stylesheet" href="/assets/css/pages/info.css?v=002740dc4d">
-<script src="/assets/js/site.js?v=8e39d6083c" defer></script>
+<link rel="stylesheet" href="/assets/css/site.css?v=d044478ff2">
+<link rel="stylesheet" href="/assets/css/resurrection.css?v=71ef6e297e">
+<link rel="stylesheet" href="/assets/css/pages/info.css?v=a1f2e0936d">
+<script type="module" src="/assets/js/bar-search.mjs?v=529d4e5ea3"></script>
+<script src="/assets/js/site.js?v=2090aa3788" defer></script>
 </head>
-<body class="field page-body">
+<body class="field">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="app-bar">
   <div class="app-bar-inner">
@@ -51,12 +52,14 @@
         </div>
         <nav class="drawer-nav" aria-label="Main">
 <ul class="nav-list">
-  <li><a href="/">Home</a></li>
-  <li><a href="/how-it-works/">How it works</a></li>
+  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/stats/">Stats</a></li>
+  <li><a href="/how-it-works/" aria-current="true">How it works</a></li>
   <li><a href="/download/">Download</a></li>
-  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
-  <li><a href="/stats/">Stats<small class="nav-sub">The game</small></a></li>
+</ul>
+<ul class="nav-fine">
   <li><a href="/about/">About</a></li>
+  <li><a href="/source/">Source code</a></li>
   <li><a href="/privacy/">Privacy</a></li>
 </ul>
         </nav>
@@ -67,67 +70,60 @@
       <svg class="wordmark" viewBox="0 0 13399 700" overflow="visible" role="img" aria-label="Project Backdash" focusable="false" fill="currentColor"><path class="wordmark-project" d="M0 700L128 700L128 438L519 438L687 354L687 42L603 0L0 0ZM128 364L128 92L559 92L559 364ZM819 700L947 700L947 438L1193 438L1391 700L1541 700L1343 438L1431 438L1514 396L1514 42L1431 0L819 0ZM947 364L947 92L1387 92L1387 364ZM1689 700L2282 700L2450 616L2450 42L2367 0L1774 0L1606 84L1606 658ZM1733 608L1733 92L2323 92L2323 608ZM2611 700L3010 700L3178 616L3178 0L3051 0L3051 608L2655 608L2655 410L2527 410L2527 658ZM3321 700L3937 700L3937 608L3449 608L3449 379L3884 379L3884 305L3449 305L3449 92L3937 92L3937 0L3321 0ZM4111 700L4599 700L4767 616L4767 608L4155 608L4155 92L4767 92L4767 42L4683 0L4196 0L4028 84L4028 658ZM4816 92L5096 92L5096 700L5223 700L5223 92L5503 92L5503 0L4816 0Z"/><path class="wordmark-main" d="M5939 700L6591 700L6759 616L6759 310L6711 286L6711 42L6627 0L5939 0ZM6135 560L6135 398L6563 398L6563 560ZM6135 286L6135 140L6515 140L6515 286ZM6847 700L7053 700L7117 560L7517 560L7581 700L7787 700L7467 0L7167 0ZM7168 448L7317 122L7466 448ZM7929 700L8517 700L8685 616L8685 560L8041 560L8041 140L8685 140L8685 42L8601 0L8013 0L7845 84L7845 658ZM8775 700L8971 700L8971 510L9093 510L9192 413L9389 700L9615 700L9328 281L9615 0L9381 0L8971 401L8971 0L8775 0ZM9715 700L10325 700L10565 580L10565 120L10325 0L9715 0ZM9911 560L9911 140L10369 140L10369 560ZM10623 700L10829 700L10893 560L11293 560L11357 700L11563 700L11243 0L10943 0ZM10944 448L11093 122L11242 448ZM11735 398L12255 398L12255 560L11651 560L11651 658L11735 700L12283 700L12451 616L12451 328L12367 286L11847 286L11847 140L12451 140L12451 42L12367 0L11819 0L11651 84L11651 356ZM12599 700L12795 700L12795 398L13203 398L13203 700L13399 700L13399 0L13203 0L13203 286L12795 286L12795 0L12599 0Z"/></svg>
       <span class="lockup-for">for Tekken 5 DR</span>
     </a>
-    
-    <a class="btn btn-sm app-bar-action" href="/how-it-works/">How it works</a>
-    
+    <nav class="bar-links" aria-label="Sections">
+      <a href="/ranked/">Ranked</a>
+      <a href="/stats/">Stats</a>
+      <a href="/how-it-works/" aria-current="true">How it works</a>
+    </nav>
+    <form class="bar-search" action="/stats/players/" method="get" role="search" data-bar-search="https://lobby.backdash.gg/v1/stats">
+      <button class="bar-search-open" type="button" aria-label="Find a player" aria-expanded="false"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="rk-search"><label class="rk-search-box"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg><input type="search" name="q" maxlength="45" autocomplete="off" spellcheck="false" required placeholder="Find a player" aria-label="Find a player"><span class="rk-kbd" aria-hidden="true">/</span></label></div>
+    </form>
+    <a class="bar-download" href="https://dl.backdash.gg/releases/0.61.1/Project%20Backdash%20Setup%200.61.1.exe" data-bar-download><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="bar-download-label" aria-hidden="true">Download</span><span class="visually-hidden">Download</span></a>
     
   </div>
 </header>
-<div class="page">
-<nav class="sidebar" aria-label="Main">
-  <div class="sidebar-inner">
-<ul class="nav-list">
-  <li><a href="/">Home</a></li>
-  <li><a href="/how-it-works/">How it works</a></li>
-  <li><a href="/download/">Download</a></li>
-  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
-  <li><a href="/stats/">Stats<small class="nav-sub">The game</small></a></li>
-  <li><a href="/about/">About</a></li>
-  <li><a href="/privacy/">Privacy</a></li>
-</ul>
-  </div>
-</nav>
-<main id="main" tabindex="-1" class="page-main">
-  <div class="page-col">
+<main id="main" tabindex="-1" class="page">
+<div class="wrap">
+  <header class="page-hero">
+    <p class="eyebrow"><span>How it works</span></p>
+    <h1 class="hero-title">Requirements</h1>
+    <p class="hero-lead">What your PC needs. The launcher checks it during setup.</p>
+  </header>
 
-    <header class="page-head">
-      <h1>Requirements</h1>
-      <p class="lead">What your PC needs. The launcher checks it during setup.</p>
-    </header>
-
-    <section class="section" id="launcher-checks" aria-labelledby="checks-title">
-      <h2 id="checks-title">Your PC</h2>
-      <div class="table-wrap">
-        <table class="data data-kv" role="table" aria-labelledby="checks-title">
-          <tbody role="rowgroup">
-            <tr role="row"><th scope="row" role="rowheader">System</th><td role="cell">Windows 10 or 11, 64-bit, on an Intel or AMD PC. Not Windows on ARM.</td></tr>
-            <tr role="row"><th scope="row" role="rowheader">Processor</th><td role="cell"><p>With AVX2 and 4 threads: Intel Core 4th generation or AMD Ryzen, or newer.</p><p class="cell-note"><strong>Recommended:</strong> Core i7-7700HQ class or faster, 8 threads.</p></td></tr>
-            <tr role="row"><th scope="row" role="rowheader">Memory</th><td role="cell"><p>8 GB installed.</p><p class="cell-note"><strong>Recommended:</strong> 16 GB.</p></td></tr>
-            <tr role="row"><th scope="row" role="rowheader">Graphics</th><td role="cell"><p>Vulkan-capable, with a current driver. On a laptop, use the dedicated graphics card.</p><p class="cell-note"><strong>Recommended:</strong> GeForce GTX 1060 class.</p></td></tr>
-            <tr role="row"><th scope="row" role="rowheader">Disk space</th><td role="cell">8 GB free for setup; 12 GB is safer.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>Below 16 GB of memory or 8 threads, or with integrated graphics, Project Backdash runs in Low-end mode: 1280 x 720, with nothing else running in the background.</p>
-      <p>If Windows asks to allow <code>backdash-netplay.exe</code> through the firewall, choose <span class="ui">Allow</span>.</p>
-    </section>
-
-    <section class="section" id="your-game" aria-labelledby="game-title">
-      <h2 id="game-title">Your game</h2>
-      <p data-compat>Your own Tekken 5 Dark Resurrection Online for PS3 (NPUB30009): its .pkg file or the game folder, with its .rap licence file. Other regional releases are not supported.</p>
-      <p>The launcher downloads the system software (<span class="addr">PS3UPDAT.PUP</span>) from its publisher's update server. We provide no game files, licence files or keys.</p>
-    </section>
-
-    <div class="page-next">
-      <ul class="links">
-        <li><a href="/download/">Download</a></li>
-        <li><a href="/how-it-works/">How it works</a></li>
-      </ul>
-    </div>
-
-  </div>
-</main>
+  <div class="sec sec-pair">
+    <section id="launcher-checks" aria-labelledby="checks-title">
+      <div class="sec-head"><h2 class="label-tab sec-tab" id="checks-title">Your PC</h2><a class="more-link" href="/download/">Download</a></div>
+      <div class="panel">
+<div class="table-wrap">
+  <table class="data data-kv" role="table" aria-labelledby="checks-title">
+    <tbody role="rowgroup">
+      <tr role="row"><th scope="row" role="rowheader">System</th><td role="cell">Windows 10 or 11, 64-bit, on an Intel or AMD PC. Not Windows on ARM.</td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Processor</th><td role="cell"><p>With AVX2 and 4 threads: Intel Core 4th generation or AMD Ryzen, or newer.</p><p class="cell-note"><strong>Recommended:</strong> Core i7-7700HQ class or faster, 8 threads.</p></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Memory</th><td role="cell"><p>8 GB installed.</p><p class="cell-note"><strong>Recommended:</strong> 16 GB.</p></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Graphics</th><td role="cell"><p>Vulkan-capable, with a current driver. On a laptop, use the dedicated graphics card.</p><p class="cell-note"><strong>Recommended:</strong> GeForce GTX 1060 class.</p></td></tr>
+      <tr role="row"><th scope="row" role="rowheader">Disk space</th><td role="cell">8 GB free for setup; 12 GB is safer.</td></tr>
+    </tbody>
+  </table>
 </div>
+        <div class="prose req-notes">
+          <p>Below 16 GB of memory or 8 threads, or with integrated graphics, Project Backdash runs in Low-end mode: 1280 x 720, with nothing else running in the background.</p>
+          <p>If Windows asks to allow <code>backdash-netplay.exe</code> through the firewall, choose <span class="ui">Allow</span>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="your-game" aria-labelledby="game-title">
+      <div class="sec-head"><h2 class="label-tab sec-tab" id="game-title">Your game</h2><a class="more-link" href="/how-it-works/">How it works</a></div>
+      <div class="panel prose">
+        <p data-compat>Your own Tekken 5 Dark Resurrection Online for PS3 (NPUB30009): its .pkg file or the game folder, with its .rap licence file. Other regional releases are not supported.</p>
+        <p>The launcher downloads the system software (<span class="addr">PS3UPDAT.PUP</span>) from its publisher's update server. We provide no game files, licence files or keys.</p>
+        <p><a href="/download/#game-requirement">Check the game and licence requirements</a>.</p>
+      </div>
+    </section>
+  </div>
+</div>
+</main>
 <footer class="site-footer">
   <div class="site-footer-inner">
 <ul class="social-links" aria-label="Project Backdash elsewhere">
@@ -139,6 +135,7 @@
     <nav class="footer-nav" aria-label="Footer">
       <ul>
         <li><a href="/how-it-works/">How it works</a></li>
+        <li><a href="/download/">Download</a></li>
         <li><a href="/ranked/">Ranked</a></li>
         <li><a href="/stats/">Stats</a></li>
         <li><a href="/about/">About</a></li>

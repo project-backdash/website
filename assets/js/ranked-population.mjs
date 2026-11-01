@@ -1,8 +1,9 @@
 // <!-- check-allow: ranked -->
 import { CHARACTERS } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { REGIONS } from '/assets/js/ranked-filters.mjs?v=81c7ed6a16';
-import { el, select, characterOptions, table, number, percent, note } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
-import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=e83c5a22b2';
+import { REGIONS } from '/assets/js/ranked-filters.mjs?v=1c45537d0e';
+import { el, select, characterOptions, table, number, count, percent, note } from '/assets/js/ranked-ui.mjs?v=8b024de9ed';
+import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=1a1faaeb43';
+import { plate } from '/assets/js/ranked-kit.mjs?v=f30d870cde';
 
 export function populationView(app) {
   let character = app.params.get('character') || '',
@@ -30,14 +31,15 @@ export function populationView(app) {
             .filter((row) => row.players > 0)
             .map((row) => ({
               name: row.rank ?? 'Unranked',
+              image: plate(row.rankId),
               value: row.players,
               label: percent(row.share),
-              detail: `${number(row.players)} players`,
+              detail: count(row.players, 'player'),
             })),
         ),
       );
       const allRanks = el('details', 'ranked-rating-decisions');
-      allRanks.append(el('summary', '', 'All ranks'));
+      allRanks.append(el('summary', 'plus-toggle', 'All ranks'));
       allRanks.append(
         table(
           'Current rank distribution',
@@ -49,7 +51,7 @@ export function populationView(app) {
       app.content.append(allRanks);
       const quantiles = data.rows.filter((row) => row.mmr);
       const ranges = el('details', 'ranked-rating-decisions');
-      ranges.append(el('summary', '', 'MMR by rank'));
+      ranges.append(el('summary', 'plus-toggle', 'MMR by rank'));
       ranges.append(
         table(
           'MMR by rank',

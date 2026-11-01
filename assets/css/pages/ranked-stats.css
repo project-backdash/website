@@ -1,165 +1,312 @@
 /* <!-- check-allow: ranked --> */
 /* <!-- check-allow: profiles --> */
-/* Shared stats controls and text tables use the site's existing palette. */
+/* The Stats views (Players, Characters, Matchups, Ranks): the page's header and tabs (site.css), then one row of
+   filters, a quiet status line and the view, built from the site's parts: tiles for the counts, grey bars, tables
+   in panels and sections of tab and panel. Gold marks only the selection and the current tab. */
 .ranked-stats {
-  max-width: 70rem;
   min-width: 0;
 }
-.ranked-stats .page-head {
-  margin-bottom: var(--s-6);
+
+/* Until a view's data is in, the page keeps the footer under the first screen, where the view will push it. Players
+   has nothing to load until a search, so it never holds the footer back. */
+.ranked-stats:not([data-ranked-view="players"]):has([data-ranked-fallback], .ranked-content[aria-busy="true"]) {
+  min-height: 100vh;
 }
-.ranked-stats h1 {
-  overflow-wrap: anywhere;
+
+@media (scripting: none) {
+  .ranked-stats:has([data-ranked-fallback]) {
+    min-height: 0;
+  }
 }
-.ranked-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2) var(--s-5);
-  margin: 0 0 var(--s-6);
-  border-bottom: 1px solid var(--line);
-}
-.ranked-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 6px 0;
-}
-.ranked-nav a[aria-current='page'] {
-  color: var(--focus);
-  border-bottom: 2px solid currentColor;
-}
+
+/* Filters: small capitals over each control, as many to a row as fit (two on a phone), so the first screen still
+   reaches the data. More filters folds the rest away. */
 .ranked-filters {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   align-items: end;
-  gap: var(--s-3);
-  margin-bottom: var(--s-4);
+  gap: 12px;
+  margin: 0 0 12px;
 }
+
+.ranked-filters:empty {
+  display: none;
+}
+
 .ranked-filters form {
-  width: 100%;
+  grid-column: 1 / -1;
 }
+
 .ranked-field {
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
-  max-width: 100%;
-  color: var(--text-2);
-}
-.ranked-search {
-  flex: 1 1 16rem;
-}
-.ranked-field :is(input, select) {
+  gap: 6px;
   min-width: 0;
   max-width: 100%;
-  min-height: 48px;
-  border: 1px solid var(--control-edge);
-  border-radius: var(--r-control);
-  background: var(--surface);
-  color: var(--text-1);
-  padding: 8px 12px;
-  font: inherit;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
-.ranked-field input {
+
+.ranked-field :is(input, select) {
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid rgba(233, 238, 237, 0.24);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--text-1);
+  font: 600 var(--fs-2)/1.2 var(--font-ui);
+  letter-spacing: 0;
+  text-transform: none;
 }
+
+.ranked-field :is(input, select):hover {
+  border-color: rgba(233, 238, 237, 0.45);
+}
+
 .ranked-filter-panel {
-  flex-basis: 100%;
+  grid-column: 1 / -1;
 }
-.ranked-filter-panel > summary {
+
+/* More filters (and the Ranks page's tables) open as the Download page's More does: a "+" after the words, a "−"
+   while open (.plus-toggle in site.css). */
+.ranked-filter-panel > summary,
+.ranked-rating-decisions > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   min-height: 44px;
-  padding-block: 10px;
-  color: var(--focus);
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: var(--fs-2);
   cursor: pointer;
+  list-style: none;
 }
+
+.ranked-filter-panel > summary::-webkit-details-marker,
+.ranked-rating-decisions > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ranked-filter-panel > summary:hover,
+.ranked-rating-decisions > summary:hover {
+  color: var(--text-1);
+}
+
 .ranked-filter-panel form {
-  padding-block: var(--s-4);
+  padding: 8px 0 4px;
 }
+
 .ranked-status,
 .ranked-note,
 .ranked-sub {
-  color: var(--text-2);
+  color: var(--text-3);
 }
+
 .ranked-status {
   min-height: 1.5em;
+  margin: 0 0 20px;
+  font-size: var(--fs-1);
 }
+
 .ranked-note {
-  margin: var(--s-2) 0;
+  margin: 10px 0;
+  font-size: var(--fs-2);
 }
+
+.ranked-sub {
+  display: block;
+  font-size: var(--fs-1);
+}
+
+.ranked-content > * + * {
+  margin-top: 16px;
+}
+
+.ranked-content > .sec {
+  margin-top: 36px;
+}
+
+.ranked-content a,
+.ranked-metrics a,
+.stats-panel a {
+  color: var(--text-1);
+  text-decoration-color: rgba(233, 238, 237, 0.35);
+}
+
+.ranked-content a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* The counts: the site's tiles, the label over the value, a short line under it. */
 .ranked-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-  gap: var(--s-3);
-  margin: 0 0 var(--s-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
 }
-.ranked-metrics > div {
-  min-width: 0;
-  padding: var(--s-4);
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-.ranked-metrics dt {
-  color: var(--text-2);
-  font-size: 0.875rem;
-}
+
+/* A value may be a name ("Anna Williams", "All characters"): it wraps, rather than run into the next tile. */
 .ranked-metrics dd {
-  margin: var(--s-2) 0 0;
-  font-size: 1.35rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  white-space: normal;
   overflow-wrap: anywhere;
 }
+
+.ranked-metrics > div {
+  display: flex;
+  flex-direction: column;
+}
+
 .ranked-metrics dd a {
-  font-size: 1.125rem;
+  font: inherit;
+  text-underline-offset: 4px;
 }
+
+.ranked-metrics .ranked-sub {
+  margin-top: 6px;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A section's panel holds its notes, bars and tables with the panel's padding round them. */
+.stats-panel {
+  padding: 16px 20px 18px;
+}
+
+.stats-panel > :first-child,
+.stats-panel > div > :first-child {
+  margin-top: 0;
+}
+
+.stats-panel .table-wrap {
+  margin: 12px 0 0;
+  border: 0;
+  background: transparent;
+}
+
+/* Bars: the name (with a line under it), a grey bar against the largest value, the number; a badge's plate before
+   its name where the row is a badge. */
 .ranked-bars {
-  margin: var(--s-3) 0 var(--s-5);
-  padding: 0;
+  margin: 0;
+  padding: 6px 0;
   list-style: none;
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  background: var(--panel);
 }
+
+.stats-panel .ranked-bars {
+  border: 0;
+  background: transparent;
+}
+
 .ranked-bars li {
   display: grid;
   grid-template-columns: minmax(8rem, 1fr) minmax(2rem, 2fr) 4.5rem;
-  gap: var(--s-3);
   align-items: center;
-  padding-block: var(--s-2);
-  border-bottom: 1px solid var(--line);
-  min-height: 56px;
+  gap: 4px 14px;
+  min-height: 52px;
+  margin: 0;
+  padding: 6px 18px;
 }
+
+.ranked-bars li + li {
+  border-top: 1px solid var(--hairline);
+}
+
+.ranked-bars li.has-plate,
+.ranked-bars:has(.has-plate) > li {
+  grid-template-columns: 64px minmax(8rem, 1fr) minmax(2rem, 2fr) 4.5rem;
+}
+
+/* A row without a badge (Unranked) in a list of badges keeps the badge's column, so the bars line up. */
+.ranked-bars:has(.has-plate) > li:not(.has-plate)::before {
+  content: "";
+}
+
+.ranked-bar-plate {
+  display: block;
+  width: 64px;
+  height: 32px;
+  order: -1;
+}
+
 .ranked-bar-label {
   min-width: 0;
+  font-weight: 600;
+  font-size: var(--fs-2);
   overflow-wrap: anywhere;
 }
-.ranked-bar-track {
-  height: 8px;
-  background: var(--surface);
+
+.ranked-bar-label .ranked-sub {
+  font-weight: 400;
 }
+
+.ranked-bar-track {
+  position: relative;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(233, 238, 237, 0.08);
+  overflow: hidden;
+}
+
 .ranked-bar-fill {
   display: block;
   height: 100%;
-  background: var(--mark-lit);
+  border-radius: 2px;
+  background: rgba(233, 238, 237, 0.55);
 }
+
 .ranked-bars .num {
-  text-align: right;
+  font: 400 var(--fs-3)/1 var(--font-display);
   font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
 }
+
+/* A view's choices (Popularity, Win rate, Table, Characters): one segmented control, the chosen one lit. */
 .ranked-view-choices {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: var(--s-2);
-  margin-bottom: var(--s-4);
+  margin: 4px 0 12px;
+  border: 1px solid rgba(233, 238, 237, 0.16);
+  border-radius: 3px;
 }
+
+.ranked-view-choices .btn {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-3);
+  font: 600 var(--fs-1)/1.2 var(--font-ui);
+}
+
+.ranked-view-choices .btn:hover {
+  color: var(--text-1);
+  background: var(--hover);
+}
+
 .ranked-view-choices [aria-pressed='true'] {
-  color: var(--focus);
-  border-color: currentColor;
+  color: var(--text-1);
+  background: rgba(233, 238, 237, 0.08);
+  box-shadow: inset 0 -2px 0 var(--gold);
 }
-.ranked-sub {
-  display: block;
-  font-size: 0.9375rem;
-}
+
 .ranked-tag {
-  color: var(--text-2);
+  color: var(--text-3);
   font-weight: 400;
+  font-size: var(--fs-1);
 }
+
 .ranked-player {
   display: inline-flex;
   flex-direction: column;
@@ -169,187 +316,185 @@
   max-width: 100%;
   overflow-wrap: anywhere;
 }
+
 .ranked-player-name {
   min-width: 0;
+  font-weight: 600;
 }
+
 .character-badge {
   display: inline-block;
   max-width: 100%;
   padding: 2px 7px;
-  border: 1px solid var(--line);
-  background: var(--surface);
+  border: 1px solid rgba(233, 238, 237, 0.16);
+  border-radius: 3px;
   color: var(--text-2);
-  font-size: 0.875rem;
+  font-size: var(--fs-1);
   font-weight: 500;
   line-height: 1.4;
   text-decoration: none;
   overflow-wrap: anywhere;
 }
+
+/* Players: the found players as rows in a panel, the row under the pointer washed gold as on the board. */
 .ranked-results {
-  list-style: none;
+  margin: 0;
   padding: 0;
+  list-style: none;
 }
+
 .ranked-results li {
-  border-bottom: 1px solid var(--line);
+  margin: 0;
 }
+
+.ranked-results li + li {
+  border-top: 1px solid var(--hairline);
+}
+
 .ranked-results :is(a, span.ranked-player) {
-  display: inline-flex;
+  display: flex;
+  flex-flow: row wrap;
   align-items: center;
-  min-height: 48px;
-  flex-wrap: wrap;
+  gap: 6px 14px;
+  min-height: 56px;
+  padding: 8px 18px;
+  text-decoration: none;
 }
+
+.ranked-results a:hover,
+.ranked-results a:focus-visible {
+  background: var(--gold-wash);
+  box-shadow: inset 2px 0 0 var(--gold);
+  outline-offset: -2px;
+}
+
+.ranked-search-form {
+  max-width: 640px;
+  margin: 0 0 16px;
+}
+
+.ranked-search-inline {
+  flex: none;
+}
+
+/* Matchups: the grid of win rates; a won matchup is the brighter number, the games under it. */
 .ranked-matchup {
   display: block;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
 .ranked-matchup small {
   display: block;
-  color: var(--text-2);
+  color: var(--text-3);
+  font-size: var(--fs-1);
 }
+
 .ranked-matchup[data-result='positive'] {
-  color: var(--focus);
+  color: var(--text-1);
+  font-weight: 600;
 }
+
+.ranked-matchup[data-result='negative'] {
+  color: var(--text-3);
+}
+
 .ranked-matrix th:first-child {
   position: sticky;
   left: 0;
   z-index: 1;
-  background: var(--surface);
+  background: #0B0304;
 }
+
 .ranked-matrix th {
   min-width: 9rem;
 }
-.ranked-rating-decisions > summary {
-  min-height: 44px;
-  padding-block: 10px;
-  cursor: pointer;
-  color: var(--focus);
-}
-.stats-loading-indicator {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--s-2);
-  padding-block: var(--s-3);
-  color: var(--text-2);
-}
-.stats-loading-inline {
-  flex-direction: row;
-  padding: 0;
-}
-.pbd-loader {
-  width: 126px;
-  height: 42px;
-  fill: var(--surface);
-  stroke: var(--text-1);
-  stroke-width: 1.8;
-  stroke-linejoin: round;
-}
-.stats-loading-inline .pbd-loader {
-  width: 56px;
-  height: 16px;
-}
-.pbd-loader-step {
-  animation: pbd-first 0.6s steps(1, end) infinite;
-}
-.pbd-loader .step-2 {
-  animation-name: pbd-second;
-  stroke: var(--mark-lit);
-}
-.pbd-loader .step-3 {
-  animation-name: pbd-third;
-}
-@keyframes pbd-first {
-  0%,
-  99% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes pbd-second {
-  0%,
-  32% {
-    opacity: 0;
-  }
-  33%,
-  99% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes pbd-third {
-  0%,
-  65% {
-    opacity: 0;
-  }
-  66%,
-  99% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .pbd-loader-step {
-    animation: none;
-    opacity: 1;
-  }
-}
+
 .ranked-status:has(> .stats-loading-indicator) {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 160px;
 }
-.ranked-search-form {
-  position: relative;
-}
+
 .ranked-search-form > .ranked-status {
-  flex-basis: 100%;
-  margin: 0;
+  margin: 8px 0 0;
 }
+
 .ranked-search-form > .ranked-status:has(.stats-loading-indicator) {
   position: absolute;
   top: 100%;
   inset-inline: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
   z-index: 3;
+  margin-top: 4px;
   padding: var(--s-5);
+  border: 1px solid var(--panel-edge);
+  border-radius: 4px;
+  background: #0B0304;
 }
+
 .ranked-stats [hidden] {
   display: none;
 }
+
 @media (max-width: 599.98px) {
-  .ranked-stats > .ranked-nav,
-  .stats > .ranked-nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: var(--s-4);
+  .ranked-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
-  .ranked-stats > .ranked-nav a,
-  .stats > .ranked-nav a {
-    flex-shrink: 0;
+
+  .ranked-field :is(input, select) {
+    height: 38px;
+    font-size: var(--fs-1);
   }
-}
-@media (max-width: 479.98px) {
+
+  .ranked-bars li,
+  .ranked-bars li.has-plate,
+  .ranked-bars:has(.has-plate) > li {
+    grid-template-columns: minmax(0, 1fr) minmax(2.5rem, 1fr) 4.25rem;
+    gap: 4px 10px;
+    padding: 6px 14px;
+  }
+
+  .ranked-bars li.has-plate .ranked-bar-plate,
+  .ranked-bars:has(.has-plate) > li:not(.has-plate)::before {
+    display: none;
+  }
+
   .ranked-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .ranked-bars li {
-    grid-template-columns: minmax(0, 1fr) minmax(2.5rem, 1fr) 3.5rem;
-    gap: var(--s-2);
+
+  .ranked-metrics dd {
+    font-size: 1.25rem;
   }
+
+  .stats-panel {
+    padding: 14px 14px 16px;
+  }
+
+  .ranked-results :is(a, span.ranked-player) {
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 479.98px) {
   .ranked-stats .data th,
   .ranked-stats .data td {
     padding-inline: 8px;
   }
+
   .ranked-stats .data {
-    font-size: 0.9375rem;
+    font-size: var(--fs-2);
+  }
+}
+
+@media (forced-colors: active) {
+  .ranked-bar-fill {
+    background: CanvasText;
+  }
+
+  .ranked-view-choices [aria-pressed='true'] {
+    border: 1px solid Highlight;
   }
 }

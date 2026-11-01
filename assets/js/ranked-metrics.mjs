@@ -1,8 +1,8 @@
 // <!-- check-allow: ranked -->
-import { el } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
+import { el } from '/assets/js/ranked-ui.mjs?v=8b024de9ed';
 
 export function summaryFacts(entries) {
-  const grid = el('dl', 'ranked-metrics');
+  const grid = el('dl', 'ranked-metrics panel tiles');
   for (const [label, value, detail] of entries) {
     if (value == null) continue;
     const fact = el('div');
@@ -24,6 +24,12 @@ export function metricBars(title, rows) {
       label = el(row.url ? 'a' : 'span', 'ranked-bar-label', row.name);
     if (row.url) label.href = row.url;
     if (row.detail) label.append(el('small', 'ranked-sub', row.detail));
+    if (row.image) {
+      row.image.classList.add('ranked-bar-plate');
+      row.image.alt = '';
+      item.append(row.image);
+      item.classList.add('has-plate');
+    }
     const track = el('span', 'ranked-bar-track'),
       bar = el('span', 'ranked-bar-fill');
     bar.style.width = `${max ? ((row.value ?? 0) / max) * 100 : 0}%`;

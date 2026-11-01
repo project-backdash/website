@@ -49,7 +49,8 @@ import {
   playerSearch,
   searchForm,
   boardRow,
-} from '/assets/js/ranked-kit.mjs?v=00fa912a59';
+} from '/assets/js/ranked-kit.mjs?v=f30d870cde';
+import { nameInto, fitNames } from '/assets/js/player-name.mjs?v=f4f589f1dc';
 
 const CHEVRON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
@@ -62,22 +63,14 @@ const FEW_GAMES = 10;
 const lower = (text) => (text === 'Yesterday' ? 'yesterday' : text);
 const placed = (row) => isRankId(row?.rankId);
 
-// The page frame: 404.html has no sidebar (a missing page has no place in the page list), so a player page adds
-// the one kept in its template and marks Ranked as the current page. The page's own inline script has usually
-// done this already, before the first paint, so the 404 text never shows.
+// The page: a player page is in Ranked, so the bar and the menu mark it (the page's own inline script has already
+// marked the address, so the 404 text never shows and the bar's Ranked is gold from the first paint).
 function frame(main) {
-  if (!main.parentElement?.classList.contains('page')) {
-    const template = document.querySelector('template[data-player-frame]');
-    const page = el('div', 'page');
-    main.replaceWith(page);
-    if (template) page.append(template.content.cloneNode(true));
-    page.append(main);
-    main.className = 'page-main';
-  }
-  for (const item of document.querySelectorAll('.nav-list a, .footer-nav a'))
-    if (item.getAttribute('href') === '/ranked/') item.setAttribute('aria-current', 'page');
+  for (const item of document.querySelectorAll('.bar-links a, .nav-list a'))
+    if (item.getAttribute('href') === '/ranked/') item.setAttribute('aria-current', 'true');
     else item.removeAttribute('aria-current');
-  const root = el('div', 'rk rk-player');
+  const root = el('div', 'wrap rk rk-player');
+  main.className = 'page';
   main.replaceChildren(root);
   return root;
 }
@@ -152,13 +145,14 @@ export function playerPage(main, route, base) {
           retry,
         ),
       );
-      const title = el('h1', 'label-tab', name);
-      root.replaceChildren(title, box);
+      const head = el('header', 'page-hero');
+      head.append(el('h1', 'hero-title', name));
+      root.replaceChildren(head, box);
     }
   }
 
   const view = el('div');
-  const tabs = el('nav', 'rk-tabs');
+  const tabs = el('nav', 'tabs');
   tabs.setAttribute('aria-label', 'Player');
   function draw() {
     root.replaceChildren(hero(ctx), tabs, view);
@@ -179,13 +173,6 @@ export function playerPage(main, route, base) {
         return tab;
       }),
     );
-    // On a phone the tabs scroll in one row; keep the current one in view.
-    requestAnimationFrame(() => {
-      const current = tabs.querySelector('[aria-current]');
-      if (current && current.offsetLeft + current.offsetWidth > tabs.scrollLeft + tabs.clientWidth)
-        tabs.scrollLeft = current.offsetLeft + current.offsetWidth - tabs.clientWidth + 16;
-      else if (current && current.offsetLeft < tabs.scrollLeft) tabs.scrollLeft = current.offsetLeft - 16;
-    });
   }
   function drawView() {
     const views = { overview, sets: setsTab, matchups: matchupsTab, vs: headToHeadTab };
@@ -220,7 +207,7 @@ export function playerPage(main, route, base) {
       event.altKey
     )
       return;
-    if (!anchor.closest('.rk-tabs, [data-in-page]')) return;
+    if (!anchor.closest('.tabs, [data-in-page]')) return;
     event.preventDefault();
     ctx.go(anchor.getAttribute('href'));
   });
@@ -294,7 +281,7 @@ function hero(ctx) {
   const nameText = el('span', 'rk-hero-text', player.name);
   title.append(nameText);
   if (player.tag) title.append(el('span', 'rk-hero-tag', `#${player.tag}`));
-  fitName(box, title, nameText);
+  fitName(box, title, nameText, player.name);
   const last = profile.recentSets?.[0]?.date ?? profile.ratingHistory[0]?.date;
   const meta = [regionName(own.region), last ? `Last set ${lower(ago(last))}` : ''].filter(Boolean).join(' · ');
   main.append(top, title);
@@ -332,7 +319,7 @@ function hero(ctx) {
     share.append(shareText);
     share.setAttribute('aria-haspopup', 'dialog');
     share.addEventListener('click', () =>
-      import('/assets/js/ranked-share.mjs?v=93599d348b').then(
+      import('/assets/js/ranked-share.mjs?v=eef3560f0f').then(
         ({ openShare }) => openShare(ctx, { ratingRows, matchupRows }, share),
         () => {
           shareText.textContent = 'Share failed';
@@ -444,31 +431,48 @@ function heroArt(root, box, ...characters) {
 }
 
 // A long name steps down in size until it fits on one line with its tag, so it never breaks inside a word. The
-// tag steps down with it, on the page's type scale. At the smallest size the tag takes the next line, and a name
-// too long even for a line of its own ends in "…".
-function fitName(box, title, text) {
+// tag steps down with it, on the page's type scale. Where none fits, the tag takes the next line and the name the
+// largest size at which it fits a line of its own; a name too long even for that, at the smallest size, wraps at
+// its natural breaks (player-name.mjs), so it is never cut short. The break points go in only then: a browser
+// breaks at a <wbr> even in a line that may not wrap, which would split a name that fits.
+function fitName(box, title, text, name) {
   let width = 0;
   const tag = title.querySelector('.rk-hero-tag');
   const fit = () => {
     title.style.fontSize = '';
-    title.classList.remove('is-wrapped');
+    title.classList.remove('is-wrapped', 'is-broken');
+    text.textContent = name;
     const start = parseFloat(getComputedStyle(title).fontSize);
+    const sizes = [start, 34, 28, 24, 20].filter((value) => value <= start);
+    const size = (value) => {
+      title.style.fontSize = `${value}px`;
+      if (tag) tag.style.fontSize = value >= 34 ? '' : value >= 24 ? 'var(--fs-3)' : 'var(--fs-2)';
+    };
     const room = () =>
       text.scrollWidth + (tag ? tag.offsetWidth + parseFloat(getComputedStyle(title).columnGap || 0) : 0) <=
       title.clientWidth;
-    for (const size of [start, 34, 28, 24, 20].filter((value) => value <= start)) {
-      title.style.fontSize = `${size}px`;
-      if (tag) tag.style.fontSize = size >= 34 ? '' : size >= 24 ? 'var(--fs-3)' : 'var(--fs-2)';
+    for (const value of sizes) {
+      size(value);
       if (room()) return;
     }
     title.classList.add('is-wrapped');
+    for (const value of sizes) {
+      size(value);
+      if (text.scrollWidth <= title.clientWidth) return;
+    }
+    title.classList.add('is-broken');
+    text.replaceChildren();
+    nameInto(text, name);
+    fitNames([text]);
   };
   new ResizeObserver(() => {
     if (Math.abs(box.clientWidth - width) < 2) return;
     width = box.clientWidth;
     fit();
   }).observe(box);
+  // Measured in a fallback face the name is wider: fit it again once the display face is in.
   document.fonts?.ready.then(fit);
+  document.fonts?.addEventListener('loadingdone', fit);
 }
 
 function placingLine(row, className) {
@@ -1499,18 +1503,20 @@ function setPage(ctx) {
       const sides = first === 1 ? [set.players[1], set.players[0]] : set.players;
       const flipped = first === 1;
       document.title = `${sides[0].player.name} vs ${sides[1].player.name} | Project Backdash`;
-      const title = el('h1', 'label-tab', 'Set');
-      const line = el('p', 'rk-head-line');
+      const head = el('header', 'page-hero');
+      const line = el('p', 'eyebrow');
       line.append(
         el('span', 'rk-pill', seasonLabel(data)),
-        `${dayLabel(set.date)}, ${clock(set.date)}${set.outcome === 'quit' ? ' · Forfeit' : ''}`,
+        el('span', '', `${dayLabel(set.date)}, ${clock(set.date)}${set.outcome === 'quit' ? ' · Forfeit' : ''}`),
       );
+      head.append(line, el('h1', 'hero-title', 'Set'));
       const panel = el('section', 'rk-setpage rk-panel');
       const vs = el('div', 'rk-setpage-vs');
       const side = (s, right) => {
         const box = el('div', 'rk-setpage-side' + (right ? ' rk-r' : ''));
         const href = playerPath(s.player);
-        const name = href ? link(s.player.name, href, '') : el('b', '', s.player.name);
+        // A long name wraps at its natural breaks, so it stays in its own column, clear of the score.
+        const name = nameInto(href ? link('', href, '') : el('b'), s.player.name);
         box.append(
           face(s.character, 80, { label: characterName(s.character) }),
           name,
@@ -1537,6 +1543,7 @@ function setPage(ctx) {
       const score = sides.every((s) => s.score != null) ? `${sides[0].score}–${sides[1].score}` : '–';
       vs.append(side(sides[0], false), el('div', 'rk-big', score), side(sides[1], true));
       panel.append(vs);
+      new ResizeObserver(() => fitNames(vs.querySelectorAll('.pbd-name'))).observe(vs);
       if (set.gameList?.length) {
         const list = el('div', 'rk-setpage-games');
         for (const game of set.gameList) {
@@ -1559,7 +1566,7 @@ function setPage(ctx) {
       const home = playerPath(sides[0].player);
       if (home) back.append(link(`${sides[0].player.name}'s page`, home), ' · ');
       back.append(link('The board', '/ranked/'));
-      root.replaceChildren(title, line, panel, back);
+      root.replaceChildren(head, panel, back);
     },
     (error) => {
       const box = el('section', 'rk-panel rk-tab-panel');

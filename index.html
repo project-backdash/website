@@ -25,23 +25,23 @@
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
-<link rel="icon" href="/favicon.svg?v=0ef5d2c4bc" type="image/svg+xml">
+<link rel="icon" href="/favicon.svg?v=b8173292d8" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4e8aadd988">
-<link rel="manifest" href="/site.webmanifest?v=6c2b5d36f0">
+<link rel="manifest" href="/site.webmanifest?v=674404c996">
 <link rel="preload" href="/assets/fonts/barlow-400.woff2?v=dabe85d6ba" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/pbd-display.woff2?v=5b6f3821ad" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
-<link rel="stylesheet" href="/assets/css/site.css?v=3f088890f3">
-<link rel="stylesheet" href="/assets/css/resurrection.css?v=66886cf18e">
-<link rel="stylesheet" href="/assets/css/pages/home.css?v=da2de7c7a3">
-<link rel="stylesheet" href="/assets/css/pages/ranked.css?v=e6f9d2e878">
-<script type="module" src="/assets/js/bar-search.mjs?v=c73c540edc"></script>
-<script src="/assets/js/site.js?v=8e39d6083c" defer></script>
-<script type="module" src="/assets/js/home-hub.mjs?v=1ea9a6e2f5"></script>
+<link rel="stylesheet" href="/assets/css/site.css?v=d044478ff2">
+<link rel="stylesheet" href="/assets/css/resurrection.css?v=71ef6e297e">
+<link rel="stylesheet" href="/assets/css/pages/home.css?v=1fb3156f4a">
+<link rel="stylesheet" href="/assets/css/pages/ranked.css?v=91a721c1f0">
+<script type="module" src="/assets/js/bar-search.mjs?v=529d4e5ea3"></script>
+<script src="/assets/js/site.js?v=2090aa3788" defer></script>
+<script type="module" src="/assets/js/home-hub.mjs?v=6714776adb"></script>
 </head>
 <body class="field home-page">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="app-bar app-bar-hub">
+<header class="app-bar">
   <div class="app-bar-inner">
     <details class="drawer" data-drawer>
       <summary><span class="drawer-button"><span class="burger" aria-hidden="true"></span></span><span class="visually-hidden">Menu</span></summary>
@@ -54,12 +54,14 @@
         </div>
         <nav class="drawer-nav" aria-label="Main">
 <ul class="nav-list">
-  <li><a href="/" aria-current="page">Home</a></li>
+  <li><a href="/ranked/">Ranked</a></li>
+  <li><a href="/stats/">Stats</a></li>
   <li><a href="/how-it-works/">How it works</a></li>
   <li><a href="/download/">Download</a></li>
-  <li><a href="/ranked/"><span class="nav-name">Ranked</span><small class="nav-sub">Players</small></a></li>
-  <li><a href="/stats/">Stats<small class="nav-sub">The game</small></a></li>
+</ul>
+<ul class="nav-fine">
   <li><a href="/about/">About</a></li>
+  <li><a href="/source/">Source code</a></li>
   <li><a href="/privacy/">Privacy</a></li>
 </ul>
         </nav>
@@ -75,38 +77,38 @@
       <a href="/stats/">Stats</a>
       <a href="/how-it-works/">How it works</a>
     </nav>
-    
     <form class="bar-search" action="/stats/players/" method="get" role="search" data-bar-search="https://lobby.backdash.gg/v1/stats">
       <button class="bar-search-open" type="button" aria-label="Find a player" aria-expanded="false"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       <div class="rk-search"><label class="rk-search-box"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg><input type="search" name="q" maxlength="45" autocomplete="off" spellcheck="false" required placeholder="Find a player" aria-label="Find a player"><span class="rk-kbd" aria-hidden="true">/</span></label></div>
     </form>
-    <a class="bar-download is-quiet" href="https://dl.backdash.gg/releases/0.61.1/Project%20Backdash%20Setup%200.61.1.exe" data-bar-download><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span>Download</span></a>
+    <a class="bar-download is-quiet" href="https://dl.backdash.gg/releases/0.61.1/Project%20Backdash%20Setup%200.61.1.exe" data-bar-download><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="bar-download-label" aria-hidden="true">Download</span><span class="visually-hidden">Download</span></a>
+    
   </div>
 </header>
 <!-- check-allow: ranked -->
 <main id="main" tabindex="-1" class="hub" data-hub data-ranked-api="https://lobby.backdash.gg/v1/stats">
 
-  <div class="hub-in hub-hero">
+  <div class="wrap hub-hero">
     <section class="hub-pitch" aria-labelledby="hub-title">
-      <p class="hub-eyebrow"><span>Free</span> · <span>Bring your own game</span></p>
-      <h1 class="hub-title" id="hub-title">Tekken 5 Dark Resurrection online, with rollback</h1>
-      <p class="hub-lead">Online lobbies, Ranked, Practice and replays, in a modified RPCS3 that plays your own copy of the PS3 game.</p>
+      <p class="eyebrow"><span>Free</span> <span>Bring your own game</span></p>
+      <h1 class="hero-title" id="hub-title">Tekken 5 Dark Resurrection online, with rollback</h1>
+      <p class="hero-lead">Online lobbies, Ranked, Practice and replays, in a modified RPCS3 that plays your own copy of the PS3 game.</p>
 <div class="hub-actions">
-<a class="btn-primary btn-lg dl-button" href="https://dl.backdash.gg/releases/0.61.1/Project%20Backdash%20Setup%200.61.1.exe"><svg class="dl-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="dl-label">Download<span class="dl-for"> for Windows</span></span></a>
+<a class="btn-primary btn-lg dl-button" href="https://dl.backdash.gg/releases/0.61.1/Project%20Backdash%20Setup%200.61.1.exe" data-download><svg class="dl-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="dl-label">Download<span class="dl-for"> for Windows</span></span></a>
   <a class="btn hub-how" href="/how-it-works/">How it works</a>
 </div>
 <p class="hub-facts">Version 0.61.1 · 172 MB · Windows 10 and 11, 64-bit</p>
 <p class="hub-facts hub-needs">Needs a CPU with AVX2 and 8 GB of memory. <a href="/download/#need">What you need</a></p>
     </section>
 
-    <section class="hub-live hub-panel" aria-labelledby="hub-live-title" data-live>
+    <section class="hub-live panel" aria-labelledby="hub-live-title" data-live>
       <div class="hub-live-head">
-        <h2 class="hub-mono" id="hub-live-title"><span class="hub-pill" data-season>Beta Season</span> Live</h2>
+        <h2 class="mono" id="hub-live-title"><span class="rk-pill" data-season>Beta Season</span> Live</h2>
       </div>
       <div data-needs-js>
-        <p class="hub-big"><span class="hub-num" data-count></span> <span class="hub-mono hub-big-label" data-count-label>Last 24 hours</span></p>
+        <p class="hub-big"><span class="hub-num" data-count></span> <span class="mono hub-big-label" data-count-label>Last 24 hours</span></p>
         <div class="hub-grid" data-grid aria-hidden="true"></div>
-        <p class="hub-mono hub-readout" data-readout aria-hidden="true">Latest Ranked sets, newest first</p>
+        <p class="mono hub-readout" data-readout aria-hidden="true">Latest Ranked sets, newest first</p>
         <dl class="hub-tiles">
           <div><dt>Players</dt><dd data-n="players">–</dd><dd class="hub-sub">signed up</dd></div>
           <div><dt>Online now</dt><dd data-n="online">–</dd><dd class="hub-sub" data-n="regions">players</dd></div>
@@ -119,47 +121,47 @@
     </section>
   </div>
 
-  <div class="hub-in hub-body">
+  <div class="wrap hub-body">
     <div class="hub-cols" data-needs-js>
       <section aria-labelledby="hub-top">
-        <div class="hub-head"><h2 class="label-tab hub-tab" id="hub-top">Top players</h2><a class="hub-link" href="/ranked/">Ranked board</a></div>
-        <ol class="hub-board hub-panel" data-board></ol>
+        <div class="sec-head"><h2 class="label-tab sec-tab" id="hub-top">Top players</h2><a class="more-link" href="/ranked/">Ranked board</a></div>
+        <ol class="hub-board top-players panel" data-board></ol>
       </section>
       <section aria-labelledby="hub-sets">
-        <div class="hub-head"><h2 class="label-tab hub-tab" id="hub-sets">Latest sets</h2><a class="hub-link" href="/ranked/sets/">All sets</a></div>
-        <ol class="hub-feed hub-panel" data-feed></ol>
+        <div class="sec-head"><h2 class="label-tab sec-tab" id="hub-sets">Latest sets</h2><a class="more-link" href="/ranked/sets/">All sets</a></div>
+        <ol class="hub-feed panel" data-feed></ol>
       </section>
     </div>
 
     <div class="hub-cols hub-cols-even" data-needs-js>
       <section aria-labelledby="hub-picks">
-        <div class="hub-head"><h2 class="label-tab hub-tab" id="hub-picks">Most played</h2><a class="hub-link" href="/stats/characters/">All characters</a></div>
-        <div class="hub-panel"><ol class="hub-chars" data-picks></ol><p class="hub-foot" data-picks-foot></p></div>
+        <div class="sec-head"><h2 class="label-tab sec-tab" id="hub-picks">Most played</h2><a class="more-link" href="/stats/characters/">All characters</a></div>
+        <div class="panel"><ol class="hub-chars" data-picks></ol><p class="hub-foot" data-picks-foot></p></div>
       </section>
       <section aria-labelledby="hub-rates">
-        <div class="hub-head"><h2 class="label-tab hub-tab" id="hub-rates">Best win rates</h2><a class="hub-link" href="/stats/characters/">All characters</a></div>
-        <div class="hub-panel"><ol class="hub-chars" data-rates></ol><p class="hub-foot" data-rates-foot></p></div>
+        <div class="sec-head"><h2 class="label-tab sec-tab" id="hub-rates">Best win rates</h2><a class="more-link" href="/stats/characters/">All characters</a></div>
+        <div class="panel"><ol class="hub-chars" data-rates></ol><p class="hub-foot" data-rates-foot></p></div>
       </section>
     </div>
-    <noscript><p class="hub-off hub-panel">The board and the latest sets need JavaScript. <a href="/how-it-works/">How it works</a> and <a href="/download/">Download</a> do not.</p></noscript>
+    <noscript><p class="hub-off panel">The board and the latest sets need JavaScript. <a href="/how-it-works/">How it works</a> and <a href="/download/">Download</a> do not.</p></noscript>
 
     <section class="hub-about" aria-labelledby="hub-about">
-      <div class="hub-head"><h2 class="label-tab hub-tab" id="hub-about">What is Project Backdash</h2></div>
-      <div class="hub-panel hub-about-in">
+      <div class="sec-head"><h2 class="label-tab sec-tab" id="hub-about">What is Project Backdash</h2></div>
+      <div class="panel hub-about-in">
         <p class="hub-about-lead">Rollback netplay for Tekken 5 Dark Resurrection on Windows: our build of RPCS3, the free and open-source PS3 emulator, and a launcher that sets it all up. Free, no ads.</p>
         <ol class="hub-steps">
           <li>
-            <span class="hub-mono hub-step-n">01 · Download</span>
+            <span class="mono hub-step-n">01 · Download</span>
 <span class="hub-step-big">0.61.1</span>
             <p>The launcher for Windows 10 and 11. It checks your PC and sets everything up behind one progress bar.</p>
           </li>
           <li>
-            <span class="hub-mono hub-step-n">02 · Bring your game</span>
+            <span class="mono hub-step-n">02 · Bring your game</span>
             <span class="hub-step-big">NPUB30009</span>
             <p>Your own Tekken 5: Dark Resurrection Online for PS3 and its .rap licence file. We provide no game files.</p>
           </li>
           <li>
-            <span class="hub-mono hub-step-n">03 · Play</span>
+            <span class="mono hub-step-n">03 · Play</span>
             <span class="hub-step-big" data-step-live data-needs-js>–</span>
             <p>Online lobbies and Ranked with rollback, plus Practice and replays.</p>
           </li>
@@ -185,6 +187,7 @@
     <nav class="footer-nav" aria-label="Footer">
       <ul>
         <li><a href="/how-it-works/">How it works</a></li>
+        <li><a href="/download/">Download</a></li>
         <li><a href="/ranked/">Ranked</a></li>
         <li><a href="/stats/">Stats</a></li>
         <li><a href="/about/">About</a></li>

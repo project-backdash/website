@@ -3,7 +3,7 @@
 // Parts shared by the Ranked landing, its latest sets, the player pages and the bar's search: numbers and times in
 // player terms, portraits and plates, the rank table, the "This is me" choice, set rows and the player search.
 import { CHARACTERS, characterName, playerPath, setPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { el } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
+import { el } from '/assets/js/ranked-ui.mjs?v=8b024de9ed';
 
 export { el };
 
@@ -27,14 +27,15 @@ export const signed = (value) =>
 export const pct = (won, lost) => (won + lost > 0 ? `${Math.round((100 * won) / (won + lost))}%` : '–');
 export const record = (won, lost) => `${fmt(won)}–${fmt(lost)}`;
 
-// Times read in the reader's own day: "20 s ago", "4 min ago", "2 h ago", "Yesterday", then "2 Nov".
+// Times read in the reader's own day: "20 s ago", "4 min ago", "2 h ago", "Yesterday", then "2 Nov"; a clock time is
+// "22:47", as the site writes every time.
 const DAY = 86400000;
 const midnight = (time) => new Date(time).setHours(0, 0, 0, 0);
 const daysAgo = (time, now = Date.now()) => Math.round((midnight(now) - midnight(time)) / DAY);
 export const shortDate = (value) =>
   new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(value));
 export const clock = (value) =>
-  new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date(value));
+  new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(value));
 export function ago(value, now = Date.now()) {
   const time = Date.parse(value);
   if (!Number.isFinite(time)) return '';
@@ -210,11 +211,14 @@ export function link(text, href, className = 'rk-link') {
   node.href = href;
   return node;
 }
-export function section(title, window, extra) {
-  const head = el('div', 'rk-sec');
-  head.append(el('h2', 'rk-h', title));
-  if (window) head.append(el('span', 'rk-window', window));
-  if (extra) head.append(extra);
+export function section(title, note, extra) {
+  const head = el('div', 'sec sec-head');
+  head.append(el('h2', 'label-tab sec-tab', title));
+  if (note) head.append(el('span', 'sec-note', note));
+  if (extra) {
+    extra.classList.replace('rk-link', 'more-link');
+    head.append(extra);
+  }
   return head;
 }
 

@@ -2,8 +2,9 @@
 /* Home. The first screen answers a first visit (the game, free, Windows, your own copy, DOWNLOAD and How it works)
    and a returning player (who is online, the sets of the last 24 hours) side by side; the board, the latest sets
    and the characters start right under it, and a short "What is Project Backdash" with the three steps closes it.
-   The Ranked pages' type scale and panels (pages/ranked.css, linked after this file) are used throughout; small
-   labels are monospaced capitals, and crimson stays on DOWNLOAD, the logo and the sets being played now. */
+   The site's type scale, sections and panels (site.css) and the Ranked pages' rows (pages/ranked.css) are used
+   throughout; small labels are monospaced capitals, and crimson stays on DOWNLOAD, the logo and the sets being played
+   now. */
 
 .hub {
   --hub-mono: var(--font-mono);
@@ -14,121 +15,6 @@
 }
 .hub a { color: inherit; }
 .hub img { display: block; }
-.hub-in {
-  width: 100%;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-.hub-mono {
-  font-family: var(--hub-mono);
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 1.3;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-/* ---- The bar on Home: lockup, the page names, the player search and DOWNLOAD -------------------------------- */
-.app-bar-hub .app-bar-inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-.app-bar-hub .lockup { flex: none; }
-.app-bar-hub .drawer { display: none; }
-.bar-links { display: flex; flex: none; gap: 2px; }
-.bar-links a {
-  padding: 8px 12px;
-  border-radius: var(--r-control);
-  color: var(--text-2);
-  font-weight: 600;
-  font-size: 0.9375rem;
-  line-height: 1;
-  text-decoration: none;
-}
-.bar-links a:hover { color: var(--text-1); background: var(--hover); }
-/* The search follows the page names and DOWNLOAD sits at the far right. The search is never wider than the room
-   DOWNLOAD's full label leaves it (the lockup and the page names take about 600 px, the label about 245), so when
-   DOWNLOAD grows from its arrow to its label only the free space between them shrinks: nothing else in the bar moves. */
-.app-bar-hub .app-bar-inner > .bar-search { flex: 0 1 300px; justify-content: flex-start; min-width: 0; padding-left: 0; }
-.app-bar-hub .bar-search .rk-search { width: 100%; }
-@media (max-width: 1239.98px) {
-  .app-bar-hub .app-bar-inner > .bar-search { flex-basis: 240px; }
-}
-/* Crimson with the ink label at 20 px display caps, as every primary (4.05:1 counts as large text). While the big
-   DOWNLOAD is on screen this one is a quiet outlined arrow (its name stays "Download"), so a screen never shows two
-   DOWNLOADs; it turns into the crimson button once the big one has scrolled away under the bar. */
-.bar-download {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  height: 44px;
-  margin-left: auto;
-  padding: 0 18px;
-  border: 1.5px solid var(--verm-500);
-  border-radius: var(--r-control);
-  background: var(--verm-500);
-  color: var(--on-verm);
-  font: 800 1.25rem/1 var(--font-display);
-  letter-spacing: 0.1em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: background-color var(--t-fast) linear, color var(--t-fast) linear, border-color var(--t-fast) linear;
-}
-.bar-download svg { width: 16px; height: 16px; fill: currentColor; }
-.bar-download:hover { background: var(--verm-400); border-color: var(--verm-400); color: var(--on-verm); }
-.bar-download.is-quiet { width: 44px; padding: 0; background: transparent; border-color: var(--control-edge); color: var(--text-1); }
-.bar-download.is-quiet:hover { border-color: var(--text-1); background: var(--hover); color: var(--text-1); }
-.bar-download:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.bar-download.is-quiet span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-/* Without the page names the search box gets its full width, and DOWNLOAD is its arrow alone: outlined while the big
-   one is on screen, crimson after. */
-@media (max-width: 1179.98px) {
-  .bar-links { display: none; }
-  .app-bar-hub .drawer { display: block; }
-  .app-bar-hub .app-bar-inner { gap: 12px; padding: 0 16px 0 8px; }
-  .app-bar-hub .app-bar-inner > .bar-search { flex-basis: 380px; }
-  .app-bar-hub .bar-download { width: 44px; padding: 0; }
-  .app-bar-hub .bar-download span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-}
-/* Under 900 px the search box would be too short to type in: the bar shows its icon beside DOWNLOAD, which opens the
-   box in a row under the bar (pages/ranked.css does the same under 768 px on every page). */
-@media (max-width: 899.98px) {
-  .app-bar-hub .app-bar-inner > .bar-search { flex: none; margin-left: auto; }
-  .app-bar-hub .bar-download { margin-left: 0; }
-}
-@media (min-width: 768px) and (max-width: 899.98px) {
-  .app-bar-hub .bar-search-open { display: inline-flex; }
-  .app-bar-hub .bar-search .rk-search { display: none; position: fixed; top: var(--bar-h); right: 0; left: 0; width: auto; max-width: none; padding: 8px 12px; background: var(--band); border-bottom: 1px solid var(--line); }
-  .app-bar-hub .bar-search.is-open .rk-search { display: block; }
-  .app-bar-hub .bar-search .rk-search-box { width: 100%; height: 44px; }
-  .app-bar-hub .bar-search .rk-search-list { position: static; width: auto; margin-top: 4px; }
-}
-/* Phones: the lockup at the left, then the search icon, DOWNLOAD as its arrow alone (outlined while the big one is
-   on screen, crimson after) and the menu, as on every page. The wordmark shrinks to leave the three buttons their
-   room (12 + 8 px of bar padding, 40 + 40 + 4 + 44 px of buttons, the lockup's 8 px); under 360 px it would be too
-   small to read, so the mark stands alone. */
-@media (max-width: 599.98px) {
-  .app-bar-hub .app-bar-inner { gap: 0; padding: 0 8px 0 12px; }
-  .app-bar.app-bar-hub .app-bar-inner > .lockup { --cap: min(11px, calc((100vw - 156px) / 26.3)); margin-right: auto; }
-  .app-bar-hub .app-bar-inner > .bar-search { order: 1; margin-left: 0; }
-  .app-bar-hub .bar-search-open { width: 40px; }
-  .app-bar-hub .bar-download { order: 2; width: 40px; height: 40px; }
-  .app-bar-hub .bar-download svg { width: 18px; height: 18px; }
-  .app-bar-hub .drawer { order: 3; margin-left: 4px; }
-}
-@media (max-width: 359.98px) {
-  .app-bar.app-bar-hub .app-bar-inner > .lockup { --cap: 11px; }
-  .app-bar-hub .app-bar-inner > .lockup .wordmark { display: none; }
-}
-
 /* ---- First screen ------------------------------------------------------------------------------------------- */
 .hub-hero {
   display: grid;
@@ -138,29 +24,10 @@
   padding-top: 44px;
   padding-bottom: 36px;
 }
-.hub-eyebrow {
-  margin: 0;
-  color: var(--text-2);
-  font-family: var(--hub-mono);
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-/* The line breaks between its parts, never inside one. */
-.hub-eyebrow span { white-space: nowrap; }
-.hub-title {
-  margin: 14px 0 0;
-  font: 400 clamp(1.75rem, 0.95rem + 2vw, 2.625rem)/1.1 var(--font-display);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  text-wrap: balance;
-}
-.hub-lead {
+/* Home's lead is a little shorter and further from the title than other pages'. */
+.hub-pitch .hero-lead {
   max-width: 33em;
-  margin: 18px 0 0;
-  color: var(--text-2);
-  font-size: var(--fs-lead);
-  line-height: 1.5;
+  margin-top: 18px;
 }
 .hub-actions {
   display: flex;
@@ -186,34 +53,9 @@
 .hub-facts a { color: var(--link); text-underline-offset: 3px; white-space: nowrap; }
 
 /* The live panel: one big number, the grid of the latest Ranked sets, and the headline counts. */
-.hub-panel {
-  border: 1px solid var(--panel-edge);
-  border-radius: 0 4px 4px 4px;
-  background: var(--panel);
-  box-shadow: inset 0 1px 0 rgba(233, 238, 237, 0.06);
-}
 .hub-live { border-radius: 4px; padding: 18px 22px 0; }
 .hub-live-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .hub-live-head h2 { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--text-2); }
-.hub-pill {
-  padding: 4px 8px;
-  border: 1px solid rgba(244, 182, 63, 0.55);
-  border-radius: 3px;
-  color: var(--gold);
-  font: 700 var(--fs-1)/1.1 var(--font-ui);
-  letter-spacing: 0.12em;
-  white-space: nowrap;
-}
-.hub-link {
-  color: var(--text-2);
-  font-weight: 600;
-  font-size: var(--fs-2);
-  text-decoration: underline;
-  text-decoration-color: rgba(233, 238, 237, 0.35);
-  text-underline-offset: 3px;
-  white-space: nowrap;
-}
-.hub-link:hover { color: var(--text-1); text-decoration-color: currentColor; }
 .hub-big { display: flex; flex-direction: column; margin: 14px 0 14px; }
 /* The number's line keeps its height while the loader's keys stand in for it. */
 .hub-num { display: flex; align-items: center; min-height: 0.9em; font: 400 4.5rem/0.9 var(--font-display); letter-spacing: 0.02em; }
@@ -271,13 +113,9 @@
 .hub-cols { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px; }
 .hub-cols-even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .hub-cols > section { display: flex; flex-direction: column; }
-.hub-cols > section > .hub-panel { flex: 1 0 auto; }
+.hub-cols > section > .panel { flex: 1 0 auto; }
 /* The site's list spacing (li + li) is for reading text; Home's lists are rows and steps that line up. */
 .hub li + li { margin-top: 0; }
-.hub-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 -1px; }
-.hub-head .hub-link { padding-bottom: 8px; }
-/* The launcher's label tab with a crimson edge, as the Ranked pages' section heads. */
-.hub-tab { padding: 9px 30px 8px 14px; border-left: 3px solid var(--verm-500); font-size: var(--fs-3); letter-spacing: 0.16em; }
 .hub-msg { padding: 20px 16px; color: var(--text-2); font-size: var(--fs-2); }
 .hub .hub-f32 { width: 32px; height: 32px; }
 
@@ -287,36 +125,12 @@
 .hub-feed { min-height: 678px; }
 .hub-chars { min-height: 412px; padding: 8px 0; }
 
-.hub-row {
-  display: grid;
-  grid-template-columns: 34px 40px minmax(0, 1fr) 140px 76px 56px 48px;
-  align-items: center;
-  gap: 12px;
-  min-height: 63px;
-  padding: 6px 16px;
-  text-decoration: none;
-}
-.hub-board li:nth-child(odd) .hub-row { background: var(--row-alt); }
-.hub-board li:first-child .hub-row { background: none; }
-a.hub-row:hover, a.hub-row:focus-visible { background: var(--gold-wash); box-shadow: inset 2px 0 0 var(--gold); outline-offset: -2px; }
-.hub-cap { min-height: 34px; color: var(--text-3); font-family: var(--hub-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
-.hub-r { text-align: right; }
 /* Display figures are wide; a number never breaks inside itself. */
-.hub-place, .hub-mmr, .hub-pct, .hub-score, .hub-num, .hub-tiles dd { overflow-wrap: normal; white-space: nowrap; }
-.hub-place { color: var(--text-2); font: 400 var(--fs-4)/1 var(--font-display); text-align: right; }
-.hub-board li:nth-child(2) .hub-place { color: var(--gold); }
-.hub-who { min-width: 0; }
+.hub-pct, .hub-score, .hub-num, .hub-tiles dd { overflow-wrap: normal; white-space: nowrap; }
 /* A name too long for its column wraps at its natural breaks; a part still too wide takes the smaller size, and only
    past that breaks anywhere (player-name.mjs), so it is never cut short. */
-.hub-who b { display: block; font-weight: 600; font-size: var(--fs-3); line-height: 1.2; }
 .hub .pbd-name.is-small { font-size: var(--fs-1); }
 .hub .pbd-name.is-tight { overflow-wrap: anywhere; }
-.hub-who span { display: block; color: var(--text-3); font-size: var(--fs-1); line-height: 1.3; }
-.hub-badge { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--text-2); font-size: var(--fs-2); }
-.hub-badge img { flex: none; width: 56px; height: 28px; }
-.hub-badge span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hub-mmr { font: 400 var(--fs-4)/1 var(--font-display); text-align: right; }
-.hub-row .hub-sub { color: var(--text-2); font-weight: 600; font-size: var(--fs-2); text-align: right; }
 
 /* Every row has the same columns (the score's is fixed), so the scores and the losers line up down the list; when
    the set was played goes on a line of its own under the names. */
@@ -373,7 +187,7 @@ a.hub-set:hover, a.hub-set:focus-visible { background: var(--gold-wash); box-sha
 .hub-about-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; }
 
 .hub-off { margin: 16px 0 0; color: var(--text-2); font-size: var(--fs-2); }
-p.hub-off.hub-panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
+p.hub-off.panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
 .hub-off a { color: var(--link); }
 
 /* ---- Narrower screens ---------------------------------------------------------------------------------- */
@@ -389,17 +203,9 @@ p.hub-off.hub-panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
   .hub-steps li, .hub-steps li:first-child { padding: 16px 0; }
   .hub-steps li + li { border-left: 0; border-top: 1px solid var(--hairline); }
 }
-@media (max-width: 759.98px) {
-  .hub-row { grid-template-columns: 34px 40px minmax(0, 1fr) 110px 76px 56px; }
-  .hub-row .hub-c-rate { display: none; }
-  .hub-badge img { display: none; }
-}
 @media (max-width: 599.98px) {
-  .hub-in { padding: 0 16px; }
   .hub-hero { gap: 24px; padding-top: 20px; padding-bottom: 28px; }
-  .hub-eyebrow { font-size: 12px; letter-spacing: 0.1em; }
-  .hub-title { margin-top: 10px; }
-  .hub-lead { margin-top: 12px; font-size: var(--fs-3); }
+  .hub-pitch .hero-lead { margin-top: 12px; }
   .hub-actions { margin-top: 20px; gap: 10px; }
   .hub-actions .dl-button { width: 100%; justify-content: center; }
   .hub-how { width: 100%; min-height: 48px; }
@@ -418,22 +224,9 @@ p.hub-off.hub-panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
   .hub-tiles > div:nth-child(5) { grid-column: 1 / -1; }
   .hub-tiles dd { font-size: 1.5rem; }
   .hub-body { gap: 28px; padding-bottom: 40px; }
-  .hub-tab { letter-spacing: 0.1em; }
 
-  /* The badge is its picture alone, under the MMR, so the name has the row's width between the portrait and the
-     MMR; the board's own page says the badge's name. */
+  /* Top players' phone rows (site.css) are a little shorter. */
   .hub-board { min-height: 648px; }
-  .hub-row { grid-template-columns: 28px 36px minmax(0, 1fr) 60px; gap: 2px 10px; min-height: 60px; padding: 6px 12px; }
-  .hub-row:not(.hub-cap) > :nth-child(-n + 3) { grid-row: 1 / span 2; }
-  .hub-row > .hub-mmr { grid-area: 1 / 4; align-self: end; }
-  .hub-row > .hub-badge { grid-area: 2 / 4; align-self: start; justify-content: flex-end; }
-  .hub-cap { min-height: 34px; }
-  .hub-row .rk-face { width: 36px; height: 36px; }
-  .hub-row .hub-c-rec, .hub-row .hub-c-rate, .hub-cap .hub-c-badge { display: none; }
-  .hub-badge img { display: block; width: 48px; height: 24px; }
-  .hub-badge span { display: none; }
-  .hub-place, .hub-mmr { font-size: var(--fs-3); }
-  .hub-who b { font-size: var(--fs-2); }
 
   /* A side's rating change follows its character without the dot, so it can take the next line on its own. */
   .hub-feed { min-height: 366px; }
@@ -452,7 +245,6 @@ p.hub-off.hub-panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
 /* The narrowest phones: the title's longest word fits the column, and the big number's label keeps room for the two
    lines "Games in the last 24 hours, every mode" takes, so nothing under it moves when it comes. */
 @media (max-width: 359.98px) {
-  .hub-title { font-size: 1.5rem; }
   .hub-big-label { min-height: 2.6em; }
 }
 
@@ -462,13 +254,10 @@ p.hub-off.hub-panel { margin: 0; padding: 16px 18px; border-radius: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hub-grid .g-live { animation: none; }
-  .bar-download { transition: none; }
 }
 @media (forced-colors: active) {
   .hub-grid i { background: CanvasText; forced-color-adjust: none; }
   .hub-grid .g-q { background: Canvas; box-shadow: inset 0 0 0 1px CanvasText; }
   .hub-grid .g-live { background: Highlight; }
   .hub-track i { background: CanvasText; }
-  .bar-download { border-color: ButtonText; }
-  .hub-tab { clip-path: none; border: 1px solid CanvasText; }
 }

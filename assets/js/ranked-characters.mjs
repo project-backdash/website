@@ -1,9 +1,10 @@
 // <!-- check-allow: ranked -->
 import { characterName, RANK_BANDS, CHARACTERS, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { el, table, number, percent, note, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=81c7ed6a16';
-import { summaryFacts, metricBars, metricColumns, viewChoices } from '/assets/js/ranked-metrics.mjs?v=e83c5a22b2';
-import { characterPopulation } from '/assets/js/ranked-character-population.mjs?v=cc6a547309';
+import { el, table, number, count, percent, note, select, characterOptions, section, utcDay } from '/assets/js/ranked-ui.mjs?v=8b024de9ed';
+import { plate } from '/assets/js/ranked-kit.mjs?v=f30d870cde';
+import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=1c45537d0e';
+import { summaryFacts, metricBars, metricColumns, viewChoices } from '/assets/js/ranked-metrics.mjs?v=1a1faaeb43';
+import { characterPopulation } from '/assets/js/ranked-character-population.mjs?v=caf961da6f';
 
 export function charactersView(app) {
   let band = app.band(),
@@ -12,9 +13,6 @@ export function charactersView(app) {
     sort = app.params.get('sort') || 'games',
     data,
     activeView = Math.max(0, ['popularity', 'win-rate', 'table', 'characters'].indexOf(app.params.get('view')));
-  app.title.parentElement.classList.add('analytics-hero');
-  app.title.parentElement.prepend(el('p', 'analytics-eyebrow', 'PROJECT BACKDASH  /  RANKED'));
-  app.title.parentElement.querySelector('.lead').textContent = 'Pick rates, win rates and rank distribution.';
   const render = () => {
     if (!data) return;
     app.content.replaceChildren();
@@ -46,14 +44,14 @@ export function charactersView(app) {
               ['Players', number(data.players)],
               ['Win rate', percent(data.winRate), `${number(data.wins)}W ${number(data.losses)}L`],
               ['Pick rate', percent(data.pickRate)],
-              ['Mains', percent(data.mainShare), `${number(data.mains)} ${data.mains === 1 ? 'player' : 'players'}`],
+              ['Mains', percent(data.mainShare), count(data.mains, 'player')],
               ['Median rank', data.medianRank],
             ]
           : [
               ['Picks', number(data.totalPicks)],
               ['Characters played', number(rows.length)],
               ['Most picked', characterLink(popular.character), percent(popular.pickRate)],
-              ['Highest win rate', strongest ? characterLink(strongest.character) : '—', strongest ? `${percent(strongest.winRate)} · ${number(strongest.games)} games` : 'No decided games'],
+              ['Highest win rate', strongest ? characterLink(strongest.character) : '—', strongest ? `${percent(strongest.winRate)} · ${count(strongest.games, 'game')}` : 'No decided games'],
             ],
       ),
     );
@@ -78,7 +76,7 @@ export function charactersView(app) {
               url: characterLink(row.character).href,
               value: row[field],
               label: percent(row[field]),
-              detail: `${number(row.games)} games`,
+              detail: count(row.games, 'game'),
             }));
         const panel = el('div', 'analytics-chart-content');
         const mobile = metricBars(title, chartRows);
@@ -94,13 +92,14 @@ export function charactersView(app) {
         const symbol = el('span', 'analytics-character-symbol', characterName(row.character).charAt(0));
         symbol.setAttribute('aria-hidden', 'true');
         const info = el('span', 'analytics-character-info');
-        info.append(el('strong', '', characterName(row.character)), el('small', '', `${number(row.games)} games`));
+        info.append(el('strong', '', characterName(row.character)), el('small', '', count(row.games, 'game')));
         link.replaceChildren(symbol, info, el('span', 'analytics-character-rate', percent(row.winRate)));
         item.append(link);
         cards.append(item);
       }
-      const panel = el('section', 'analytics-panel');
-      panel.append(el('h2', '', 'Character statistics'), note('Pick rate is each character’s share of all picks. Win rate excludes draws. Bars are scaled to the largest value.'));
+      const { node: statsBox, body: panel } = section('Character statistics');
+      panel.classList.add('analytics-panel');
+      panel.append(note('Pick rate is each character’s share of all picks. Win rate excludes draws. Bars are scaled to the largest value.'));
       panel.append(viewChoices([
           ['Popularity', chart('pickRate')],
           ['Win rate', chart('winRate')],
@@ -110,18 +109,19 @@ export function charactersView(app) {
           activeView = index;
           app.setParam('view', ['popularity', 'win-rate', 'table', 'characters'][index]);
         } }));
-      app.content.append(panel);
-      const distribution = el('section', 'analytics-panel analytics-distribution');
-      distribution.append(el('h2', '', 'Rank distribution'), note('Current ratings by region. Rank band, build and date filters apply to games above.'));
+      app.content.append(statsBox);
+      const { node: distribution, body: distributionBody } = section('Rank distribution');
+      distributionBody.classList.add('analytics-panel', 'analytics-distribution');
+      distributionBody.append(note('Current ratings by region. Rank band, build and date filters apply to games above.'));
       const output = el('div', 'analytics-distribution-output', 'Loading…');
-      distribution.append(output);
+      distributionBody.append(output);
       app.content.append(distribution);
       fetchRanked(app.base, 'rank-distribution', 'rank-distribution', { region: query.region, population: 'highest' })
         .then((rankData) => {
           if (!distribution.isConnected) return;
           output.replaceChildren();
           if (!rankData.total) return output.append(note('No rank data for this region yet.'));
-          output.append(note(`${number(rankData.total)} players · highest rating per player · bars scaled to the largest rank`), metricBars('Rank distribution', rankData.rows.filter((row) => row.players > 0).map((row) => ({ name: row.rank ?? 'Unranked', value: row.players, label: percent(row.share), detail: `${number(row.players)} ${row.players === 1 ? 'player' : 'players'}` }))));
+          output.append(note(`${count(rankData.total, 'player')} · highest rating per player · bars scaled to the largest rank`), metricBars('Rank distribution', rankData.rows.filter((row) => row.players > 0).map((row) => ({ name: row.rank ?? 'Unranked', image: plate(row.rankId), value: row.players, label: percent(row.share), detail: count(row.players, 'player') }))));
           const link = el('a', '', 'Explore all ranks');
           link.href = '/stats/ranks/' + (query.region ? '?' + new URLSearchParams({ region: query.region }) : '');
           output.append(link);
@@ -139,13 +139,20 @@ export function charactersView(app) {
           table(
             'Daily rates (UTC)',
             ['Date', 'Games', 'Pick rate', 'Win rate'],
-            data.daily.map((row) => [row.date, number(row.games), percent(row.pickRate), percent(row.winRate)]),
+            data.daily.map((row) => [utcDay(row.date), number(row.games), percent(row.pickRate), percent(row.winRate)]),
             { numeric: [1, 2, 3] },
           ),
         );
-      if (data.matchups.length)
+      if (data.matchups.length) {
+        // The Matchups page, filtered to this character, is a click away from the section's head.
+        const head = el('div', 'sec sec-head');
+        const all = el('a', 'more-link', 'All matchups');
+        const search = new URLSearchParams({ character, ...query });
+        if (band !== 'all') search.set('rankBand', band);
+        all.href = `/stats/matchups/?${search}`;
+        head.append(el('h2', 'label-tab sec-tab', 'Matchups'), all);
         app.content.append(
-          el('h2', 'label-tab', 'Matchups'),
+          head,
           summaryFacts(
             decided.length
               ? [
@@ -165,22 +172,7 @@ export function charactersView(app) {
             { numeric: [1, 2] },
           ),
         );
-      const nav = el('nav', 'ranked-nav');
-      nav.setAttribute('aria-label', 'Character statistics');
-      for (const [path, title] of [
-        ['matchups', 'Matchups'],
-        ['leaderboard', 'Leaderboard'],
-      ]) {
-        const link = el('a', '', title),
-          search = new URLSearchParams({
-            character,
-            ...(path === 'matchups' ? query : query.region ? { region: query.region } : {}),
-          });
-        if (path === 'matchups' && band !== 'all') search.set('rankBand', band);
-        link.href = `/stats/${path}/?${search}`;
-        nav.append(link);
       }
-      app.content.append(nav);
       app.content.append(
         note('Mains use the most-played character in this selection. Median rank uses current character badges.'),
       );

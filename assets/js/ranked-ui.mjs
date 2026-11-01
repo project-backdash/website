@@ -1,18 +1,31 @@
 // <!-- check-allow: ranked -->
 import { characterName, playerPath } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=f58aa85270';
+import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=8ca4597c83';
 
 export const number = (value) =>
   value == null ? '—' : new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);
 export const percent = (value) =>
   value == null ? '—' : new Intl.NumberFormat('en-US', { style: 'percent', maximumFractionDigits: 1 }).format(value);
+// "1 player", "12 players".
+export const count = (value, one, many = `${one}s`) => `${number(value)} ${value === 1 ? one : many}`;
 export const change = (value) => (value == null ? '—' : `${value > 0 ? '+' : ''}${number(value)}`);
+// Dates as the rest of the site writes them: "1 Nov, 11:29 UTC" for when the service last counted, "28 Oct" for a
+// UTC day ("2026-10-28").
 export const dateLabel = (value) =>
   value == null
     ? 'Unknown'
-    : new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }).format(
-        new Date(value),
-      ) + ' UTC';
+    : new Intl.DateTimeFormat('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23',
+        timeZone: 'UTC',
+      }).format(new Date(value)) + ' UTC';
+export const utcDay = (day) =>
+  new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(
+    new Date(`${day}T00:00:00Z`),
+  );
 
 export function el(tag, className = '', text) {
   const node = document.createElement(tag);
@@ -89,26 +102,10 @@ export function characterOptions(ids) {
     .map((id) => [id, characterName(id)]);
 }
 
-export function statsNav(current) {
-  const nav = el('nav', 'ranked-nav');
-  nav.setAttribute('aria-label', 'Statistics');
-  for (const [route, title] of [
-    ['/stats/', 'Overview'],
-    ['/stats/players/', 'Players'],
-    ['/stats/characters/', 'Characters'],
-    ['/stats/matchups/', 'Matchups'],
-    ['/stats/ranks/', 'Ranks'],
-  ]) {
-    const link = el('a', '', title);
-    link.href = route;
-    if (route === current) link.setAttribute('aria-current', 'page');
-    nav.append(link);
-  }
-  return nav;
-}
-
+// A section: the launcher's tab with the crimson edge over a panel. What it shows goes in `body`.
 export function section(title) {
-  const node = el('section', 'section');
-  node.append(el('h2', 'label-tab', title));
-  return node;
+  const node = el('section', 'sec');
+  const body = el('div', 'panel stats-panel');
+  node.append(el('h2', 'label-tab sec-tab', title), body);
+  return { node, body };
 }

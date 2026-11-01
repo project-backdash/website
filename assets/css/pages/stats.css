@@ -1,16 +1,14 @@
-/* The Stats page: the headline counts as tiles, the characters, the top-players table, the other totals as rows and
-   games per day.
+/* The Stats overview: the headline counts as tiles, the top players beside the most played characters and the other
+   totals, then games per day, each a section of the site's tab and panel (site.css).
    data-state on .stats is "loading" (the page's own value) while stats.js asks for the totals, "up" once they are
    in and "down" when they cannot be read. At a glance shows from the first paint and stats.js fills each count in
    place: the online counts come in well under a second, the totals when they come (a first read can take ten).
    Without scripts nothing would fill the page, so it shows the warming-up note alone.
    Every colour is a site.css token, so `node contrast.mjs` covers the text. */
 
-/* The status line holds one line in every state, so nothing under it moves when the totals come. */
+/* The status is part of the header's top line, which holds its place in every state. */
 .stats-state {
-  min-height: 1.5em;
-  margin: 0 0 var(--s-6);
-  color: var(--text-2);
+  min-height: 1.4em;
 }
 
 .stats-loading,
@@ -34,6 +32,11 @@
   display: block;
 }
 
+.stats[data-state="up"] .stats-cols {
+  display: grid;
+}
+
+
 .stats[data-state="down"] .stats-warm {
   color: var(--text-1);
 }
@@ -54,49 +57,37 @@
   }
 }
 
-/* Headline counts: two tiles a row on a phone, three from 600 px. */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-3);
-  margin: 0;
+/* The top players beside the characters and the totals; one column under 960 px. */
+.stats-cols {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 28px;
+  align-items: start;
 }
 
-@media (min-width: 600px) {
-  .stat-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Games per day: two columns of days on a wide screen, newest first down the first. */
+.bars-days {
+  columns: 2;
+  column-gap: 0;
+}
+
+.bars-days > li {
+  break-inside: avoid;
+}
+
+@media (max-width: 959.98px) {
+  .stats-cols {
+    grid-template-columns: minmax(0, 1fr);
   }
-}
 
-.stat-grid > div {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-end;
-  padding: var(--s-4);
-  border-radius: var(--r-box);
-  background: var(--surface);
-}
-
-.stat-grid dt {
-  color: var(--text-2);
-  font-size: 0.9375rem;
-  line-height: 1.4;
-}
-
-.stat-grid dd {
-  margin: 0 0 2px;
-  color: var(--text-1);
-  font-family: var(--font-ui);
-  font-weight: 700;
-  font-size: var(--fs-title);
-  line-height: 1.15;
-  font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
+  .bars-days {
+    columns: 1;
+  }
 }
 
 /* Totals under the lists: one row each, the name and its number. */
 .stat-rows {
   margin: 0;
+  padding: 6px 0;
 }
 
 .stat-rows > div {
@@ -104,54 +95,79 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--s-3);
-  min-height: 40px;
-  padding: var(--s-2) 0;
+  min-height: 52px;
+  padding: 12px 18px;
 }
 
 .stat-rows > div + div {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--hairline);
 }
 
 .stat-rows dt {
   color: var(--text-2);
+  font-size: var(--fs-2);
 }
 
 .stat-rows dd {
   margin: 0;
   color: var(--text-1);
-  font-weight: 700;
+  font: 400 var(--fs-4)/1 var(--font-display);
   font-variant-numeric: tabular-nums;
   text-align: right;
+  white-space: nowrap;
 }
 
-/* Bar lists: the name, a bar against the largest value, the number. */
+/* Bar lists, as Home's characters: the name, a grey bar against the largest value, the number. */
 .bars {
   margin: 0;
-  padding: 0;
+  padding: 6px 0;
   list-style: none;
 }
 
 .bars > li {
   display: grid;
-  grid-template-columns: minmax(4.5rem, 9rem) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(6rem, 10rem) minmax(0, 1fr) 4.5rem;
   align-items: center;
-  gap: var(--s-3);
-  min-height: 32px;
+  gap: 12px;
+  min-height: 44px;
+  margin: 0;
+  padding: 4px 18px;
 }
 
-.bars > li + li {
-  border-top: 1px solid var(--line);
+/* Characters, as on Home: the portrait first. */
+.bars-chars > li {
+  grid-template-columns: 32px minmax(6rem, 10rem) minmax(0, 1fr) 4.5rem;
+}
+
+.bar-face {
+  width: 32px;
+  height: 32px;
 }
 
 .bar-name {
+  overflow: hidden;
   color: var(--text-1);
-  overflow-wrap: anywhere;
+  font-weight: 600;
+  font-size: var(--fs-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.bar-name {
+  text-decoration: underline;
+  text-decoration-color: rgba(233, 238, 237, 0.3);
+  text-underline-offset: 3px;
+}
+
+a.bar-name:hover {
+  text-decoration-color: currentColor;
 }
 
 .bar-track {
+  position: relative;
   height: 10px;
-  border-radius: var(--r-slab);
-  background: var(--surface);
+  border-radius: 2px;
+  background: rgba(233, 238, 237, 0.08);
   overflow: hidden;
 }
 
@@ -159,60 +175,58 @@
   display: block;
   height: 100%;
   min-width: 2px;
-  background: var(--mark-lit);
+  border-radius: 2px;
+  background: rgba(233, 238, 237, 0.55);
 }
 
 .bar-value {
   color: var(--text-1);
+  font: 400 var(--fs-3)/1 var(--font-display);
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
-.bars-empty {
-  color: var(--text-2);
-}
-
 .bars > li.bars-empty {
   display: block;
+  padding: 16px 18px;
+  color: var(--text-2);
+  font-size: var(--fs-2);
 }
 
-/* Top players: on a phone the character sits under the player's name, so all of the table fits a 320 px
-   screen with the MMR column in view. */
-.top-char {
-  display: none;
+/* Top players (site.css) holds the ten rows' height while the board loads, as on Home. */
+.stats .top-players {
+  min-height: 678px;
 }
 
-/* A name breaks at its natural points (stats.js marks them); its column is never narrower than its widest part. */
-.top-table tbody th a {
-  overflow-wrap: break-word;
-}
-
-/* On a phone Rank folds under the MMR the same way, so the name has the room between the place and the MMR. */
-.top-rank {
-  display: none;
+@media (max-width: 599.98px) {
+  .stats .top-players {
+    min-height: 648px;
+  }
 }
 
 @media (max-width: 479.98px) {
-  .top-table .col-char,
-  .top-table .col-rank {
-    display: none;
+  .bars > li {
+    grid-template-columns: minmax(5rem, 8rem) minmax(0, 1fr) 3.5rem;
+    gap: 10px;
+    padding: 4px 14px;
   }
 
-  .top-char,
-  .top-rank {
-    display: block;
-    color: var(--text-2);
-    font-weight: 400;
-    font-size: 0.9375rem;
+  .bars-chars > li {
+    grid-template-columns: 28px minmax(5rem, 8rem) minmax(0, 1fr) 3.5rem;
+  }
+
+  .bar-face {
+    width: 28px;
+    height: 28px;
+  }
+
+  .stat-rows > div {
+    padding: 12px 14px;
   }
 }
 
-/* Forced colours drop the fills: draw the tiles and bars. */
+/* Forced colours drop the fills: draw the bars. */
 @media (forced-colors: active) {
-  .stat-grid > div {
-    border: 1px solid CanvasText;
-  }
-
   .bar-track {
     border: 1px solid CanvasText;
   }

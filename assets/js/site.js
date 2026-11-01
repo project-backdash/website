@@ -9,6 +9,9 @@
  *    opening moves focus into the panel, Tab stays inside it, the rest of the page is inert
  *    and does not scroll; Escape closes it and returns focus to the menu button, and
  *    choosing a link closes it.
+ *  - The bar's DOWNLOAD: phones and tablets go to the download page (they cannot run the
+ *    installer); on a page with its own big button (data-download) the bar's is a quiet arrow
+ *    while that one is on screen.
  */
 (function () {
   'use strict';
@@ -175,21 +178,50 @@
       if (link) close(false);
     });
 
-    // A sidebar replaces the drawer on wide screens: close it if the window grows.
+    // From 1024 px the bar carries the sections and the drawer is hidden: close it if the window grows.
     if (window.matchMedia) {
       var wide = window.matchMedia('(min-width: 1024px)');
       var onChange = function () {
-        if (wide.matches && document.querySelector('.sidebar')) close(false);
+        if (wide.matches) close(false);
       };
       if (wide.addEventListener) wide.addEventListener('change', onChange);
       else if (wide.addListener) wide.addListener(onChange);
     }
   }
 
+  /* The bar's DOWNLOAD -------------------------------------------------------- */
+
+  // A phone or tablet cannot run the Windows installer, so there the bar's button, and a page's big one away from
+  // the download page itself, open the download page (what a PC needs) rather than starting a download of the whole
+  // installer over mobile data. iPadOS says it is a Mac; a Mac with a touch screen is an iPad.
+  function initDownload() {
+    var bar = document.querySelector('[data-bar-download]');
+    var big = document.querySelector('[data-download]');
+    var browser = navigator.userAgent;
+    var handheld = /Android|iPhone|iPad|iPod/i.test(browser) || (/Macintosh/.test(browser) && navigator.maxTouchPoints > 1);
+    if (handheld) {
+      if (bar) bar.setAttribute('href', '/download/');
+      if (big && location.pathname !== '/download/') big.setAttribute('href', '/download/');
+    }
+    if (!bar) return;
+    // The page's big button: while it is on screen (under the bar) the bar's is quiet; once it has scrolled away the
+    // bar's turns crimson.
+    if (big && 'IntersectionObserver' in window) {
+      var header = document.querySelector('.app-bar');
+      new IntersectionObserver(
+        function (entries) {
+          bar.classList.toggle('is-quiet', entries[0].isIntersecting);
+        },
+        { rootMargin: '-' + (header ? header.offsetHeight : 56) + 'px 0px 0px 0px' }
+      ).observe(big);
+    } else bar.classList.remove('is-quiet');
+  }
+
   function init() {
     initThemeControl();
     var drawers = document.querySelectorAll('details[data-drawer]');
     for (var i = 0; i < drawers.length; i++) initDrawer(drawers[i]);
+    initDownload();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

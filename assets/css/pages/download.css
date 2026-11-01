@@ -1,35 +1,30 @@
-/* Download page only. Everything else is in site.css. */
-
-.game-requirement {
-  margin: 0 0 var(--s-6);
-  padding: 1rem 1.2rem;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface);
-}
-
-.game-requirement h2 {
-  margin: 0 0 .6rem;
-  font-size: 1.15rem;
-}
-
-.game-requirement p {
-  margin: .45rem 0 0;
-  color: var(--text-2);
-  font-size: .9375rem;
-  line-height: 1.45;
-}
-
-.game-requirement strong { color: var(--text-1); }
-.game-file { color: var(--text-1); overflow-wrap: anywhere; }
-
-/* The download slot: the primary, then one line under it. */
-.dl-slot {
-  margin: 0 0 var(--s-8);
-}
+/* Download: the page's header carries the big button (the bar's DOWNLOAD is a quiet arrow while it shows), then what
+   you need (the game and its licence beside what the PC needs, the table How it works and Requirements show), and
+   what to do if Windows warns you beside where to get help, each pair side by side from 900 px (site.css). */
 
 .dl-slot .btn-primary {
   min-width: min(100%, 320px);
+}
+
+.page-hero .download-note {
+  margin: 14px 0 0;
+  color: var(--text-2);
+  font-size: var(--fs-2);
+}
+
+.game-requirement p {
+  color: var(--text-2);
+  font-size: var(--fs-2);
+  line-height: 1.5;
+}
+
+.game-requirement strong {
+  color: var(--text-1);
+}
+
+.game-file {
+  color: var(--text-1);
+  overflow-wrap: anywhere;
 }
 
 /* The installer's SHA-256 is one long word: let it break anywhere on a phone. */
@@ -38,7 +33,25 @@
 }
 
 /* A value still to be filled (an offline or gated preview build only: check.mjs fails a public build that carries one). */
-[data-placeholder] {
+[data-placeholder]:not(:focus-visible) {
   outline: 2px dashed var(--warn);
   outline-offset: 3px;
+}
+
+@media (max-width: 599.98px) {
+  .dl-slot .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* "for Windows" does not fit a phone's button; the lines above and under it say Windows. */
+  .dl-slot .dl-for {
+    display: none;
+  }
+
+  /* With the text enlarged, the label breaks rather than run off a narrow phone. */
+  .dl-slot .dl-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
 }
