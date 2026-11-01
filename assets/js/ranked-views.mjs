@@ -1,9 +1,9 @@
 // <!-- check-allow: ranked -->
-import { characterName, RANK_BANDS, CHARACTERS } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=be962e69d0';
-import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=dfb030f87e';
-import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
+import { characterName, RANK_BANDS, CHARACTERS } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=81c7ed6a16';
+import { showLoading } from '/assets/js/ranked-loading.mjs?v=78371fcc9f';
+import { summaryFacts, metricBars } from '/assets/js/ranked-metrics.mjs?v=e83c5a22b2';
+import { el, table, number, percent, note, playerLink, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
 
 export function playersView(app) {
   const form = el('form', 'ranked-filters ranked-search-form');

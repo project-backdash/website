@@ -2,7 +2,7 @@
 // The address comes from the page (data-stats-src), so this script names no other site. A missing, late or
 // malformed answer leaves data-state="down", and the page shows its warming-up note instead of empty boxes.
 // <!-- check-allow: ranked -->
-import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
+import { showLoading } from '/assets/js/ranked-loading.mjs?v=78371fcc9f';
 
 const TOTALS = ['accounts', 'playersWhoPlayed', 'gamesPlayed', 'rankedGames', 'rankedPlayers', 'hoursPlayed'];
 const MAX_DAYS = 30;

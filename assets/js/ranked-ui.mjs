@@ -1,6 +1,6 @@
 // <!-- check-allow: ranked -->
-import { characterName, playerPath } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=4b07d8a542';
+import { characterName, playerPath } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { characterBadge } from '/assets/js/ranked-avatar.mjs?v=f58aa85270';
 
 export const number = (value) =>
   value == null ? '—' : new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(value);

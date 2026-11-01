@@ -1,9 +1,9 @@
 // <!-- check-allow: ranked -->
-import { characterName, RANK_BANDS, CHARACTERS, fetchRanked } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { el, table, number, percent, note, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
-import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=be962e69d0';
-import { summaryFacts, metricBars, metricColumns, viewChoices } from '/assets/js/ranked-metrics.mjs?v=dfb030f87e';
-import { characterPopulation } from '/assets/js/ranked-character-population.mjs?v=d81983d4e4';
+import { characterName, RANK_BANDS, CHARACTERS, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { el, table, number, percent, note, select, characterOptions } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
+import { gameFilters, gameQuery } from '/assets/js/ranked-filters.mjs?v=81c7ed6a16';
+import { summaryFacts, metricBars, metricColumns, viewChoices } from '/assets/js/ranked-metrics.mjs?v=e83c5a22b2';
+import { characterPopulation } from '/assets/js/ranked-character-population.mjs?v=cc6a547309';
 
 export function charactersView(app) {
   let band = app.band(),

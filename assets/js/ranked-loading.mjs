@@ -9,8 +9,8 @@ export function showLoading(target, text = 'Loading…', inline = false) {
   svg.setAttribute('focusable', 'false');
   for (const [index, d] of [
     'M0 12L12 0L13 0L13 8L24 8L24 16L13 16L13 24L12 24Z',
-    'M30 12L42 0L43 0L43 8L54 8L54 16L43 16L43 24L42 24Z',
-    'M60 21.8995L60 4.9289L60.7071 4.2218L66.364 9.8787L74.1421 2.1005L79.799 7.7574L72.0208 15.5355L77.6777 21.1924L76.9706 21.8995Z',
+    'M30 21.8995L30 4.9289L30.7071 4.2218L36.364 9.8787L44.1421 2.1005L49.799 7.7574L42.0208 15.5355L47.6777 21.1924L46.9706 21.8995Z',
+    'M60 12L72 0L73 0L73 8L84 8L84 16L73 16L73 24L72 24Z',
   ].entries()) {
     const arrow = document.createElementNS(svg.namespaceURI, 'path');
     arrow.setAttribute('d', d);

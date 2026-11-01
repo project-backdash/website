@@ -1,5 +1,5 @@
 // <!-- check-allow: ranked -->
-import { characterName } from '/assets/js/ranked-data.mjs?v=928834e0ba';
+import { characterName } from '/assets/js/ranked-data.mjs?v=dde3981e98';
 
 export function characterBadge(character) {
   const id = typeof character === 'string' && /^[a-z][a-z0-9_]{0,47}$/.test(character) ? character : null;

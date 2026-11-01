@@ -1,8 +1,8 @@
 // <!-- check-allow: ranked -->
-import { fetchRanked, characterName } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
-import { metricBars } from '/assets/js/ranked-metrics.mjs?v=dfb030f87e';
-import { section, el, table, number, percent, playerLink, note } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
+import { fetchRanked, characterName } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { showLoading } from '/assets/js/ranked-loading.mjs?v=78371fcc9f';
+import { metricBars } from '/assets/js/ranked-metrics.mjs?v=e83c5a22b2';
+import { section, el, table, number, percent, playerLink, note } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
 
 export function characterPopulation(app, character, region) {
   for (const [endpoint, title] of [

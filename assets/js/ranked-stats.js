@@ -1,15 +1,15 @@
 // <!-- check-allow: ranked -->
 // <!-- check-allow: profiles -->
-import { fetchRanked, RANK_BANDS, parsePlayerRoute, StatsError } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
-import { showLoading } from '/assets/js/ranked-loading.mjs?v=99f2b86e88';
+import { fetchRanked, RANK_BANDS, parsePlayerRoute, StatsError } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { el, statsNav, dateLabel } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
+import { showLoading } from '/assets/js/ranked-loading.mjs?v=78371fcc9f';
 
 // Each page loads only its own view: a player page (404.html) never waits for the Stats views, nor they for it.
 const VIEWS = {
-  players: () => import('/assets/js/ranked-views.mjs?v=6b2e6a3437').then((m) => m.playersView),
-  matchups: () => import('/assets/js/ranked-views.mjs?v=6b2e6a3437').then((m) => m.matchupsView),
-  characters: () => import('/assets/js/ranked-characters.mjs?v=384e17e5ee').then((m) => m.charactersView),
-  ranks: () => import('/assets/js/ranked-population.mjs?v=92b722eb10').then((m) => m.populationView),
+  players: () => import('/assets/js/ranked-views.mjs?v=6c534fa2f3').then((m) => m.playersView),
+  matchups: () => import('/assets/js/ranked-views.mjs?v=6c534fa2f3').then((m) => m.matchupsView),
+  characters: () => import('/assets/js/ranked-characters.mjs?v=375f325d73').then((m) => m.charactersView),
+  ranks: () => import('/assets/js/ranked-population.mjs?v=1a45e15f6a').then((m) => m.populationView),
 };
 
 async function mount(root, view) {
@@ -76,7 +76,7 @@ const route = parsePlayerRoute(location.pathname);
 const playerRoute = document.querySelector('[data-player-route]');
 const root = document.querySelector('[data-ranked-view]');
 if (route && playerRoute)
-  import('/assets/js/ranked-player.mjs?v=fab7a1a13b').then(({ playerPage }) =>
+  import('/assets/js/ranked-player.mjs?v=4d1349984b').then(({ playerPage }) =>
     playerPage(document.querySelector('main'), route, playerRoute.dataset.playerRoute),
   );
 else if (playerRoute && document.documentElement.classList.contains('is-player')) {

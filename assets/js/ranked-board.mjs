@@ -3,7 +3,7 @@
 // The Ranked landing (/ranked/): the season line and the player search, one quiet line for right now, the board
 // of every placed player, where everyone is by badge, and the latest sets. Also the full list of latest sets
 // (/ranked/sets/). Parts the stats service does not send yet stay hidden until it does.
-import { CHARACTERS, characterName, playerPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=928834e0ba';
+import { CHARACTERS, characterName, playerPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
 import {
   el,
   REGIONS,
@@ -29,7 +29,7 @@ import {
   playerSearch,
   isRankId,
   bar,
-} from '/assets/js/ranked-kit.mjs?v=a7b28d1a10';
+} from '/assets/js/ranked-kit.mjs?v=d786a71a15';
 
 const root = document.querySelector('[data-board]');
 const base = root.dataset.rankedApi;

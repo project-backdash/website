@@ -10,7 +10,7 @@ import {
   profileEndpoint,
   parsePlayerRoute,
   fetchRanked,
-} from '/assets/js/ranked-data.mjs?v=928834e0ba';
+} from '/assets/js/ranked-data.mjs?v=dde3981e98';
 import {
   el,
   regionName,
@@ -46,7 +46,7 @@ import {
   playerSearch,
   searchForm,
   boardRow,
-} from '/assets/js/ranked-kit.mjs?v=a7b28d1a10';
+} from '/assets/js/ranked-kit.mjs?v=d786a71a15';
 
 const CHEVRON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';

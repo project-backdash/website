@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
 // The bar's player search on pages about players. The Ranked landing has its own, bigger box, so this one stays
 // hidden there and "/" goes to that one instead.
-import { playerSearch } from '/assets/js/ranked-kit.mjs?v=a7b28d1a10';
+import { playerSearch } from '/assets/js/ranked-kit.mjs?v=d786a71a15';
 
 const form = document.querySelector('[data-bar-search]');
 if (form && !document.querySelector('.rk-landing')) {

@@ -254,10 +254,10 @@
 }
 .pbd-loader .step-2 {
   animation-name: pbd-second;
+  stroke: var(--mark-lit);
 }
 .pbd-loader .step-3 {
   animation-name: pbd-third;
-  stroke: var(--mark-lit);
 }
 @keyframes pbd-first {
   0%,

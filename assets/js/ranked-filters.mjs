@@ -1,6 +1,6 @@
 // <!-- check-allow: ranked -->
-import { fetchRanked } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { el, select } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
+import { fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { el, select } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
 
 export const REGIONS = [
   ['', 'All regions'],

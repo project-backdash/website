@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
-import { readStats } from '/assets/js/stats.js?v=0a4e010ab3';
-import { fetchRanked, playerPath } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { feedRow } from '/assets/js/ranked-kit.mjs?v=a7b28d1a10';
+import { readStats } from '/assets/js/stats.js?v=a29a8528ed';
+import { fetchRanked, playerPath } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { feedRow } from '/assets/js/ranked-kit.mjs?v=d786a71a15';
 
 const root = document.querySelector('[data-home-stats]');
 const counts = root.querySelectorAll('[data-home-count]');

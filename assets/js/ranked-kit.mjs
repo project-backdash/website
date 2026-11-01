@@ -2,8 +2,8 @@
 // <!-- check-allow: profiles -->
 // Parts shared by the Ranked landing, its latest sets, the player pages and the bar's search: numbers and times in
 // player terms, portraits and plates, the rank table, the "This is me" choice, set rows and the player search.
-import { CHARACTERS, characterName, playerPath, setPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=928834e0ba';
-import { el } from '/assets/js/ranked-ui.mjs?v=486fe60e21';
+import { CHARACTERS, characterName, playerPath, setPath, fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
+import { el } from '/assets/js/ranked-ui.mjs?v=8eae8314f1';
 
 export { el };
 
