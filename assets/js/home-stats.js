@@ -1,7 +1,7 @@
 // <!-- check-allow: ranked -->
 import { readStats } from '/assets/js/stats.js?v=a29a8528ed';
 import { fetchRanked, playerPath } from '/assets/js/ranked-data.mjs?v=dde3981e98';
-import { feedRow } from '/assets/js/ranked-kit.mjs?v=d786a71a15';
+import { feedRow } from '/assets/js/ranked-kit.mjs?v=a623c764b6';
 
 const root = document.querySelector('[data-home-stats]');
 const counts = root.querySelectorAll('[data-home-count]');

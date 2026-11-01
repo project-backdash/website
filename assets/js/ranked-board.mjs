@@ -29,7 +29,7 @@ import {
   playerSearch,
   isRankId,
   bar,
-} from '/assets/js/ranked-kit.mjs?v=d786a71a15';
+} from '/assets/js/ranked-kit.mjs?v=a623c764b6';
 
 const root = document.querySelector('[data-board]');
 const base = root.dataset.rankedApi;

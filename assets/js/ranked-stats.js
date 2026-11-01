@@ -76,7 +76,7 @@ const route = parsePlayerRoute(location.pathname);
 const playerRoute = document.querySelector('[data-player-route]');
 const root = document.querySelector('[data-ranked-view]');
 if (route && playerRoute)
-  import('/assets/js/ranked-player.mjs?v=4d1349984b').then(({ playerPage }) =>
+  import('/assets/js/ranked-player.mjs?v=7c3e8be831').then(({ playerPage }) =>
     playerPage(document.querySelector('main'), route, playerRoute.dataset.playerRoute),
   );
 else if (playerRoute && document.documentElement.classList.contains('is-player')) {

@@ -42,16 +42,20 @@ import {
   setScore,
   rounds,
   isRankId,
+  isPlaced,
+  isPlacing,
   int,
   playerSearch,
   searchForm,
   boardRow,
-} from '/assets/js/ranked-kit.mjs?v=d786a71a15';
+} from '/assets/js/ranked-kit.mjs?v=a623c764b6';
 
 const CHEVRON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
 const LINK_ICON =
   '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6.5 9.5l3-3M5 8L3.6 9.4a2.3 2.3 0 0 0 3.3 3.3L8.2 11.3M11 8l1.4-1.4a2.3 2.3 0 0 0-3.3-3.3L7.8 4.7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+const SHARE_ICON =
+  '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 10V2.5M5 5l3-3 3 3M3.5 8v5.5h9V8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
 const FEW_GAMES = 10;
 
 const lower = (text) => (text === 'Yesterday' ? 'yesterday' : text);
@@ -317,6 +321,25 @@ function hero(ctx) {
     setMe(isMe(player) ? null : player);
     mine.setAttribute('aria-pressed', String(isMe(player)));
   });
+  // The player card shows a placed character's badge and MMR, or a character's placement sets while none is placed.
+  if (profile.characters.some((row) => isPlaced(row) || isPlacing(row))) {
+    const share = el('button', 'rk-btn');
+    share.type = 'button';
+    share.innerHTML = SHARE_ICON;
+    const shareText = el('span', '', 'Share');
+    share.append(shareText);
+    share.setAttribute('aria-haspopup', 'dialog');
+    share.addEventListener('click', () =>
+      import('/assets/js/ranked-share.mjs?v=8acaa5a78f').then(
+        ({ openShare }) => openShare(ctx, { ratingRows, matchupRows }, share),
+        () => {
+          shareText.textContent = 'Share failed';
+          setTimeout(() => (shareText.textContent = 'Share'), 2000);
+        },
+      ),
+    );
+    actions.append(share);
+  }
   actions.append(copy, mine);
   main.append(actions);
   box.append(main);
@@ -645,8 +668,9 @@ function ratingGraph(ctx) {
       r = phone ? 2.8 : 3.6;
     const n = points.length;
     const values = [points[0].before, ...points.map((row) => row.after)];
-    let lo = Math.min(...values),
-      hi = Math.max(...values);
+    const known = values.concat(points.map((row) => row.before));
+    let lo = Math.min(...known),
+      hi = Math.max(...known);
     const pad = Math.max(16, (hi - lo) * 0.14);
     lo -= pad;
     hi += pad;
@@ -703,10 +727,20 @@ function ratingGraph(ctx) {
       );
       text(L + 6, T + fs + 2, 'Placing');
     }
-    const path = values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-    parts.push(
-      `<path d="${path} L${x(n).toFixed(1)} ${H - B} L${x(0).toFixed(1)} ${H - B} Z" fill="rgba(233,238,237,0.04)"/>`,
-    );
+    // One stretch of line per run of sets that follow on from each other: a set that starts away from where the one
+    // before it ended (the rating moved between them) starts a new one.
+    const runs = [];
+    for (let i = 1; i <= n; i++) {
+      const row = points[i - 1];
+      if (i === 1 || Math.abs(row.before - points[i - 2].after) >= 0.5) runs.push([[i - 1, row.before]]);
+      runs.at(-1).push([i, row.after]);
+    }
+    const spot = ([i, v]) => `${x(i).toFixed(1)} ${y(v).toFixed(1)}`;
+    for (const run of runs)
+      parts.push(
+        `<path d="M${run.map(spot).join(' L')} L${x(run.at(-1)[0]).toFixed(1)} ${H - B} L${x(run[0][0]).toFixed(1)} ${H - B} Z" fill="rgba(233,238,237,0.04)"/>`,
+      );
+    const path = runs.map((run) => `M${run.map(spot).join(' L')}`).join(' ');
     parts.push(`<path d="${path}" fill="none" stroke="#AEBDBD" stroke-width="1.6" stroke-linejoin="round"/>`);
     for (let i = 1; i <= n; i++) {
       const won = wonSet(ctx, points[i - 1]);
@@ -829,18 +863,21 @@ function ratingGraph(ctx) {
       show(at + step);
     });
 
-    const first = values[0],
-      lastValue = values[n];
+    // The change adds up the sets themselves, so a move between sets is not counted as one.
+    const change = points.reduce(
+      (sum, row) => sum + (Number.isFinite(row.change) ? row.change : row.after - row.before),
+      0,
+    );
     const bits = [];
     const total = el('span');
     if (range === 'season') {
-      total.append(el('b', '', signed(lastValue - first)), ` this ${label}`);
+      total.append(el('b', '', signed(change)), ` this ${label}`);
       const count = el('span');
       count.append(el('b', '', fmt(n)), ` ${n === 1 ? 'set' : 'sets'} with ${characterName(character)}`);
       bits.push(total, count);
     } else {
       total.append(
-        el('b', '', signed(lastValue - first)),
+        el('b', '', signed(change)),
         ` over the last ${fmt(n)} ${n === 1 ? 'set' : 'sets'} with ${characterName(character)}`,
       );
       bits.push(total);

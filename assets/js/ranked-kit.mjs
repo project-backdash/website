@@ -97,6 +97,14 @@ export function face(character, size = 40, { label = '', className = '' } = {}) 
 }
 
 export const isRankId = (id) => typeof id === 'string' && /^rank_(0\d|[12]\d|3[0-4])$/.test(id);
+// What the player card can show of a character: a badge with its MMR, or the count of placement sets while it places.
+// The player page offers Share by the same two tests.
+export const isPlaced = (row) => isRankId(row?.rankId) && Number.isFinite(row?.mmr);
+export const isPlacing = (row) =>
+  !isRankId(row?.rankId) &&
+  int(row?.placementSets) != null &&
+  int(row?.placementTotal) > 0 &&
+  row.placementSets < row.placementTotal;
 export function plate(rankId, { label = '', className = '' } = {}) {
   if (!isRankId(rankId)) return null;
   const image = el('img', className);
