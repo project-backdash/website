@@ -1,16 +1,10 @@
-// The Stats page: reads the public totals once at page load and fills the page in, who is online from the same
-// service's /v2/online, again every minute while the page is in view, and the top ten from the Ranked board, drawn as
-// on Home.
-// The address comes from the page (data-stats-src), so this script names no other site. At a glance shows at once
-// and fills each count in place: the online counts in well under a second, the totals when they come (a first read
-// can take ten seconds). A missing, late or malformed totals answer leaves data-state="down": the page shows its
-// warming-up note in place of the lists, and At a glance keeps the online counts. A single count the service does
-// not send (yet) reads "–", never 0.
+// Totals load once; live activity refreshes each minute while visible. Missing counts stay unknown, never zero.
 // <!-- check-allow: ranked -->
 import { showLoading } from '/assets/js/ranked-loading.mjs?v=78371fcc9f';
 import { fetchRanked } from '/assets/js/ranked-data.mjs?v=dde3981e98';
 import { face } from '/assets/js/ranked-kit.mjs?v=f30d870cde';
 import { drawTopPlayers } from '/assets/js/top-players.mjs?v=3bdf392edc';
+import { dailySeries } from '/assets/js/stats-days.mjs?v=48384e5925';
 
 const TOTALS = [
   'accounts',
@@ -22,7 +16,6 @@ const TOTALS = [
   'hoursPlayed',
 ];
 const ONLINE_EVERY_MS = 60000;
-const MAX_DAYS = 30;
 const MAX_CHARACTERS = 10;
 const TOP_PLAYERS = 10;
 const TIMEOUT_MS = 8000;
@@ -62,7 +55,7 @@ export function readStats(value) {
   const updated = typeof updatedAt === 'string' ? new Date(updatedAt) : null;
   return {
     totals,
-    days: [...gamesPerDay].sort((a, b) => (a.date < b.date ? 1 : -1)).slice(0, MAX_DAYS),
+    days: dailySeries(gamesPerDay, updated && !Number.isNaN(updated.getTime()) ? updated : new Date()),
     characters: [...characters].sort((a, b) => b.games - a.games).slice(0, MAX_CHARACTERS),
     updated: updated && !Number.isNaN(updated.getTime()) ? updated : null,
   };
@@ -113,15 +106,9 @@ export function renderTotals(root, totals) {
 export function renderStats(root, stats) {
   renderTotals(root, stats.totals);
   const days = root.querySelector('[data-stats-days]');
-  if (days)
-    fillBars(
-      days,
-      // Only the days with games: a quiet day would be a row of nothing.
-      stats.days
-        .filter((d) => d.games > 0)
-        .map((d) => ({ name: dayName.format(new Date(`${d.date}T00:00:00Z`)), value: d.games })),
-      'No games yet.',
-    );
+  if (days) renderDays(days, stats.days);
+  const coverage = root.querySelector('[data-days-coverage]');
+  if (coverage) coverage.hidden = !stats.days.some(day => day.games == null);
   const characters = root.querySelector('[data-stats-characters]');
   if (characters)
     fillBars(
@@ -143,6 +130,32 @@ export function renderStats(root, stats) {
   const updated = root.querySelector('[data-stats-updated]');
   if (updated) updated.textContent = stats.updated ? `Updated ${stamp.format(stats.updated)} UTC` : '';
   root.dataset.state = 'up';
+  // Scroll after the chart becomes visible, keeping the newest date in view inside its own region.
+  const scroller = days?.closest('.days-scroll');
+  if (scroller) requestAnimationFrame(() => { scroller.scrollLeft = scroller.scrollWidth; });
+}
+
+export function renderDays(list, rows) {
+  list.replaceChildren();
+  const most = Math.max(1, ...rows.map(day => day.games ?? 0));
+  for (const day of rows) {
+    const item = el('li', day.today ? 'day-column is-today' : 'day-column');
+    item.dataset.date = day.date;
+    const label = dayName.format(new Date(`${day.date}T00:00:00Z`));
+    item.setAttribute('aria-label', `${label}: ${day.games == null ? 'count unavailable' : number.format(day.games) + ' games'}${day.today ? ', today so far' : ''}`);
+    const track = el('span', 'day-track');
+    track.setAttribute('aria-hidden', 'true');
+    const bar = el('span', 'day-bar');
+    bar.style.height = `${((day.games ?? 0) / most) * 100}%`;
+    if (day.games === 0) bar.classList.add('is-zero');
+    bar.append(el('span', 'day-value', shown(day.games)));
+    track.append(bar);
+    const date = el('span', 'day-date', label);
+    date.setAttribute('aria-hidden', 'true');
+    if (day.today) date.append(el('span', 'day-today', 'Today so far'));
+    item.append(track, date);
+    list.append(item);
+  }
 }
 
 // /v2/online as the page uses it: who is online, the open lobbies, who is searching and who is in a set being played,
@@ -157,6 +170,7 @@ export function readOnline(value) {
     lobbies: count(value.lobbies),
     searching: count(value.searching),
     playing: count(value.playingPlayers) ?? (sets == null ? null : 2 * sets),
+    updated: typeof value.updatedAt === 'string' && Number.isFinite(Date.parse(value.updatedAt)) ? new Date(value.updatedAt) : null,
   };
 }
 
@@ -164,9 +178,12 @@ export function renderOnline(root, online) {
   const text = {
     players: shown(online?.players),
     lobbies: shown(online?.lobbies),
-    queue: online ? `${shown(online.searching)} / ${shown(online.playing)}` : '–',
+    searching: shown(online?.searching),
+    playing: shown(online?.playing),
   };
   for (const cell of root.querySelectorAll('[data-online]')) cell.textContent = text[cell.dataset.online] ?? '–';
+  const updated = root.querySelector('[data-online-updated]');
+  if (updated) updated.textContent = online ? `${online.updated ? 'Updated ' + stamp.format(online.updated) + ' UTC. ' : ''}Refreshes every minute.` : 'Live activity unavailable.';
 }
 
 const timeout = (ms = TIMEOUT_MS) => (typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(ms) : undefined);
@@ -193,18 +210,26 @@ async function load(root) {
 let online = null;
 let onlineSeen = false;
 async function loadOnline(root) {
+  let fresh = false;
   try {
     const response = await fetch(new URL('/v2/online', root.dataset.statsSrc), {
       mode: 'cors',
       credentials: 'omit',
       signal: timeout(),
     });
-    if (response.ok) online = readOnline(await response.json()) ?? online;
+    if (response.ok) {
+      const answer = readOnline(await response.json());
+      if (answer) { online = answer; fresh = true; }
+    }
   } catch {
     // Kept as it was; the tiles say "–" until a first answer.
   }
   onlineSeen ||= online != null;
   renderOnline(root, online);
+  if (!fresh && online) {
+    const updated = root.querySelector('[data-online-updated]');
+    if (updated) updated.textContent = `${online.updated ? 'Last updated ' + stamp.format(online.updated) + ' UTC. ' : ''}Refresh delayed.`;
+  }
   return onlineSeen;
 }
 

@@ -1,237 +1,90 @@
-/* The Stats overview: the headline counts as tiles, the top players beside the most played characters and the other
-   totals, then games per day, each a section of the site's tab and panel (site.css).
-   data-state on .stats is "loading" (the page's own value) while stats.js asks for the totals, "up" once they are
-   in and "down" when they cannot be read. At a glance shows from the first paint and stats.js fills each count in
-   place: the online counts come in well under a second, the totals when they come (a first read can take ten).
-   Without scripts nothing would fill the page, so it shows the warming-up note alone.
-   Every colour is a site.css token, so `node contrast.mjs` covers the text. */
-
-/* The status is part of the header's top line, which holds its place in every state. */
-.stats-state {
-  min-height: 1.4em;
-}
-
-.stats-loading,
-.stats-warm,
-.stats-updated:empty,
-.stats-live {
-  display: none;
-}
-
-/* While the totals load, the page keeps the footer under the first screen, where the lists will push it. */
-.stats[data-state="loading"] {
-  min-height: 100vh;
-}
-
+/* Counts stay in place while the totals load; live activity is independent of the charts. */
+.stats-state { min-height: 1.4em; }
+.stats-loading, .stats-warm, .stats-updated:empty, .stats-live { display: none; }
+.stats[data-state="loading"] { min-height: 100vh; }
 .stats[data-state="loading"] .stats-loading,
-.stats[data-state="down"] .stats-warm {
-  display: inline;
-}
+.stats[data-state="down"] .stats-warm { display: inline; }
+.stats[data-state="up"] .stats-live { display: block; }
+.stats[data-state="up"] .stats-cols { display: grid; }
+.stats[data-state="down"] .stats-warm { color: var(--text-1); }
 
-.stats[data-state="up"] .stats-live {
-  display: block;
-}
+.stats .stats-headlines { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.stats-headlines > div { padding: 20px 20px 18px; }
+.stats-headlines dt { min-height: 2.6em; color: var(--text-2); letter-spacing: .06em; }
+.stats-headlines dd { margin-top: 12px; font-size: clamp(2rem, 3.3vw, 3rem); }
+.stats-secondary { display: flex; flex-wrap: wrap; gap: 8px 36px; margin: 0; padding: 14px 20px; border-top: 1px solid var(--hairline); }
+.stats-secondary > div { display: flex; align-items: baseline; gap: 14px; }
+.stats-secondary dt { color: var(--text-2); font-size: var(--fs-2); }
+.stats-secondary dd { margin: 0; font: 400 1.5rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.stats-explainer { margin: 0; padding: 0 20px 16px; color: var(--text-2); font-size: var(--fs-2); line-height: 1.5; }
 
-.stats[data-state="up"] .stats-cols {
-  display: grid;
-}
+.stats-now { display: flex; align-items: center; gap: 24px; margin-top: 16px; padding: 16px 20px; }
+.stats-now-heading { flex: 1; min-width: 0; }
+.stats-now h2 { margin: 0 0 4px; color: var(--text-1); font: 400 1.25rem/1.2 var(--font-display); letter-spacing: .12em; text-transform: uppercase; }
+.stats-now h2::before { content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 9px 2px 0; border-radius: 50%; background: var(--good); }
+.stats-now p { margin: 0; color: var(--text-2); font-size: var(--fs-1); line-height: 1.5; }
+.stats-now dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; margin: 0; }
+.stats-now dt { color: var(--text-2); font-size: var(--fs-2); }
+.stats-now dd { margin: 6px 0 0; font: 400 1.75rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
 
+/* minmax keeps chart overflow inside its own scroll region. */
+.stats-cols { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 28px; align-items: start; }
+.stats-cols > section { min-width: 0; }
+.stats-cols .sec-head { min-height: 40px; }
+.chart-note { margin: 0; padding: 16px 18px 12px; color: var(--text-2); font-size: var(--fs-2); line-height: 1.5; }
+.days-scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-color: var(--text-3) var(--surface); }
+.daily-columns { display: flex; gap: 8px; width: 100%; min-width: max-content; margin: 0; padding: 32px 18px 12px; list-style: none; }
+.day-column { flex: 1 0 52px; min-width: 52px; margin: 0; padding: 0; text-align: center; }
+.day-column.is-today { flex-basis: 76px; min-width: 76px; }
+.day-track { display: flex; align-items: end; justify-content: center; height: 278px; border-bottom: 1px solid var(--text-3); }
+.day-bar { position: relative; display: block; width: 70%; background: var(--mark-lit); }
+.day-bar.is-zero { border-bottom: 2px solid var(--text-3); }
+.day-value { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding-bottom: 7px; color: var(--text-1); font: 400 1.125rem/1 var(--font-display); white-space: nowrap; }
+.day-date { display: block; min-height: 45px; padding-top: 12px; color: var(--text-2); font-size: var(--fs-1); line-height: 1.4; white-space: nowrap; }
+.day-today { display: block; color: var(--text-1); font-weight: 600; }
+.is-today .day-bar { background: var(--text-3); }
+.days-help { padding-top: 4px; padding-bottom: 16px; }
 
-.stats[data-state="down"] .stats-warm {
-  color: var(--text-1);
-}
-
-@media (scripting: none) {
-  .stats[data-state] {
-    min-height: 0;
-  }
-
-  .stats[data-state] .stats-warm {
-    display: inline;
-    color: var(--text-1);
-  }
-
-  .stats[data-state] .stats-loading,
-  .stats[data-state] .stats-glance {
-    display: none;
-  }
-}
-
-/* The top players beside the characters and the totals; one column under 960 px. */
-.stats-cols {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0 28px;
-  align-items: start;
-}
-
-/* Games per day: two columns of days on a wide screen, newest first down the first. */
-.bars-days {
-  columns: 2;
-  column-gap: 0;
-}
-
-.bars-days > li {
-  break-inside: avoid;
-}
+.bars { margin: 0; padding: 0 0 10px; list-style: none; }
+.bars > li { display: grid; grid-template-columns: 32px minmax(0, 1.6fr) minmax(0, 1fr) 4rem; align-items: center; gap: 10px; min-height: 40px; margin: 0; padding: 4px 18px; }
+.bar-face { width: 32px; height: 32px; }
+.bar-name { overflow: hidden; color: var(--text-1); font-weight: 600; font-size: var(--fs-2); text-overflow: ellipsis; white-space: nowrap; }
+a.bar-name { text-decoration: underline; text-decoration-color: rgba(233, 238, 237, .3); text-underline-offset: 3px; }
+a.bar-name:hover { text-decoration-color: currentColor; }
+.bar-track { height: 8px; border-radius: 2px; background: var(--hairline); overflow: hidden; }
+.bar-fill { display: block; height: 100%; border-radius: 2px; background: var(--text-3); }
+.bar-value { color: var(--text-1); font: 400 var(--fs-3)/1 var(--font-display); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.bars > li.bars-empty { display: block; padding: 16px 18px; color: var(--text-2); font-size: var(--fs-2); }
+.stats .top-players { min-height: 678px; }
 
 @media (max-width: 959.98px) {
-  .stats-cols {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .bars-days {
-    columns: 1;
-  }
+  .stats-cols { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .stats-now { align-items: start; flex-direction: column; gap: 16px; }
+  .stats-now dl { width: 100%; }
+  .stats-headlines > div { padding: 16px 14px; }
 }
-
-/* Totals under the lists: one row each, the name and its number. */
-.stat-rows {
-  margin: 0;
-  padding: 6px 0;
-}
-
-.stat-rows > div {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-3);
-  min-height: 52px;
-  padding: 12px 18px;
-}
-
-.stat-rows > div + div {
-  border-top: 1px solid var(--hairline);
-}
-
-.stat-rows dt {
-  color: var(--text-2);
-  font-size: var(--fs-2);
-}
-
-.stat-rows dd {
-  margin: 0;
-  color: var(--text-1);
-  font: 400 var(--fs-4)/1 var(--font-display);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  white-space: nowrap;
-}
-
-/* Bar lists, as Home's characters: the name, a grey bar against the largest value, the number. */
-.bars {
-  margin: 0;
-  padding: 6px 0;
-  list-style: none;
-}
-
-.bars > li {
-  display: grid;
-  grid-template-columns: minmax(6rem, 10rem) minmax(0, 1fr) 4.5rem;
-  align-items: center;
-  gap: 12px;
-  min-height: 44px;
-  margin: 0;
-  padding: 4px 18px;
-}
-
-/* Characters, as on Home: the portrait first. */
-.bars-chars > li {
-  grid-template-columns: 32px minmax(6rem, 10rem) minmax(0, 1fr) 4.5rem;
-}
-
-.bar-face {
-  width: 32px;
-  height: 32px;
-}
-
-.bar-name {
-  overflow: hidden;
-  color: var(--text-1);
-  font-weight: 600;
-  font-size: var(--fs-2);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-a.bar-name {
-  text-decoration: underline;
-  text-decoration-color: rgba(233, 238, 237, 0.3);
-  text-underline-offset: 3px;
-}
-
-a.bar-name:hover {
-  text-decoration-color: currentColor;
-}
-
-.bar-track {
-  position: relative;
-  height: 10px;
-  border-radius: 2px;
-  background: rgba(233, 238, 237, 0.08);
-  overflow: hidden;
-}
-
-.bar-fill {
-  display: block;
-  height: 100%;
-  min-width: 2px;
-  border-radius: 2px;
-  background: rgba(233, 238, 237, 0.55);
-}
-
-.bar-value {
-  color: var(--text-1);
-  font: 400 var(--fs-3)/1 var(--font-display);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-}
-
-.bars > li.bars-empty {
-  display: block;
-  padding: 16px 18px;
-  color: var(--text-2);
-  font-size: var(--fs-2);
-}
-
-/* Top players (site.css) holds the ten rows' height while the board loads, as on Home. */
-.stats .top-players {
-  min-height: 678px;
-}
-
 @media (max-width: 599.98px) {
-  .stats .top-players {
-    min-height: 648px;
-  }
+  .stats .stats-headlines { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats-headlines > div:last-child { grid-column: 1 / -1; }
+  .stats-headlines > div:last-child dt { min-height: 0; }
+  .stats-headlines dd { margin-top: 8px; font-size: 2rem; }
+  .stats-secondary { display: grid; gap: 12px; padding: 14px; }
+  .stats-secondary > div { justify-content: space-between; }
+  .stats-explainer { padding: 0 14px 14px; }
+  .stats-now { padding: 14px; }
+  .stats-now dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .stats .top-players { min-height: 648px; }
+  .chart-note { padding-left: 14px; padding-right: 14px; }
+  .bars > li { grid-template-columns: 28px minmax(0, 1.6fr) minmax(0, 1fr) 4rem; padding: 4px 14px; }
+  .bar-face { width: 28px; height: 28px; }
 }
-
-@media (max-width: 479.98px) {
-  .bars > li {
-    grid-template-columns: minmax(5rem, 8rem) minmax(0, 1fr) 3.5rem;
-    gap: 10px;
-    padding: 4px 14px;
-  }
-
-  .bars-chars > li {
-    grid-template-columns: 28px minmax(5rem, 8rem) minmax(0, 1fr) 3.5rem;
-  }
-
-  .bar-face {
-    width: 28px;
-    height: 28px;
-  }
-
-  .stat-rows > div {
-    padding: 12px 14px;
-  }
+@media (scripting: none) {
+  .stats[data-state] { min-height: 0; }
+  .stats[data-state] .stats-warm { display: inline; color: var(--text-1); }
+  .stats[data-state] .stats-loading, .stats-summary, .stats-now { display: none; }
 }
-
-/* Forced colours drop the fills: draw the bars. */
 @media (forced-colors: active) {
-  .bar-track {
-    border: 1px solid CanvasText;
-  }
-
-  .bar-fill {
-    background: CanvasText;
-  }
+  .bar-track, .day-bar { border: 1px solid CanvasText; }
+  .bar-fill, .day-bar { background: CanvasText; }
+  .is-today .day-bar { background: GrayText; }
 }

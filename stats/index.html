@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Stats | Project Backdash</title>
-<meta name="description" content="Project Backdash in numbers: players, who is online, open lobbies, Ranked games, games in the last 24 hours, the most played characters and the top players.">
+<meta name="description" content="Project Backdash in numbers: accounts, players who played a game, games across every mode, live activity and daily games since public launch.">
 <link rel="canonical" href="https://backdash.gg/stats/">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#140608">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Backdash">
 <meta property="og:title" content="Stats | Project Backdash">
-<meta property="og:description" content="Project Backdash in numbers: players, who is online, open lobbies, Ranked games, games in the last 24 hours, the most played characters and the top players.">
+<meta property="og:description" content="Project Backdash in numbers: accounts, players who played a game, games across every mode, live activity and daily games since public launch.">
 <meta property="og:url" content="https://backdash.gg/stats/">
 <meta property="og:image" content="https://backdash.gg/og.png">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Project Backdash">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stats | Project Backdash">
-<meta name="twitter:description" content="Project Backdash in numbers: players, who is online, open lobbies, Ranked games, games in the last 24 hours, the most played characters and the top players.">
+<meta name="twitter:description" content="Project Backdash in numbers: accounts, players who played a game, games across every mode, live activity and daily games since public launch.">
 <meta name="twitter:image" content="https://backdash.gg/og.png">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
@@ -33,10 +33,10 @@
 <link rel="stylesheet" href="/assets/css/fonts.css?v=689f3103f6">
 <link rel="stylesheet" href="/assets/css/site.css?v=d044478ff2">
 <link rel="stylesheet" href="/assets/css/resurrection.css?v=71ef6e297e">
-<link rel="stylesheet" href="/assets/css/pages/stats.css?v=4695fbc6e9">
+<link rel="stylesheet" href="/assets/css/pages/stats.css?v=a925386b50">
 <script type="module" src="/assets/js/bar-search.mjs?v=529d4e5ea3"></script>
 <script src="/assets/js/site.js?v=2090aa3788" defer></script>
-<script type="module" src="/assets/js/stats.js?v=0ae75f796d"></script>
+<script type="module" src="/assets/js/stats.js?v=8ed9d04bdc"></script>
 </head>
 <body class="field">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -80,7 +80,7 @@
       <button class="bar-search-open" type="button" aria-label="Find a player" aria-expanded="false"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       <div class="rk-search"><label class="rk-search-box"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg><input type="search" name="q" maxlength="45" autocomplete="off" spellcheck="false" required placeholder="Find a player" aria-label="Find a player"><span class="rk-kbd" aria-hidden="true">/</span></label></div>
     </form>
-    <a class="bar-download" href="https://dl.backdash.gg/releases/0.61.7/Project%20Backdash%20Setup%200.61.7.exe" data-bar-download><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="bar-download-label" aria-hidden="true">Download</span><span class="visually-hidden">Download</span></a>
+    <a class="bar-download" href="https://dl.backdash.gg/releases/0.61.10/Project%20Backdash%20Setup%200.61.10.exe" data-bar-download><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 24L0 12L0 11L8 11L8 0L16 0L16 11L24 11L24 12Z"/></svg><span class="bar-download-label" aria-hidden="true">Download</span><span class="visually-hidden">Download</span></a>
     
   </div>
 </header>
@@ -95,7 +95,7 @@
       <span class="stats-updated" data-stats-updated></span>
     </p>
     <h1 class="hero-title">Stats</h1>
-    <p class="hero-lead">Players, games and characters across every mode. The players themselves are on the <a href="/ranked/">Ranked</a> board.</p>
+    <p class="hero-lead">The community in numbers. Games across every online mode, and who is playing right now.</p>
   </header>
 
 <nav class="tabs" aria-label="Stats">
@@ -106,45 +106,55 @@
   <a href="/stats/ranks/">Ranks</a>
 </nav>
 
-  <section class="sec stats-glance" aria-labelledby="glance-title">
-    <h2 class="label-tab sec-tab" id="glance-title">At a glance</h2>
-    <dl class="panel tiles">
-      <div><dt>Players</dt><dd data-stat="accounts">–</dd></div>
+  <section class="sec stats-summary" aria-labelledby="numbers-title">
+    <h2 class="label-tab sec-tab" id="numbers-title">Community totals</h2>
+    <div class="panel">
+      <dl class="tiles stats-headlines">
+        <div><dt>Accounts</dt><dd data-stat="accounts">–</dd></div>
+        <div><dt>Players who played a game</dt><dd data-stat="playersWhoPlayed">–</dd></div>
+        <div><dt>Games, every online mode</dt><dd data-stat="gamesPlayed">–</dd></div>
+        <div><dt>Ranked games</dt><dd data-stat="rankedGames">–</dd></div>
+        <div><dt>Games in the last 24 hours</dt><dd data-stat="gamesLast24h">–</dd></div>
+      </dl>
+      <dl class="stats-secondary">
+        <div><dt>Players who played Ranked</dt><dd data-stat="rankedPlayers">–</dd></div>
+        <div><dt>Hours of recorded games</dt><dd data-stat="hoursPlayed">–</dd></div>
+      </dl>
+      <p class="stats-explainer">Accounts include people who have not played. Players who played counts each account once. Totals include test games.</p>
+    </div>
+  </section>
+
+  <section class="stats-now panel" aria-labelledby="live-title">
+    <div class="stats-now-heading"><h2 id="live-title">Live</h2><p data-online-updated>Waiting for live activity.</p></div>
+    <dl>
       <div><dt>Online now</dt><dd data-online="players">–</dd></div>
-      <div><dt>Lobbies open</dt><dd data-online="lobbies">–</dd></div>
-      <div><dt>Ranked games</dt><dd data-stat="rankedGames">–</dd></div>
-      <div><dt>Games – last 24 h</dt><dd data-stat="gamesLast24h">–</dd></div>
-      <div><dt>Searching / playing now</dt><dd data-online="queue">–</dd></div>
+      <div><dt>Searching</dt><dd data-online="searching">–</dd></div>
+      <div><dt>Playing</dt><dd data-online="playing">–</dd></div>
+      <div><dt>Public lobbies</dt><dd data-online="lobbies">–</dd></div>
     </dl>
   </section>
 
   <div class="stats-cols stats-live">
-    <section class="sec" aria-labelledby="top-title">
-      <div class="sec-head"><h2 class="label-tab sec-tab" id="top-title">Top players</h2><a class="more-link" href="/ranked/">Ranked board</a></div>
-      <ol class="top-players panel" data-stats-top></ol>
+    <section class="sec" aria-labelledby="days-title">
+      <h2 class="label-tab sec-tab" id="days-title">Games per day</h2>
+      <div class="panel days-panel">
+        <p class="chart-note" id="days-note">Every day since public launch, 28 Oct 2026.<br>Pacific time (America/Los_Angeles, PST/PDT). Today is still running.</p>
+        <div class="days-scroll" tabindex="0" role="region" aria-labelledby="days-title" aria-describedby="days-note days-help">
+          <ol class="daily-columns" data-stats-days aria-labelledby="days-title"></ol>
+        </div>
+        <p class="chart-note days-help" id="days-help">Each column is one calendar day. Scroll to see earlier days.</p>
+        <p class="chart-note" data-days-coverage hidden>Older daily counts are unavailable; a dash means unknown.</p>
+      </div>
     </section>
-    <div>
     <section class="sec" aria-labelledby="chars-title">
-      <div class="sec-head"><h2 class="label-tab sec-tab" id="chars-title">Most played characters</h2><a class="more-link" href="/stats/characters/">All characters</a></div>
-      <div class="panel"><ol class="bars bars-chars" data-stats-characters aria-labelledby="chars-title"></ol></div>
+      <h2 class="label-tab sec-tab" id="chars-title">Most played characters</h2>
+      <div class="panel"><p class="chart-note">Character picks in recorded games, every online mode.</p><ol class="bars bars-chars" data-stats-characters aria-labelledby="chars-title"></ol><p class="chart-note"><a class="more-link" href="/stats/characters/">All characters</a></p></div>
     </section>
-
-    <section class="sec" aria-labelledby="totals-title">
-      <h2 class="label-tab sec-tab" id="totals-title">Totals</h2>
-      <dl class="panel stat-rows">
-        <div><dt>Players who played</dt><dd data-stat="playersWhoPlayed"></dd></div>
-        <div><dt>Games played, every mode</dt><dd data-stat="gamesPlayed"></dd></div>
-        <div><dt>Ranked players</dt><dd data-stat="rankedPlayers"></dd></div>
-        <div><dt>Hours played</dt><dd data-stat="hoursPlayed"></dd></div>
-      </dl>
-    </section>
-    </div>
-
   </div>
 
-  <section class="sec stats-live" aria-labelledby="days-title">
-    <div class="sec-head"><h2 class="label-tab sec-tab" id="days-title">Games per day</h2><span class="sec-note">PST, days with games</span></div>
-    <div class="panel"><ol class="bars bars-days" data-stats-days aria-labelledby="days-title"></ol></div>
+  <section class="sec stats-live" aria-labelledby="top-title">
+    <div class="sec-head"><h2 class="label-tab sec-tab" id="top-title">Top players</h2><a class="more-link" href="/ranked/">Ranked board</a></div>
+    <ol class="top-players panel" data-stats-top></ol>
   </section>
 </div>
 </main>
