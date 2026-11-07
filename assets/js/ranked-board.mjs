@@ -498,7 +498,8 @@ function landing() {
 
   async function drawFoot() {
     const ranks = await table;
-    if (ranks?.startedAt) started.textContent = `Started ${shortDate(ranks.startedAt)}. `;
+    if (ranks?.startedAt)
+      started.textContent = `Season Start ${new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric' }).format(new Date(ranks.startedAt))}`;
     const stats = link('Stats', '/stats/');
     foot.replaceChildren(
       `Ranked sets in ${label}${ranks?.startedAt ? `, from ${shortDate(ranks.startedAt)}` : ''}. The board updates every minute. `,
@@ -565,11 +566,11 @@ function latestSets() {
       list.replaceChildren(
         error.status === 404
           ? empty(
-              'Latest sets are not on the site yet.',
+              'Latest Ranked sets are not on the site yet.',
               'The board and every player are on Ranked.',
               link('Go to Ranked', '/ranked/'),
             )
-          : empty('Latest sets are unavailable right now.', 'Try again in a minute.'),
+          : empty('Latest Ranked sets are unavailable right now.', 'Try again in a minute.'),
       );
     } finally {
       more.disabled = false;

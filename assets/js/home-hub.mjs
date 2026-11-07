@@ -191,7 +191,7 @@ async function loadDay() {
       readout.classList.remove('is-set');
       readout.replaceChildren(el('span', '', 'The sets are not available right now'));
     }
-    if (!q('[data-feed] .hub-set')) message(q('[data-feed]'), 'The latest sets are not available right now.');
+    if (!q('[data-feed] .hub-set')) message(q('[data-feed]'), 'The latest Ranked sets are not available right now.');
     throw error;
   }
 }
