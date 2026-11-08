@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>(function(){var d=document.documentElement,m=/[?&]theme=(light|dark)(?:&|$)/.exec(location.search),t=m&&m[1];if(!t){try{t=localStorage.getItem("pbd-theme")}catch(e){}}if(t==="light"||t==="dark")d.setAttribute("data-theme",t)})();</script>
 <title>Privacy | Project Backdash</title>
-<meta name="description" content="What Project Backdash keeps, what is public, how long it is kept and how to remove it: accounts, match history, Ranked, friends, messages, shared replays and problem reports.">
+<meta name="description" content="What Project Backdash keeps, what is public, how long it is kept and how to remove it: accounts, match history, Ranked, friends, messages, game replays and problem reports.">
 <link rel="canonical" href="https://backdash.gg/privacy/">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#140608">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Project Backdash">
 <meta property="og:title" content="Privacy | Project Backdash">
-<meta property="og:description" content="What Project Backdash keeps, what is public, how long it is kept and how to remove it: accounts, match history, Ranked, friends, messages, shared replays and problem reports.">
+<meta property="og:description" content="What Project Backdash keeps, what is public, how long it is kept and how to remove it: accounts, match history, Ranked, friends, messages, game replays and problem reports.">
 <meta property="og:url" content="https://backdash.gg/privacy/">
 <meta property="og:image" content="https://backdash.gg/og.png?v=20261107">
 <meta property="og:image:width" content="1200">
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Project Backdash">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Privacy | Project Backdash">
-<meta name="twitter:description" content="What Project Backdash keeps, what is public, how long it is kept and how to remove it: accounts, match history, Ranked, friends, messages, shared replays and problem reports.">
+<meta name="twitter:description" content="What Project Backdash keeps, what is public, how long it is kept and how to remove it: accounts, match history, Ranked, friends, messages, game replays and problem reports.">
 <meta name="twitter:image" content="https://backdash.gg/og.png?v=20261107">
 <meta name="twitter:image:alt" content="Project Backdash">
 <link rel="icon" href="/favicon.ico?v=b80dc6ce2f" sizes="32x32">
@@ -89,7 +89,7 @@
 <main id="main" tabindex="-1" class="page">
 <div class="wrap">
   <header class="page-hero">
-    <p class="eyebrow"><span>Updated <time datetime="2026-10-19">19 October 2026</time></span></p>
+    <p class="eyebrow"><span>Updated <time datetime="2026-11-08">8 November 2026</time></span></p>
     <h1 class="hero-title">Privacy</h1>
     <p class="hero-lead">What Project Backdash keeps, what is public, and how to remove it.</p>
   </header>
@@ -114,10 +114,11 @@
         <ul>
           <li><strong>Lobbies:</strong> each open room's host name, region and last character.</li>
           <li><strong>Ranked:</strong> the leaderboard, and each Ranked player's profile: name, character, region, rank, MMR, wins and losses, and their rated sets and games with their opponents' names.</li>
+          <li><strong>Game replays and results:</strong> from the next launcher update, every online game outside private lobby rooms. Its set's result shows on both players' profiles, and anyone can watch its replay, with both players' names, characters and inputs. See <a href="#recordings">Game replays</a>.</li>
           <li><strong>Stats:</strong> totals, and the top players by MMR with their name, character and rank.</li>
           <li><strong>Shared replays:</strong> when you press <span class="ui">Upload</span>, anyone can find, watch and download that replay, with both players' names, characters and inputs.</li>
         </ul>
-        <p>Matches that are not Ranked stay private to the two players. To stay off the public lists, do not play Ranked or upload replays, or use <a href="#removing-data">Remove my data</a>.</p>
+        <p>Games in private lobby rooms stay off the public lists. To stay off them, play in private rooms, or use <a href="#removing-data">Remove my data</a>.</p>
         </div>
       </section>
 
@@ -131,19 +132,34 @@
             </thead>
             <tbody>
               <tr><th scope="row">Account: player ID, a hash of its key, your Discord ID and name if you log in</th><td>You</td><td>Until you remove it</td></tr>
-              <tr><th scope="row">Match records: both players' IDs and names, characters, stage, score, results, region, version and times</th><td>The two players; everyone for Ranked</td><td>Until you remove it</td></tr>
+              <tr><th scope="row">Match records: both players' IDs and names, characters, stage, score, results, region, version and times</th><td>Everyone, except sets in private lobby rooms (Quick Match and lobby sets from the next launcher update)</td><td>Until you remove it</td></tr>
               <tr><th scope="row">Ranked rating, rank, and leaves or dodges</th><td>Everyone (rating and rank)</td><td>Until you remove it</td></tr>
               <tr><th scope="row">Friends, friend name and blocks</th><td>You; friends see your status</td><td>Until you remove it</td></tr>
               <tr><th scope="row">Online status and invites</th><td>Friends</td><td>2 and 10 minutes</td></tr>
               <tr><th scope="row">Direct messages</th><td>You and the other person</td><td>30 days</td></tr>
               <tr><th scope="row">Lobby chat</th><td>The room</td><td>Not stored</td></tr>
               <tr><th scope="row">Watching a set (the game inputs)</th><td>The room</td><td>Until the room closes</td></tr>
+              <tr><th scope="row"><a href="#recordings">Game replays</a>: every online game, with its connection numbers and controller name</th><td>Everyone (the replay), except games in private rooms; us (the rest)</td><td>Until you remove it</td></tr>
               <tr><th scope="row">Shared replays</th><td>Everyone</td><td>Until you delete them</td></tr>
               <tr><th scope="row">Reports of a player or message, with a copy of what was reported</th><td>Us</td><td>365 days</td></tr>
             </tbody>
           </table>
         </div>
         <p>It runs on Cloudflare, with the database at DigitalOcean and encrypted backups at Backblaze. Backups are erased within 30 days.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="recordings" aria-labelledby="recordings-title">
+        <h2 class="label-tab sec-tab" id="recordings-title">Game replays</h2>
+        <div class="panel prose">
+        <p>Starting with the next launcher update, every game you play online (Ranked, Quick Match and lobby sets) uploads its replay when the game ends.</p>
+        <ul>
+          <li><strong>A replay holds</strong> both players' inputs on every frame, their names and characters, the stage, round results, and the game and emulator versions.</li>
+          <li><strong>Anyone can watch it,</strong> from either player's profile, the latest sets and replay links, except games in private lobby rooms, which are not listed.</li>
+          <li><strong>With it we keep</strong> your player ID, the set and game number, the connection's ping, delay and rollback numbers, and your controller's name. Only we see these.</li>
+          <li><strong>We also use them</strong> to find bugs and to check for cheating.</li>
+          <li><strong>They are kept</strong> until you use <a href="#removing-data">Remove my data</a>, which erases them. Copies others downloaded cannot be recalled.</li>
+        </ul>
         </div>
       </section>
 
@@ -196,7 +212,7 @@
         <div class="panel prose">
         <p>In the launcher: <span class="ui">Settings → Game → Remove my data</span>.</p>
         <ul>
-          <li><strong>Online, it erases</strong> your match records (also from your opponents' histories), ratings, Discord link, friends, blocks, messages (both sides of each conversation), shared replays and problem reports.</li>
+          <li><strong>Online, it erases</strong> your match records (also from your opponents' histories), ratings, Discord link, friends, blocks, messages (both sides of each conversation), game replays, shared replays and problem reports.</li>
           <li><strong>On your PC, it then clears</strong> your game files, settings, replays and account keys.</li>
           <li><strong>What stays:</strong> your player ID with a hash of its key, and a record that it was removed, so a backup cannot bring your data back; reports filed by or about you, until their 365 days end; and past Ranked results, with your name shown as "Removed player".</li>
         </ul>
@@ -226,6 +242,7 @@
         <li><a href="#accounts"><span class="link-name">Your account</span></a></li>
         <li><a href="#public"><span class="link-name">What is public</span></a></li>
         <li><a href="#stored"><span class="link-name">What the online service keeps</span></a></li>
+        <li><a href="#recordings"><span class="link-name">Game replays</span></a></li>
         <li><a href="#diagnostics"><span class="link-name">Problem reports</span></a></li>
         <li><a href="#connections"><span class="link-name">Connections</span></a></li>
         <li><a href="#other-services"><span class="link-name">Other services</span></a></li>
