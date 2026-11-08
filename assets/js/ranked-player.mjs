@@ -842,7 +842,9 @@ function ratingGraph(ctx) {
       `${characterName(character)} rating, ${n} sets. Use the arrow keys to read each set.`,
     );
     svg.innerHTML = parts.join('');
-    holder.replaceChildren(svg);
+    const card = el('div', 'rk-pointcard');
+    card.hidden = true;
+    holder.replaceChildren(svg, card);
     const cursor = svg.querySelector('.rk-cursor');
 
     let at = n;
@@ -889,19 +891,117 @@ function ratingGraph(ctx) {
       cursor.setAttribute('x2', x(at));
       cursor.setAttribute('visibility', 'visible');
     };
-    show(n);
-    svg.addEventListener('mousemove', (event) => {
+    // The card over a point: the set it was, against whom, the score and what it did to the rating; a click opens the
+    // set. It is placed above the point, below it near the top, and kept inside the chart.
+    const pointSet = (row) => {
+      if (row.set) return row.set;
+      const set = ctx.setsByDate.get(row.date);
+      return set
+        ? {
+            id: set.id,
+            won: set.players[0].won,
+            games: set.games,
+            score: { player: set.players[0].score, opponent: set.players[1].score },
+            opponent: { player: set.players[1].player, character: set.players[1].character },
+          }
+        : null;
+    };
+    const pointHref = (row) => {
+      const set = pointSet(row);
+      return set?.id ? setPath(profile.player, set.id) : null;
+    };
+    const showCard = () => {
+      const row = points[at - 1];
+      const set = pointSet(row);
+      const won = wonSet(ctx, row);
+      const head = el('div', 'rk-pc-head');
+      if (won != null) {
+        const score =
+          set && Number.isSafeInteger(set.score?.player) && Number.isSafeInteger(set.score?.opponent)
+            ? ` ${set.score.player}–${set.score.opponent}`
+            : '';
+        head.append(el('span', `rk-res ${won ? 'rk-win' : 'rk-loss'}`, `${won ? 'Win' : 'Loss'}${score}`));
+      }
+      head.append(
+        el('span', `rk-delta ${row.change > 0 ? 'rk-win' : row.change < 0 ? 'rk-loss' : ''}`, signed(row.change)),
+      );
+      const parts = [head];
+      if (set?.opponent?.player) {
+        const who = el('div', 'rk-pc-who');
+        const name = el('span', 'rk-pc-name', set.opponent.player.name);
+        if (set.opponent.player.tag) name.append(el('span', 'rk-faint', ` #${set.opponent.player.tag}`));
+        const words = el('span', 'rk-pc-words');
+        words.append(name, el('span', 'rk-faint', characterName(set.opponent.character) || ''));
+        who.append(face(set.opponent.character, 40), words);
+        parts.push(who);
+      }
+      const number = complete ? all.indexOf(row) + 1 : null;
+      parts.push(
+        el(
+          'div',
+          'rk-pc-foot rk-faint',
+          [number ? `Set ${number}` : '', `${shortDate(row.date)}, ${clock(row.date)}`, `${fmt(row.before)} → ${fmt(row.after)}`]
+            .filter(Boolean)
+            .join(' · '),
+        ),
+      );
+      if (pointHref(row)) parts.push(el('div', 'rk-pc-open', 'Click to open the set'));
+      card.replaceChildren(...parts);
+      card.hidden = false;
+      const box = svg.getBoundingClientRect(),
+        scale = box.width / W;
+      const px = x(at) * scale,
+        py = y(values[at]) * scale;
+      const width = card.offsetWidth,
+        height = card.offsetHeight;
+      card.style.left = `${Math.max(0, Math.min(box.width - width, px - width / 2))}px`;
+      card.style.top = `${py - height - 14 < 0 ? py + 14 : py - height - 14}px`;
+      svg.style.cursor = pointHref(row) ? 'pointer' : '';
+    };
+    const hideCard = () => {
+      card.hidden = true;
+      svg.style.cursor = '';
+    };
+    const pointAt = (event) => {
       const box = svg.getBoundingClientRect();
       const fx = ((event.clientX - box.left) / box.width) * W;
-      show(Math.round(((fx - L) / (W - L - R)) * n));
+      return Math.round(((fx - L) / (W - L - R)) * n);
+    };
+    show(n);
+    svg.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      show(pointAt(event));
+      showCard();
     });
-    svg.addEventListener('mouseleave', () => show(n));
+    svg.addEventListener('mouseleave', () => {
+      show(n);
+      hideCard();
+    });
+    // A tap shows the card first; a second tap on the same point opens the set, as a click does with a mouse.
+    svg.addEventListener('click', (event) => {
+      const i = Math.max(1, Math.min(n, pointAt(event)));
+      if (event.pointerType === 'touch' && (card.hidden || i !== at)) {
+        show(i);
+        showCard();
+        return;
+      }
+      const href = pointHref(points[i - 1]);
+      if (href) location.assign(href);
+    });
     svg.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        const href = pointHref(points[at - 1]);
+        if (href) location.assign(href);
+        return;
+      }
+      if (event.key === 'Escape') return hideCard();
       const step = { ArrowLeft: -1, ArrowRight: 1, Home: -n, End: n }[event.key];
       if (!step) return;
       event.preventDefault();
       show(at + step);
+      showCard();
     });
+    svg.addEventListener('blur', hideCard);
 
     // The change adds up the sets themselves, so a move between sets is not counted as one.
     const change = points.reduce(
@@ -952,6 +1052,7 @@ const escapeText = (value) =>
   String(value).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // A Glicko-2 win always raises the rating; with no set to say, a zero change tells nothing either way.
 function wonSet(ctx, row) {
+  if (typeof row.set?.won === 'boolean') return row.set.won;
   const set = ctx.setsByDate.get(row.date);
   if (set) return set.players[0].won;
   return row.change > 0 ? true : row.change < 0 ? false : null;

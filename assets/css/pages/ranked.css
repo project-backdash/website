@@ -231,6 +231,17 @@ a.rk-feed-row:hover, a.rk-feed-row:focus-visible { background: var(--gold-wash);
 .rk-readout .rk-res { font-weight: 700; font-size: var(--fs-1); letter-spacing: 0.08em; text-transform: uppercase; }
 .rk-readout .rk-delta { margin-left: auto; font-weight: 700; }
 .rk-chart { display: block; width: 100%; height: auto; outline-offset: 2px; }
+.rk-graph > div:has(> .rk-chart) { position: relative; }
+.rk-pointcard { position: absolute; z-index: 2; width: max-content; max-width: min(320px, 100%); padding: 10px 12px; border: 1px solid var(--panel-edge); border-left: 2px solid rgba(233, 238, 237, 0.4); background: var(--band); font-size: var(--fs-2); pointer-events: none; }
+.rk-pointcard[hidden] { display: none; }
+.rk-pc-head { display: flex; align-items: center; gap: 14px; }
+.rk-pc-head .rk-res { font-weight: 700; font-size: var(--fs-1); letter-spacing: 0.08em; text-transform: uppercase; }
+.rk-pc-head .rk-delta { margin-left: auto; font-weight: 700; }
+.rk-pc-who { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.rk-pc-words { display: grid; gap: 2px; }
+.rk-pc-name { color: var(--text-1); font-weight: 600; }
+.rk-pc-foot { margin-top: 8px; font-size: var(--fs-1); }
+.rk-pc-open { margin-top: 6px; color: var(--text-3); font-size: var(--fs-1); }
 .rk-chart text { font-family: var(--font-ui); }
 .rk-graph-sum { display: flex; flex-wrap: wrap; gap: 6px 24px; margin: 8px 0 0; color: var(--text-2); font-size: var(--fs-2); }
 .rk-graph-sum b { color: var(--text-1); font-weight: 600; }
