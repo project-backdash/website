@@ -910,7 +910,11 @@ function ratingGraph(ctx) {
       const set = pointSet(row);
       return set?.id ? setPath(profile.player, set.id) : null;
     };
+    let cardAt = 0;
     const showCard = () => {
+      // The pointer moving over the same point keeps the card as drawn, its portrait already loaded.
+      if (cardAt === at && !card.hidden) return;
+      cardAt = at;
       const row = points[at - 1];
       const set = pointSet(row);
       const won = wonSet(ctx, row);
@@ -932,7 +936,10 @@ function ratingGraph(ctx) {
         if (set.opponent.player.tag) name.append(el('span', 'rk-faint', ` #${set.opponent.player.tag}`));
         const words = el('span', 'rk-pc-words');
         words.append(name, el('span', 'rk-faint', characterName(set.opponent.character) || ''));
-        who.append(face(set.opponent.character, 40), words);
+        const portrait = face(set.opponent.character, 40);
+        // Drawn on demand under the pointer: a lazy image would wait for a scroll that never comes.
+        if (portrait instanceof HTMLImageElement) portrait.loading = 'eager';
+        who.append(portrait, words);
         parts.push(who);
       }
       const number = complete ? all.indexOf(row) + 1 : null;
@@ -960,6 +967,7 @@ function ratingGraph(ctx) {
     };
     const hideCard = () => {
       card.hidden = true;
+      cardAt = 0;
       svg.style.cursor = '';
     };
     const pointAt = (event) => {

@@ -83,7 +83,7 @@ const route = parsePlayerRoute(location.pathname);
 const playerRoute = document.querySelector('[data-player-route]');
 const root = document.querySelector('[data-ranked-view]');
 if (route && playerRoute)
-  import('/assets/js/ranked-player.mjs?v=0672111662').then(({ playerPage }) =>
+  import('/assets/js/ranked-player.mjs?v=643c9751b3').then(({ playerPage }) =>
     playerPage(document.querySelector('main'), route, playerRoute.dataset.playerRoute),
   );
 else if (playerRoute) document.documentElement.classList.remove('is-player');
